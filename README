@@ -1,0 +1,49 @@
+JavaEWAH
+(c) Daniel Lemire,
+http://www.daniel-lemire.com/
+
+This is a word-aligned compressed variant of
+the Java Bitset class. It uses a 64-bit RLE-like
+compression scheme.
+
+The goal of word-aligned compression is not to 
+achieve the best compression, but rather to 
+improve query processing time. Hence, we try
+to save CPU cycles, maybe at the expense of
+storage. However, the EWAH scheme we implemented
+is always more efficient storage-wise than an
+uncompressed bitmap (as implemented in the java
+BitSet class by Sun).
+
+Unlike the similar compressedbitset, it does not
+implement a patented scheme (to D. Lemire's knowledge).
+
+http://code.google.com/p/compressedbitset/
+
+For better performance, use a 64-bit JVM over
+64-bit CPUs.
+
+Among other possible open source licenses, this
+code is licensed under GPL version 3 and ASL2.0.
+
+For more details, see the following paper:
+
+Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes.
+ Data & Knowledge Engineering 69 (1), pages 3-28, 2010.  
+ http://arxiv.org/abs/0901.3751
+ 
+== Unit testing ==
+
+javac javaewah/unit.java 
+java javaewah/unit
+
+
+=== Usage ==
+
+See example.java.
+
+=== Warning ==
+
+Don't trust software you downloaded off the internet. When in doubt, 
+run the unit tests (javaewah/unit.java). Report bugs when you find them.
+
