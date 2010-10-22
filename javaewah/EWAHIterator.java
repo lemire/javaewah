@@ -2,7 +2,7 @@ package javaewah;
 
 /*
 * Copyright 2009-2010, Daniel Lemire
-* Licensed under the GPL version 3 and APL 2.0, among others.
+* Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
 public class EWAHIterator {

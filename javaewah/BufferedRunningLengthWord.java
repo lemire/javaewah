@@ -2,7 +2,7 @@ package javaewah;
 
 /*
 * Copyright 2009-2010, Daniel Lemire
-* Licensed under the GPL version 3 and APL 2.0, among others.
+* Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
 public class BufferedRunningLengthWord {
@@ -55,7 +55,7 @@ public class BufferedRunningLengthWord {
         assert getRunningLength() == 0;
         long old = getNumberOfLiteralWords() ;
         assert old >= x;
-        dirtywordoffset += x; 
+        dirtywordoffset += x;
         setNumberOfLiteralWords(old - x);
         assert old-x == getNumberOfLiteralWords();
     }

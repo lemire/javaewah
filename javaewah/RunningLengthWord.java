@@ -2,9 +2,12 @@ package javaewah;
 
 /*
 * Copyright 2009-2010, Daniel Lemire
-* Licensed under the GPL version 3 and APL 2.0, among others.
+* Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
+/**
+ * Mostly for internal use.
+ */
 public class RunningLengthWord {
 
     RunningLengthWord(long[] a, int p) {
@@ -52,7 +55,7 @@ public class RunningLengthWord {
         x -= rl;
         setRunningLength(0);
         assert getRunningLength() == 0;
-        long old = getNumberOfLiteralWords() ;
+        final long old = getNumberOfLiteralWords() ;
         assert old >= x;
         setNumberOfLiteralWords(old - x);
         assert old-x == getNumberOfLiteralWords();
