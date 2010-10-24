@@ -676,14 +676,9 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
         return ans;
     }
 
-
-
-    /**
-    * iterate over the positions of the true values.
-    */
-    public Iterator<Integer> iterator() {
-        final EWAHIterator i = new EWAHIterator(buffer,actualsizeinwords);
-        return new Iterator<Integer>() {
+    public IntIterator intIterator() {
+    	final EWAHIterator i = new EWAHIterator(buffer,actualsizeinwords);
+        return new IntIterator() {
             int pos = 0;
             RunningLengthWord rlw = null;
             Vector<Integer> buffer = new Vector<Integer>();
@@ -730,7 +725,7 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
                     }
                 }
             }
-            public Integer 	next() {
+            public int next() {
                 if(buffer.size() == bufferpos+1)
                     rlw = null;
                 return buffer.get(bufferpos++);
@@ -739,6 +734,27 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
                 throw new RuntimeException("not implemented");
             }
         };
+    }
+
+    /**
+    * iterate over the positions of the true values.
+    */
+    public Iterator<Integer> iterator() {
+    	return new Iterator<Integer>() {
+    		final private IntIterator under = intIterator();
+    		
+    		public Integer next() {
+    			return under.next();
+    		}
+    		
+    		public boolean hasNext() {
+    			return under.hasNext();
+    		}
+
+			public void remove() {
+				throw new UnsupportedOperationException("bitsets do not support remove");
+			}
+    	};
     }
 
     /**
