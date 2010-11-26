@@ -107,7 +107,6 @@ public class unit {
         int[] bitsToSet = createSortedIntArrayOfBitsToSet(length);
         EWAHCompressedBitmap ewah = new EWAHCompressedBitmap();
         System.out.println(" ... setting "+bitsToSet.length+" values");
-        long now = System.currentTimeMillis();
         for (int i : bitsToSet) {
             ewah.set(i);
         }
@@ -133,7 +132,7 @@ public class unit {
         equal(0,rlw.getNumberOfLiteralWords());
         equal(false,rlw.getRunningBit());
         equal(0,rlw.getRunningLength());
-        for(long rl = rlw.largestliteralcount; rl >=0; rl-=1024) {
+        for(long rl = RunningLengthWord.largestliteralcount; rl >=0; rl-=1024) {
             rlw.setNumberOfLiteralWords(rl);
             equal(rl,rlw.getNumberOfLiteralWords());
             equal(false,rlw.getRunningBit());
@@ -143,7 +142,7 @@ public class unit {
             equal(false,rlw.getRunningBit());
             equal(0,rlw.getRunningLength());
         }
-        for(long rl = 0; rl <=rlw.largestrunninglengthcount; rl+=1024) {
+        for(long rl = 0; rl <=RunningLengthWord.largestrunninglengthcount; rl+=1024) {
             rlw.setRunningLength(rl);
             equal(0,rlw.getNumberOfLiteralWords());
             equal(false,rlw.getRunningBit());
@@ -154,7 +153,7 @@ public class unit {
             equal(0,rlw.getRunningLength());
         }
         rlw.setRunningBit(true);
-        for(long rl = 0; rl <=rlw.largestrunninglengthcount; rl+=1024) {
+        for(long rl = 0; rl <=RunningLengthWord.largestrunninglengthcount; rl+=1024) {
             rlw.setRunningLength(rl);
             equal(0,rlw.getNumberOfLiteralWords());
             equal(true,rlw.getRunningBit());
@@ -164,7 +163,7 @@ public class unit {
             equal(true,rlw.getRunningBit());
             equal(0,rlw.getRunningLength());
         }
-        for(long rl = 0; rl <=rlw.largestliteralcount; rl+=128) {
+        for(long rl = 0; rl <=RunningLengthWord.largestliteralcount; rl+=128) {
             rlw.setNumberOfLiteralWords(rl);
             equal(rl,rlw.getNumberOfLiteralWords());
             equal(true,rlw.getRunningBit());
@@ -234,12 +233,12 @@ public class unit {
         isTrue(x.getPositions().equals(myarray2.getPositions()));
         x = new EWAHCompressedBitmap();
         for(Iterator<Integer> k = myarray1.iterator(); k.hasNext(); ) {
-            x.set(k.next().intValue());
+            x.set(extracted(k).intValue());
         }
         isTrue(x.getPositions().equals(myarray1.getPositions()));
         x = new EWAHCompressedBitmap();
         for(Iterator<Integer> k = myarray2.iterator(); k.hasNext(); ) {
-            x.set(k.next().intValue());
+            x.set(extracted(k).intValue());
         }
         isTrue(x.getPositions().equals(myarray2.getPositions()));
     }
@@ -274,7 +273,7 @@ public class unit {
         Vector<Integer> result = ewcb.getPositions();
         isTrue(val.length==result.size());
         for(int k = 0; k<val.length; ++k) {
-            isTrue(result.get(k)==val[k]);
+            isTrue(result.get(k).intValue()==val[k]);
         }
     }
 
@@ -296,13 +295,13 @@ public class unit {
         Vector<Integer> result = ewcb.getPositions();
         isTrue(val.length==result.size());
         for(int k = 0; k<val.length; ++k) {
-            isTrue(result.get(k)==val[k]);
+            isTrue(result.get(k).intValue()==val[k]);
         }
     }
     static void equal(Iterator<Integer> i, int[] array) {
         int cursor = 0;
         while(i.hasNext()) {
-            int x = i.next();
+            int x = extracted(i).intValue();
             int y = array[cursor++];
             if( x != y  ) throw new RuntimeException(x+" != "+y);
         }
@@ -417,18 +416,23 @@ public class unit {
         final Vector<Integer> positions = new Vector<Integer>();
         final Iterator<Integer> bits = ewahBitmap.iterator();
         while (bits.hasNext()) {
-            final int bit = bits.next();
+            final int bit = extracted(bits).intValue();
             if (!jdkBitmap.get(bit)) {
                 throw new RuntimeException("iterator: bitset got different bits");
             }
-            positions.add(bit);
+            positions.add(new Integer(bit));
         }
         for (int pos = jdkBitmap.nextSetBit(0); pos >= 0; pos = jdkBitmap.nextSetBit(pos + 1)) {
-            if (!positions.contains(pos)) {
+            if (!positions.contains(new Integer(pos))) {
                 throw new RuntimeException("iterator: bitset got different bits");
             }
         }
     }
+
+
+	private static Integer extracted(final Iterator<Integer> bits) {
+		return bits.next();
+	}
 
     // part of a test contributed by Marc Polizzi
     static void assertEqualsPositions(BitSet jdkBitmap, EWAHCompressedBitmap ewahBitmap) {
@@ -439,7 +443,7 @@ public class unit {
             }
         }
         for (int pos = jdkBitmap.nextSetBit(0); pos >= 0; pos = jdkBitmap.nextSetBit(pos + 1)) {
-            if (!positions.contains(pos)) {
+            if (!positions.contains(new Integer(pos))) {
                 throw new RuntimeException("positions: bitset got different bits");
             }
         }

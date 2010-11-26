@@ -8,38 +8,39 @@ package javaewah;
 public class BufferedRunningLengthWord {
 
     public BufferedRunningLengthWord(RunningLengthWord rlw) {
-        val = rlw.array[rlw.position];
+        this.val = rlw.array[rlw.position];
     }
     public BufferedRunningLengthWord(long a) {
-        val = a;
+        this.val = a;
     }
     public long getNumberOfLiteralWords() {
-        return  val >>> (1+runninglengthbits);
+        return  this.val >>> (1+runninglengthbits);
     }
     public void setNumberOfLiteralWords(long number) {
-        val |= notrunninglengthplusrunningbit;
-        val &= (number << (runninglengthbits +1) ) |runninglengthplusrunningbit;
+        this.val |= notrunninglengthplusrunningbit;
+        this.val &= (number << (runninglengthbits +1) ) |runninglengthplusrunningbit;
     }
     public void setRunningBit(boolean b) {
-        if(b) val |= 1l;
-        else val &= ~1l;
+        if(b) this.val |= 1l;
+        else this.val &= ~1l;
     }
     public boolean getRunningBit() {
-        return (val & 1) != 0;
+        return (this.val & 1) != 0;
     }
     public long getRunningLength() {
-        return (val >>> 1) & largestrunninglengthcount ;
+        return (this.val >>> 1) & largestrunninglengthcount ;
     }
     public void setRunningLength(long number) {
-        val |= shiftedlargestrunninglengthcount;
-        val &= (number << 1) | notshiftedlargestrunninglengthcount;
+        this.val |= shiftedlargestrunninglengthcount;
+        this.val &= (number << 1) | notshiftedlargestrunninglengthcount;
     }
 
     public long  size() {
         return getRunningLength() + getNumberOfLiteralWords();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "running bit = "+getRunningBit() +" running length = "+getRunningLength() + " number of lit. words "+ getNumberOfLiteralWords();
     }
 
@@ -55,7 +56,7 @@ public class BufferedRunningLengthWord {
         assert getRunningLength() == 0;
         long old = getNumberOfLiteralWords() ;
         assert old >= x;
-        dirtywordoffset += x;
+        this.dirtywordoffset += x;
         setNumberOfLiteralWords(old - x);
         assert old-x == getNumberOfLiteralWords();
     }

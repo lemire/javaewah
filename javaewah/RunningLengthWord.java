@@ -10,37 +10,38 @@ package javaewah;
  */
 public class RunningLengthWord {
 
-    RunningLengthWord(long[] a, int p) {
-        array = a;
-        position = p;
+    RunningLengthWord(final long[] a, final int p) {
+        this.array = a;
+        this.position = p;
     }
     public long getNumberOfLiteralWords() {
-        return  array[position] >>> (1+runninglengthbits);
+        return  this.array[this.position] >>> (1+runninglengthbits);
     }
-    public void setNumberOfLiteralWords(long number) {
-        array[position] |= notrunninglengthplusrunningbit;
-        array[position] &= (number << (runninglengthbits +1) ) |runninglengthplusrunningbit;
+    public void setNumberOfLiteralWords(final long number) {
+        this.array[this.position] |= notrunninglengthplusrunningbit;
+        this.array[this.position] &= (number << (runninglengthbits +1) ) |runninglengthplusrunningbit;
     }
-    public void setRunningBit(boolean b) {
-        if(b) array[position] |= 1l;
-        else array[position] &= ~1l;
+    public void setRunningBit(final boolean b) {
+        if(b) this.array[this.position] |= 1l;
+        else this.array[this.position] &= ~1l;
     }
     public boolean getRunningBit() {
-        return (array[position] & 1) != 0;
+        return (this.array[this.position] & 1) != 0;
     }
     public long getRunningLength() {
-        return (array[position] >>> 1) & largestrunninglengthcount ;
+        return (this.array[this.position] >>> 1) & largestrunninglengthcount ;
     }
-    public void setRunningLength(long number) {
-        array[position] |= shiftedlargestrunninglengthcount;
-        array[position] &= (number << 1) | notshiftedlargestrunninglengthcount;
+    public void setRunningLength(final long number) {
+        this.array[this.position] |= shiftedlargestrunninglengthcount;
+        this.array[this.position] &= (number << 1) | notshiftedlargestrunninglengthcount;
     }
 
     public long  size() {
         return getRunningLength() + getNumberOfLiteralWords();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "running bit = "+getRunningBit() +" running length = "+
                getRunningLength() + " number of lit. words "+ getNumberOfLiteralWords();
     }
@@ -63,13 +64,13 @@ public class RunningLengthWord {
 
     public long[] array;
     public int position;
-    public static int runninglengthbits = 32;
-    public static int literalbits = 64 - 1 - runninglengthbits;
-    public static long largestliteralcount = (1l<<literalbits) - 1;
-    public static long largestrunninglengthcount = (1l<<runninglengthbits)-1;
-    public static long shiftedlargestrunninglengthcount = largestrunninglengthcount<<1;
-    public static long notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
-    public static long runninglengthplusrunningbit = (1l<<(runninglengthbits+1)) - 1;
-    public static long notrunninglengthplusrunningbit =~runninglengthplusrunningbit;
-    public static long notlargestrunninglengthcount =~largestrunninglengthcount;
+    public static final int runninglengthbits = 32;
+    public static final int literalbits = 64 - 1 - runninglengthbits;
+    public static final long largestliteralcount = (1l<<literalbits) - 1;
+    public static final long largestrunninglengthcount = (1l<<runninglengthbits)-1;
+    public static final long shiftedlargestrunninglengthcount = largestrunninglengthcount<<1;
+    public static final long notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
+    public static final long runninglengthplusrunningbit = (1l<<(runninglengthbits+1)) - 1;
+    public static final long notrunninglengthplusrunningbit =~runninglengthplusrunningbit;
+    public static final long notlargestrunninglengthcount =~largestrunninglengthcount;
 }

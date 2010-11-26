@@ -10,28 +10,28 @@ public class EWAHIterator {
     int size;
     int pointer;
 
-    public EWAHIterator(long[] a, int sizeinwords) {
-        rlw = new RunningLengthWord(a,0);
-        size = sizeinwords;
-        pointer = 0;
+    public EWAHIterator(final long[] a, final int sizeinwords) {
+        this.rlw = new RunningLengthWord(a,0);
+        this.size = sizeinwords;
+        this.pointer = 0;
     }
 
     boolean hasNext() {
-        return pointer<size;
+        return this.pointer<this.size;
     }
 
     RunningLengthWord next() {
-        rlw.position = pointer;
-        pointer += rlw.getNumberOfLiteralWords() + 1;
-        return rlw;
+        this.rlw.position = this.pointer;
+        this.pointer += this.rlw.getNumberOfLiteralWords() + 1;
+        return this.rlw;
     }
 
     int dirtyWords()  {
-        return pointer-(int)rlw.getNumberOfLiteralWords();
+        return this.pointer-(int)this.rlw.getNumberOfLiteralWords();
     }
 
     long[] buffer() {
-        return rlw.array;
+        return this.rlw.array;
     }
 
 }
