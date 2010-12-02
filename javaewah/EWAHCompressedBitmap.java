@@ -45,7 +45,13 @@ import java.io.*;
 public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable<Integer> {
 
     public EWAHCompressedBitmap () {
-    	// nothing to do in the constructor
+    	this.buffer = new long[defaultbuffersize];
+    	this.rlw = new RunningLengthWord(this.buffer,0);
+    }
+    
+    public EWAHCompressedBitmap (final int buffersize) {
+    	this.buffer = new long[buffersize];
+    	this.rlw = new RunningLengthWord(this.buffer,0);
     }
 
     EWAHIterator getEWAHIterator() {
@@ -813,10 +819,10 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
 
 
     static final int defaultbuffersize = 512;
-    long buffer[] = new long[defaultbuffersize];
+    long buffer[] = null;
     int actualsizeinwords = 1;
     int sizeinbits = 0;
-    RunningLengthWord rlw = new RunningLengthWord(this.buffer,0);
+    RunningLengthWord rlw = null;
     public static final int wordinbits = 64;
 
 
