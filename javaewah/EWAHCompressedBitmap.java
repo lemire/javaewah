@@ -359,9 +359,14 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
 
 
 	/**
-    * Negate (bitwise) the current bitmap. To obtained a negated copy, do ((EWAHCompressedBitmap) mybitmap.clone()).not();
+    * Negate (bitwise) the current bitmap. To get a negated copy, do ((EWAHCompressedBitmap) mybitmap.clone()).not();
     * 
     *     The running time is proportionnal to the compressed size (as reported by sizeInBytes()).
+    *
+    * LIMITATION (FIXME): in the current version, if you negate
+    * a bitmap, and then iterator through the set bits, you may find
+    * true bits beyond the sizeInBits range.
+    *
     */
     public void not() {
     	final EWAHIterator i = new EWAHIterator(this.buffer,this.actualsizeinwords);
