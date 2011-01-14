@@ -42,7 +42,6 @@ package javaewah;
 import java.util.*;
 import java.io.*;
 
-import sun.tools.tree.ThisExpression;
 
 public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable<Integer> {
 
