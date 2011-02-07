@@ -853,34 +853,44 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
         return new IntIterator() {
             int pos = 0;
             RunningLengthWord localrlw = null;
-            Vector<Integer> localbuffer = new Vector<Integer>();
+            final static int initcapacity = 512;
+            int[] localbuffer = new int[initcapacity ];
+            int localbuffersize = 0;
+            //Vector<Integer> localbuffer = new Vector<Integer>();
             int bufferpos= 0;
             public boolean 	hasNext() {
-                if(this.localrlw == null) {
-                    if(!loadNextRLE())
-                        return false;
-                    loadBuffer();
-                    return this.localbuffer.size() > 0;
+                while(this.localbuffersize==0) {
+                    	if(!loadNextRLE())
+                    		return false;
+                    	loadBuffer();
                 }
                 return true;
             }
             private boolean loadNextRLE() {
                 while(i.hasNext()) {
                     this.localrlw = i.next();
-                    if(this.localrlw.getRunningBit() && (this.localrlw.getRunningLength()>0) )
-                        return true;
-                    if(this.localrlw.getNumberOfLiteralWords()>0)
-                        return true;
+                    return true;
                 }
                 return false;
             }
+            
+            private void add(final int val) {
+            	++this.localbuffersize;
+            	while(this.localbuffersize>this.localbuffer.length) {
+            		int[] oldbuffer = this.localbuffer;
+            		this.localbuffer = new int[this.localbuffer.length * 2];
+            		System.arraycopy(oldbuffer, 0, this.localbuffer, 0, oldbuffer.length);
+            	}
+            	this.localbuffer[this.localbuffersize - 1] = val;
+            }
             private void loadBuffer() {
-                this.localbuffer = new Vector<Integer>();
-                this.bufferpos = 0;
+            	this.bufferpos = 0;
+            	this.localbuffersize=0;
                 if(this.localrlw.getRunningBit()) {
                     for(int j = 0; j<this.localrlw.getRunningLength(); ++j) {
-                        for(int c= 0; c<wordinbits; ++c)
-                            this.localbuffer.add(new Integer(this.pos++));
+                        for(int c= 0; c<wordinbits; ++c) {
+                        	add(this.pos++);
+                        }
                     }
                 } else {
                     this.pos+=wordinbits*this.localrlw.getRunningLength();
@@ -889,16 +899,18 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
                 	final long data = i.buffer()[i.dirtyWords()+j];
                     for(long c= 0; c<wordinbits; ++c) {
                         if( ((1l << c) & data) != 0) {
-                            this.localbuffer.add(new Integer(this.pos));
+                        	add(this.pos);
                         }
                         ++this.pos;
                     }
                 }
             }
             public int next() {
-                if(this.localbuffer.size() == this.bufferpos+1)
-                    this.localrlw = null;
-                return this.localbuffer.get(this.bufferpos++).intValue();
+            	final int answer = this.localbuffer[this.bufferpos++];
+                if(this.localbuffersize == this.bufferpos) {
+                	this.localbuffersize=0;
+                }
+                return answer ;
             }
         };
     }
