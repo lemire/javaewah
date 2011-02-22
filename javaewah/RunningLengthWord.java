@@ -1,7 +1,7 @@
 package javaewah;
 
 /*
-* Copyright 2009-2010, Daniel Lemire
+* Copyright 2009-2011, Daniel Lemire
 * Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
