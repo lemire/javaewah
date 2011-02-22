@@ -806,7 +806,7 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
         this.buffer = new long[in.readInt()];
         for(int k = 0; k< this.actualsizeinwords; ++k)
             this.buffer[k] = in.readLong();
-        this.rlw = new RunningLengthWord(this.buffer,this.actualsizeinwords-1);
+        this.rlw = new RunningLengthWord(this.buffer,in.readInt());
     }
 
     public void	writeExternal(ObjectOutput out) throws IOException  {
@@ -815,6 +815,7 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
         out.writeInt(this.buffer.length);
         for(int k = 0; k< this.actualsizeinwords; ++k)
             out.writeLong(this.buffer[k]);
+        out.writeInt(this.rlw.position);
     }
 
 
