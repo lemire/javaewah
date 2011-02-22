@@ -992,7 +992,11 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
     }
 
     public void	readExternal(ObjectInput in) throws IOException {
-        this.sizeinbits = in.readInt();
+        deserialize(in);
+    }
+    
+    public void deserialize(DataInput in) throws IOException {
+    	this.sizeinbits = in.readInt();
         this.actualsizeinwords = in.readInt();
         this.buffer = new long[in.readInt()];
         for(int k = 0; k< this.actualsizeinwords; ++k)
@@ -1001,7 +1005,11 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
     }
 
     public void	writeExternal(ObjectOutput out) throws IOException  {
-        out.writeInt(this.sizeinbits);
+        serialize(out);
+    }
+    
+    public void serialize(DataOutput out) throws IOException {
+    	out.writeInt(this.sizeinbits);
         out.writeInt(this.actualsizeinwords);
         out.writeInt(this.buffer.length);
         for(int k = 0; k< this.actualsizeinwords; ++k)
