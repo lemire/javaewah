@@ -969,7 +969,19 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
         return v;
     }
 
-
+    @Override
+    public boolean equals(Object o) {
+    	if (o instanceof EWAHCompressedBitmap) {
+    		EWAHCompressedBitmap other = (EWAHCompressedBitmap) o;
+    		return sizeinbits == other.sizeinbits &&
+    			actualsizeinwords == other.actualsizeinwords &&
+    			rlw.position == other.rlw.position &&
+    			Arrays.equals(buffer, other.buffer);
+    	} else {
+    		return false;
+    	}
+    }
+    
     @Override
 	public Object clone() throws java.lang.CloneNotSupportedException {
     	final EWAHCompressedBitmap clone = (EWAHCompressedBitmap) super.clone();
