@@ -856,7 +856,6 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
             final static int initcapacity = 512;
             int[] localbuffer = new int[initcapacity ];
             int localbuffersize = 0;
-            //Vector<Integer> localbuffer = new Vector<Integer>();
             int bufferpos= 0;
             public boolean 	hasNext() {
                 while(this.localbuffersize==0) {
@@ -940,8 +939,8 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
     * get the locations of the true values as one vector.
     * (may use more memory than iterator())
     */
-    public Vector<Integer> getPositions() {
-    	final Vector<Integer> v = new Vector<Integer>();
+    public List<Integer> getPositions() {
+    	final ArrayList<Integer> v = new ArrayList<Integer>();
         final EWAHIterator i = new EWAHIterator(this.buffer,this.actualsizeinwords);
         int pos = 0;
         while(i.hasNext()) {
@@ -964,10 +963,12 @@ public class EWAHCompressedBitmap implements Cloneable, Externalizable, Iterable
                 }
             }
         }
-        while( (v.size()>0) && (v.lastElement().intValue() >= this.sizeinbits ))
-            v.removeElementAt(v.size()-1);
+        while( (v.size()>0) && (v.get(v.size()-1).intValue() >= this.sizeinbits ))
+            v.remove(v.size()-1);
         return v;
     }
+    
+    
 
     @Override
     public boolean equals(Object o) {

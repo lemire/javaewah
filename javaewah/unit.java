@@ -199,8 +199,8 @@ public class unit {
         myarray2.add(zero);
         myarray2.add(zero);
         equal(myarray2.getPositions().size(), 6+64);
-        Vector<Integer> data1 = myarray1.getPositions();
-        Vector<Integer> data2 = myarray2.getPositions();
+        List<Integer> data1 = myarray1.getPositions();
+        List<Integer> data2 = myarray2.getPositions();
         Vector<Integer> logicalor = new Vector<Integer>();
         {
             HashSet<Integer> tmp = new HashSet<Integer>();
@@ -270,7 +270,7 @@ public class unit {
         for (int k = 0; k< val.length; ++k) {
             ewcb.set(val[k]);
         }
-        Vector<Integer> result = ewcb.getPositions();
+        List<Integer> result = ewcb.getPositions();
         isTrue(val.length==result.size());
         for(int k = 0; k<val.length; ++k) {
             isTrue(result.get(k).intValue()==val[k]);
@@ -292,7 +292,7 @@ public class unit {
         ewcb = new EWAHCompressedBitmap();
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray() );
         ewcb.readExternal(new ObjectInputStream(bis));
-        Vector<Integer> result = ewcb.getPositions();
+        List<Integer> result = ewcb.getPositions();
         isTrue(val.length==result.size());
         for(int k = 0; k<val.length; ++k) {
             isTrue(result.get(k).intValue()==val[k]);
@@ -449,7 +449,7 @@ public class unit {
 
     // part of a test contributed by Marc Polizzi
     static void assertEqualsPositions(BitSet jdkBitmap, EWAHCompressedBitmap ewahBitmap) {
-        final Vector<Integer> positions = ewahBitmap.getPositions();
+        final List<Integer> positions = ewahBitmap.getPositions();
         for (int position : positions) {
             if (!jdkBitmap.get(position)) {
                 throw new RuntimeException("positions: bitset got different bits");
@@ -462,8 +462,8 @@ public class unit {
         }
     }
     static void assertEqualsPositions(EWAHCompressedBitmap ewahBitmap1, EWAHCompressedBitmap ewahBitmap2) {
-        final Vector<Integer> positions1 = ewahBitmap1.getPositions();
-        final Vector<Integer> positions2 = ewahBitmap2.getPositions();
+        final List<Integer> positions1 = ewahBitmap1.getPositions();
+        final List<Integer> positions2 = ewahBitmap2.getPositions();
         if(!positions1.equals(positions2))
           throw new RuntimeException("positions: alternative got different bits");
     }
@@ -579,7 +579,7 @@ public class unit {
                 bitmap.set(i);
             }
             IntIterator iterator = bitmap.intIterator();
-            Vector<Integer> v = bitmap.getPositions();
+            List<Integer> v = bitmap.getPositions();
             for(int k = 0; k<v.size();++k) {
             	isTrue(iterator.hasNext());
             	final int ival = iterator.next();
