@@ -5,7 +5,7 @@ package javaewah;
 * Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
-public class EWAHIterator {
+public final class EWAHIterator {
     RunningLengthWord rlw;
     int size;
     int pointer;

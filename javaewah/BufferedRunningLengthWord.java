@@ -5,38 +5,47 @@ package javaewah;
 * Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
-public class BufferedRunningLengthWord {
+public final class BufferedRunningLengthWord {
 
-    public BufferedRunningLengthWord(RunningLengthWord rlw) {
-        this.val = rlw.array[rlw.position];
+    public BufferedRunningLengthWord(final RunningLengthWord rlw) {
+    	this(rlw.array[rlw.position]);
     }
-    public BufferedRunningLengthWord(long a) {
-        this.val = a;
+    public BufferedRunningLengthWord(final long a) {
+    	this.NumberOfLiteralWords = (int) (a >>> (1+runninglengthbits));
+        this.RunningBit = (a & 1) != 0;
+        this.RunningLength = (int) ((a >>> 1) & largestrunninglengthcount) ;
     }
-    public long getNumberOfLiteralWords() {
-        return  this.val >>> (1+runninglengthbits);
+    public void reset(final RunningLengthWord rlw) {
+    	reset(rlw.array[rlw.position]);
+    }   
+    public void reset(final long a) {
+    	this.NumberOfLiteralWords = (int) (a >>> (1+runninglengthbits));
+        this.RunningBit = (a & 1) != 0;
+        this.RunningLength = (int) ((a >>> 1) & largestrunninglengthcount) ; 
+        this.dirtywordoffset = 0;
     }
-    public void setNumberOfLiteralWords(long number) {
-        this.val |= notrunninglengthplusrunningbit;
-        this.val &= (number << (runninglengthbits +1) ) |runninglengthplusrunningbit;
+    
+    public int getNumberOfLiteralWords() {
+        return  this.NumberOfLiteralWords;
     }
-    public void setRunningBit(boolean b) {
-        if(b) this.val |= 1l;
-        else this.val &= ~1l;
+    public void setNumberOfLiteralWords(final int number) {
+    	this.NumberOfLiteralWords = number;
+    }
+    public void setRunningBit(final boolean b) {
+    	this.RunningBit = b;
     }
     public boolean getRunningBit() {
-        return (this.val & 1) != 0;
+    	return this.RunningBit;
     }
     public long getRunningLength() {
-        return (this.val >>> 1) & largestrunninglengthcount ;
+    	return this.RunningLength;
     }
-    public void setRunningLength(long number) {
-        this.val |= shiftedlargestrunninglengthcount;
-        this.val &= (number << 1) | notshiftedlargestrunninglengthcount;
+    public void setRunningLength(final long number) {
+    	this.RunningLength = number;
     }
 
     public long  size() {
-        return getRunningLength() + getNumberOfLiteralWords();
+        return this.RunningLength + this.NumberOfLiteralWords;
     }
 
     @Override
@@ -45,24 +54,21 @@ public class BufferedRunningLengthWord {
     }
 
     public void discardFirstWords(long x) {
-        long rl = getRunningLength() ;
-        if(rl >= x) {
-            setRunningLength(rl - x);
-            assert getRunningLength() == rl-x;
+        if(this.RunningLength >= x) {
+        	this.RunningLength -= x;
             return;
         }
-        x -= rl;
-        setRunningLength(0);
-        assert getRunningLength() == 0;
-        long old = getNumberOfLiteralWords() ;
-        assert old >= x;
+        x -= this.RunningLength;
+        this.RunningLength = 0;
         this.dirtywordoffset += x;
-        setNumberOfLiteralWords(old - x);
-        assert old-x == getNumberOfLiteralWords();
+        this.NumberOfLiteralWords -= x;
     }
 
-    public long val;
-    int dirtywordoffset= 0;
+	public int NumberOfLiteralWords;
+    public boolean RunningBit;
+    public long RunningLength;
+    public int dirtywordoffset= 0;
+    
     public static int runninglengthbits = 32;
     public static int literalbits = 64 - 1 - runninglengthbits;
     public static long largestliteralcount = (1l<<literalbits) - 1;

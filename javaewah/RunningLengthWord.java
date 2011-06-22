@@ -8,14 +8,14 @@ package javaewah;
 /**
  * Mostly for internal use.
  */
-public class RunningLengthWord {
+public final class RunningLengthWord {
 
     RunningLengthWord(final long[] a, final int p) {
         this.array = a;
         this.position = p;
     }
-    public long getNumberOfLiteralWords() {
-        return  this.array[this.position] >>> (1+runninglengthbits);
+    public int getNumberOfLiteralWords() {
+        return  (int) (this.array[this.position] >>> (1+runninglengthbits));
     }
     public void setNumberOfLiteralWords(final long number) {
         this.array[this.position] |= notrunninglengthplusrunningbit;
@@ -46,7 +46,7 @@ public class RunningLengthWord {
                getRunningLength() + " number of lit. words "+ getNumberOfLiteralWords();
     }
 
-    public void discardFirstWords(long x) {
+    /*public void discardFirstWords(long x) {
         long rl = getRunningLength() ;
         if(rl >= x) {
             setRunningLength(rl - x);
@@ -60,7 +60,7 @@ public class RunningLengthWord {
         assert old >= x;
         setNumberOfLiteralWords(old - x);
         assert old-x == getNumberOfLiteralWords();
-    }
+    }*/
 
     public long[] array;
     public int position;
