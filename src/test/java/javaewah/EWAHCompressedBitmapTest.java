@@ -5,10 +5,12 @@ package javaewah;
 * Licensed under the GPL version 3 and APL 2.0, among other licenses.
 */
 
+import org.junit.Test;
+
 import java.util.*;
 import java.io.*;
 
-public class unit {
+public class EWAHCompressedBitmapTest {
     private static final int MEGA = 8 * 1024 * 1024;
     private static final int TEST_BS_SIZE = 8 * MEGA;
 
@@ -49,7 +51,8 @@ public class unit {
     /**
     * Non deterministic test inspired by S.J.vanSchaik.
     */
-    public static void vanSchaikTest() {
+    @Test
+    public void vanSchaikTest() {
         System.out.println("testing vanSchaikTest (this takes some time)");
         final int totalNumBits = 32768;
         final double odds = 0.9;
@@ -68,7 +71,8 @@ public class unit {
     /*
     * Test inspired by William Habermaas
     */
-    public static void habermaasTest() {
+    @Test
+    public void habermaasTest() {
         System.out.println("testing habermaasTest");
         BitSet bitsetaa = new BitSet();
         EWAHCompressedBitmap aa = new EWAHCompressedBitmap();
@@ -116,8 +120,8 @@ public class unit {
         equal(bitsToSet.length, ewah.cardinality());
     }
 
-
-    public static void testRunningLengthWord() {
+    @Test
+    public void testRunningLengthWord() {
         System.out.println("testing RunningLengthWord");
         long x[] = new long[1];
         RunningLengthWord rlw = new RunningLengthWord(x,0);
@@ -175,8 +179,8 @@ public class unit {
         }
     }
 
-
-    static void testEWAHCompressedBitmap() {
+    @Test
+    public void testEWAHCompressedBitmap() {
         System.out.println("testing EWAH");
         long zero = 0;
         long specialval = 1l | (1l << 4)|(1l << 63);
@@ -246,7 +250,8 @@ public class unit {
     /**  as per renaud.delbru, Feb 12, 2009
     * this might throw an error out of bound exception.
     */
-    static void testLargeEWAHCompressedBitmap() {
+    @Test
+    public void testLargeEWAHCompressedBitmap() {
         System.out.println("testing EWAH over a large array");
         EWAHCompressedBitmap myarray1 = new EWAHCompressedBitmap();
         int N= 11000000;
@@ -256,14 +261,17 @@ public class unit {
         isTrue(myarray1.sizeInBits() == N);
     }
 
-    static void testCardinality () {
+    @Test
+    public void testCardinality () {
         System.out.println("testing EWAH cardinality");
         EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
         bitmap.set(Integer.MAX_VALUE);
         //System.out.format("Total Items %d\n", bitmap.cardinality());
         isTrue(bitmap.cardinality()==1);
     }
-    static void testSetGet () {
+
+    @Test
+    public void testSetGet () {
         System.out.println("testing EWAH set/get");
         EWAHCompressedBitmap ewcb = new EWAHCompressedBitmap();
         int[] val = {5,4400,44600,55400,1000000};
@@ -277,7 +285,8 @@ public class unit {
         }
     }
 
-    static void testExternalization () throws IOException {
+    @Test
+    public void testExternalization () throws IOException {
         System.out.println("testing EWAH externalization");
         EWAHCompressedBitmap ewcb = new EWAHCompressedBitmap();
         int[] val = {5,4400,44600,55400,1000000};
@@ -467,7 +476,9 @@ public class unit {
         if(!positions1.equals(positions2))
           throw new RuntimeException("positions: alternative got different bits");
     }
-    public static void testMassiveAnd() {
+
+    @Test
+    public void testMassiveAnd() {
         System.out.println("testing massive logical and");
         EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[1024];
         for(int k = 0; k<ewah.length; ++k) ewah[k] = new EWAHCompressedBitmap();
@@ -482,7 +493,9 @@ public class unit {
             System.out.println(answer.toDebugString());
         isTrue(answer.getPositions().size() == 0);
     }
-    public static void testMassiveXOR() {
+
+    @Test
+    public void testMassiveXOR() {
         System.out.println("testing massive xor");
         final int N = 128;
         EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
@@ -509,7 +522,8 @@ public class unit {
         }
     }
 
-    public static void testMassiveAndNot() {
+    @Test
+    public void testMassiveAndNot() {
         System.out.println("testing massive and not");
         final int N = 1024;
         EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
@@ -532,7 +546,9 @@ public class unit {
             assertEqualsPositions(answer, answer2);
         }
     }
-    public static void testMassiveOr() {
+
+    @Test
+    public void testMassiveOr() {
         System.out.println("testing massive logical or");
         final int N = 1024;
         for(int howmany = 512; howmany <=10000; howmany *=2){
@@ -566,13 +582,14 @@ public class unit {
 	        }
         }
     }
-    
-    
+
+
     /**
      * Created: 2/4/11 6:03 PM
      * By: Arnon Moscona
      */
-    public static  void EwahIteratorProblem (){
+    @Test
+    public void EwahIteratorProblem (){
     	    System.out.println("testing ArnonMoscona");
             EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
             for (int i=9434560; i<=9435159; i++) {
@@ -598,28 +615,14 @@ public class unit {
             }
     }
 
-
-
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void testWithParameters() throws IOException {
     	System.out.println("These tests can run for several minutes. Please be patient.");
-    	EwahIteratorProblem ();
         for(int k = 2; k<1<<24; k*=8) shouldSetBits(k);
-    	habermaasTest();
-        testEWAHCompressedBitmap();
-        testRunningLengthWord();
-        testLargeEWAHCompressedBitmap();
-        testCardinality ();
-        testSetGet ();
         PolizziTest(64);
         PolizziTest(128);
         PolizziTest(256);
         PolizziTest(2048);
-        testExternalization ();
-        vanSchaikTest();
-        testMassiveOr();
-        testMassiveAnd();
-        testMassiveAndNot();
-        testMassiveXOR();
         System.out.println("Your code is probably ok.");
     }
 }
