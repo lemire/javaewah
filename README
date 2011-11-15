@@ -24,7 +24,8 @@ For better performance, use a 64-bit JVM over
 64-bit CPUs.
 
 Among other possible open source licenses, this
-code is licensed under GPL version 3 and ASL2.0.
+code is licensed under GPL version 3 and Apache License, Version 2.0 (ASL2.0).
+(You can choose which license you prefer.)
 
 For more details, see the following paper:
 
