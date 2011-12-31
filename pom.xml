@@ -21,7 +21,7 @@
 	</licenses>
 	<scm>
 	  <connection>scm:git:git@github.com:lemire/javaewah.git</connection>
-	  <url>https://github.com/lemire/javaewah/</url>
+	  <url>scm:git:git@github.com:lemire/javaewah.git</url>
 	  <developerConnection>scm:git:git@github.com:lemire/javaewah.git</developerConnection>
     </scm>
       <developers>
