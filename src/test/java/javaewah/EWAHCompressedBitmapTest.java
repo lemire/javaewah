@@ -58,7 +58,7 @@ public class EWAHCompressedBitmapTest {
     final int totalNumBits = 32768;
     final double odds = 0.9;
     Random rand = new Random(323232323);
-    for (int t = 0; t < 10000; t++) {
+    for (int t = 0; t < 100; t++) {
       int numBitsSet = 0;
       EWAHCompressedBitmap cBitMap = new EWAHCompressedBitmap();
       for (int i = 0; i < totalNumBits; i++) {
@@ -514,7 +514,7 @@ public class EWAHCompressedBitmapTest {
   @Test
   public void testMassiveXOR() {
     System.out.println("testing massive xor (can take a couple of minutes)");
-    final int N = 128;
+    final int N = 16;
     EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
     BitSet[] bset = new BitSet[N];
     for (int k = 0; k < ewah.length; ++k)
@@ -571,7 +571,7 @@ public class EWAHCompressedBitmapTest {
   @Test
   public void testMassiveOr() {
     System.out.println("testing massive logical or (can take a couple of minutes)");
-    final int N = 1024;
+    final int N = 128;
     for (int howmany = 512; howmany <= 10000; howmany *= 2) {
       EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
       BitSet[] bset = new BitSet[N];

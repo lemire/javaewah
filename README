@@ -25,7 +25,6 @@ For better performance, use a 64-bit JVM over
 
 Among other possible open source licenses, this
 code is licensed under GPL version 3 and Apache License, Version 2.0 (ASL2.0).
-(You can choose which license you prefer.)
 
 For more details, see the following paper:
 
@@ -35,8 +34,14 @@ Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap i
  
 == Unit testing ==
 
-javac javaewah/unit.java 
-java javaewah/unit
+As of October 2011, this packages relies on Maven. To
+test it:
+
+mvn test
+
+See 
+http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+for details.
 
 
 === Usage ==
