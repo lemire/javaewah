@@ -22,7 +22,7 @@
 	</licenses>
 	<scm>
 	  <connection>scm:git:git@github.com:lemire/javaewah.git</connection>
-	  <url>scm:git:git@github.com:lemire/javaewah.git</url>
+	  <url>https://github.com/lemire/javaewah/</url>
 	  <developerConnection>scm:git:git@github.com:lemire/javaewah.git</developerConnection>
     </scm>
       <developers>
