@@ -1159,7 +1159,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * Returns a customized hash code (based on Karp-Rabin).
    * Naturally, if the bitmaps are equal, they will hash to the same value.
    * 
-   * @see java.lang.Object#hashCode(java.lang.Object)
    */
   @Override
   public int hashCode() {
