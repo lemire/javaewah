@@ -48,8 +48,19 @@ for details.
 
 See example.java.
 
-=== Warning ==
+ 
+== Maven central repository ==
 
-Don't trust software you downloaded off the internet. When in doubt, 
-run the unit tests (javaewah/unit.java). Report bugs when you find them.
+You can download JavaEWAH from the Maven central repository:
+http://repo1.maven.org/maven2/com/googlecode/javaewah/JavaEWAH/
+
+You can also specify the dependency in the Maven "pom.xml" file:
+
+<dependencies>
+    <dependency>
+	<groupId>com.googlecode.javaewah</groupId>
+	<artifactId>JavaEWAH</artifactId>
+	<version>0.3.1</version>
+    </dependency>
+</dependencies>
 
