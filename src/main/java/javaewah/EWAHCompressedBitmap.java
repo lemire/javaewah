@@ -36,6 +36,10 @@ import java.io.*;
  * Berkeley National Laboratory, available from http://crd.lbl.
  * gov/~kewu/ps/PUB-3161.html (2001).</li>
  * </ul>
+ *
+ * <p> We can view this scheme as a 64-bit equivalent to the 
+ * Oracle bitmap compression scheme:</li>
+ * <ul><li>G. Antoshenkov, Byte-Aligned Bitmap Compression, DCC'95, 1995.</li></ul>
  * 
  * <p>1- The author (D. Lemire) does not know of any patent infringed by the
  * following implementation. However, similar schemes, like WAH are covered by
@@ -290,6 +294,94 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     container.sizeinbits = Math.max(sizeInBits(), a.sizeInBits());
     return container;
   }
+
+
+  /**
+   * Return true if the two EWAHCompressedBitmap have both at least one
+   * true bit in the same position. Equivalently, you could call "and"
+   * and check whether there is a set bit, but intersects will run faster
+   * if you don't need the result of the "and" operation.
+   *
+   * @param a the other bitmap
+   * @return whether they intersect
+   */
+  public boolean intersects(final EWAHCompressedBitmap a) {
+    final EWAHIterator i = a.getEWAHIterator();
+    final EWAHIterator j = getEWAHIterator();
+    if ((! i.hasNext()) || (! j.hasNext())) {
+      return false;
+    }
+    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
+    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
+    while (true) {
+      final boolean i_is_prey = rlwi.size() < rlwj.size();
+      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
+      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
+      if (prey.getRunningBit() == false) {
+        predator.discardFirstWords(prey.RunningLength);
+        prey.RunningLength = 0;
+      } else {
+        // we have a stream of 1x11
+        final long predatorrl = predator.getRunningLength();
+        final long preyrl = prey.getRunningLength();
+        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
+        if(predator.getRunningBit()) return true;
+        final int dw_predator = predator.dirtywordoffset
+          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
+        if(preyrl > tobediscarded) return true; 
+        predator.discardFirstWords(preyrl);
+        prey.RunningLength = 0;
+      }
+      final long predatorrl = predator.getRunningLength();
+      if (predatorrl > 0) {
+        if (predator.getRunningBit() == false) {
+          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : predatorrl;
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+        } else {
+          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int dw_prey = prey.dirtywordoffset
+            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
+          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : predatorrl;
+          if(tobediscarded>0) return true;
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+        }
+      }
+      final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      if (nbre_dirty_prey > 0) {
+        for (int k = 0; k < nbre_dirty_prey; ++k) {
+          if (i_is_prey)
+            if( ( i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
+              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k] ) !=0) 
+              return true;
+          else
+            if( ( i.buffer()[predator.dirtywordoffset + i.dirtyWords()
+              + k]
+              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k] ) != 0)
+              return true;
+        }
+      }
+      if (i_is_prey) {
+        if (!i.hasNext()) {
+          rlwi = null;
+          break;
+        }
+        rlwi.reset(i.next());
+      } else {
+        if (!j.hasNext()) {
+          rlwj = null;
+          break;
+        }
+        rlwj.reset(j.next());
+      }
+    }
+    return false;
+  }
+
 
   /**
    * Returns a new compressed bitmap contained the bitwise AND NOT values of the
@@ -763,11 +855,12 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * compressed bitmap. Initially, the sizeInBits is zero. It is extended
    * automatically when you set bits to true.
    *
-   * @return the size
+   * @return the size in bits
    */
   public int sizeInBits() {
     return this.sizeinbits;
   }
+
 
   /**
    * Change the reported size in bits of the *uncompressed* bitmap represented
@@ -810,6 +903,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public int sizeInBytes() {
     return this.actualsizeinwords * 8;
   }
+  
 
   /**
    * For internal use (trading off memory for speed).
