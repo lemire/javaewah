@@ -79,7 +79,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Returns a new compressed bitmap contained the bitwise XOR values of the
+   * Returns a new compressed bitmap containing the bitwise XOR values of the
    * current bitmap with some other bitmap.
    * 
    * The running time is proportional to the sum of the compressed sizes (as
@@ -193,7 +193,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Returns a new compressed bitmap contained the bitwise AND values of the
+   * Returns a new compressed bitmap containing the bitwise AND values of the
    * current bitmap with some other bitmap.
    * 
    * The running time is proportional to the sum of the compressed sizes (as
@@ -384,8 +384,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
 
   /**
-   * Returns a new compressed bitmap contained the bitwise AND NOT values of the
-   * current bitmap with some other bitmap.
+   * Returns a new compressed bitmap containing the bitwise AND NOT values of
+   * the current bitmap with some other bitmap.
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
@@ -525,7 +525,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Returns a new compressed bitmap contained the bitwise OR values of the
+   * Returns a new compressed bitmap containing the bitwise OR values of the
    * current bitmap with some other bitmap.
    * 
    * The running time is proportional to the sum of the compressed sizes (as
