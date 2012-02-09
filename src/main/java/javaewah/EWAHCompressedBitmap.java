@@ -1293,7 +1293,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public void deserialize(DataInput in) throws IOException {
     this.sizeinbits = in.readInt();
     this.actualsizeinwords = in.readInt();
-    this.buffer = new long[in.readInt()];
+    int bufferSize = in.readInt();
+    if (this.buffer.length < bufferSize) {
+      this.buffer = new long[bufferSize];
+    }
     for (int k = 0; k < this.actualsizeinwords; ++k)
       this.buffer[k] = in.readLong();
     this.rlw = new RunningLengthWord(this.buffer, in.readInt());
@@ -1321,6 +1324,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     out.writeInt(this.rlw.position);
   }
 
+  /**
+   * Clear any set bits and set size in bits back to 0
+   */
+  public void clear() {
+    sizeinbits = 0;
+    actualsizeinwords = 1;
+    rlw.position = 0;
+    // buffer is not fully cleared but any new set operations should overwrite stale data
+    buffer[0] = 0;
+  }
 
   /** The Constant defaultbuffersize: default memory allocation when the object is constructed. */
   static final int defaultbuffersize = 4;
