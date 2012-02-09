@@ -1321,6 +1321,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     out.writeInt(this.rlw.position);
   }
 
+  /**
+   * Clear any set bits and set size in bits back to 0
+   */
+  public void clear() {
+    sizeinbits = 0;
+    actualsizeinwords = 1;
+    rlw.position = 0;
+    // buffer is not fully cleared but any new set operations should overwrite stale data
+    buffer[0] = 0;
+  }
 
   /** The Constant defaultbuffersize: default memory allocation when the object is constructed. */
   static final int defaultbuffersize = 4;

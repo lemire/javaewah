@@ -776,4 +776,39 @@ public class EWAHCompressedBitmapTest {
     PolizziTest(2048);
     System.out.println("Your code is probably ok.");
   }
+
+  /**
+   * Test clear function
+   */
+  @Test
+  public void testClear() {
+    EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+    bitmap.set(5);
+    bitmap.clear();
+    bitmap.set(7);
+    isTrue(1 == bitmap.cardinality());
+    isTrue(1 == bitmap.getPositions().size());
+    isTrue(7 == bitmap.getPositions().get(0));
+    bitmap.clear();
+    bitmap.set( 5000 );
+    isTrue(1 == bitmap.cardinality());
+    isTrue(1 == bitmap.getPositions().size());
+    isTrue(5000 == bitmap.getPositions().get(0));
+    bitmap.set(5001);
+    bitmap.set(5005);
+    bitmap.set(5100);
+    bitmap.set(5500);
+    bitmap.clear();
+    bitmap.set(5);
+    bitmap.set(7);
+    bitmap.set(1000);
+    bitmap.set(1001);
+    isTrue(4 == bitmap.cardinality());
+    List<Integer> positions = bitmap.getPositions();
+    isTrue(4 == positions.size());
+    isTrue(5 == positions.get(0));
+    isTrue(7 == positions.get(1));
+    isTrue(1000 == positions.get(2));
+    isTrue(1001 == positions.get(3));
+  }
 }
