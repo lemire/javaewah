@@ -1293,7 +1293,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public void deserialize(DataInput in) throws IOException {
     this.sizeinbits = in.readInt();
     this.actualsizeinwords = in.readInt();
-    this.buffer = new long[in.readInt()];
+    int bufferSize = in.readInt();
+    if (this.buffer.length < bufferSize) {
+      this.buffer = new long[bufferSize];
+    }
     for (int k = 0; k < this.actualsizeinwords; ++k)
       this.buffer[k] = in.readLong();
     this.rlw = new RunningLengthWord(this.buffer, in.readInt());
