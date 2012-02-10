@@ -6,7 +6,6 @@ and David McIntosh (https://github.com/mctofu)
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
 
 
-
 This is a word-aligned compressed variant of
 the Java Bitset class. It uses a 64-bit RLE-like
 compression scheme. It can be used to implement

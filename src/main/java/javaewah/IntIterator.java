@@ -1,7 +1,7 @@
 package javaewah;
 
 /*
- * Copyright 2009-2012, Daniel Lemire
+ * Copyright 2009-2012, Daniel Lemire, Cliff Moon and David McIntosh
  * Licensed under APL 2.0.
  */
 
