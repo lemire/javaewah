@@ -1,10 +1,16 @@
 JavaEWAH
-(c) Daniel Lemire and others,
-http://lemire.me/en/
+(c) 2009-2012
+Daniel Lemire (http://lemire.me/en/), 
+Cliff Moon (https://github.com/cliffmoon), 
+and David McIntosh (https://github.com/mctofu)
+This code is licensed under Apache License, Version 2.0 (ASL2.0).
+
+
 
 This is a word-aligned compressed variant of
 the Java Bitset class. It uses a 64-bit RLE-like
-compression scheme.
+compression scheme. It can be used to implement
+bitmap indexes.
 
 The goal of word-aligned compression is not to 
 achieve the best compression, but rather to 
@@ -19,13 +25,14 @@ BitSet class by Sun).
 For better performance, use a 64-bit JVM over
 64-bit CPUs.
 
-This code is licensed under Apache License, Version 2.0 (ASL2.0).
 
-For more details, see the following paper:
+For more details regarding the compression format, please
+see Section 3 of the following paper:
 
-Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes.
- Data & Knowledge Engineering 69 (1), pages 3-28, 2010.  
+Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010.  
  http://arxiv.org/abs/0901.3751
+ 
+ (The PDF file is freely available on the arXiv site.)
  
 == Unit testing ==
 
@@ -43,7 +50,6 @@ for details.
 
 See example.java.
 
- 
 == Maven central repository ==
 
 You can download JavaEWAH from the Maven central repository:
@@ -59,3 +65,5 @@ You can also specify the dependency in the Maven "pom.xml" file:
     </dependency>
 </dependencies>
 
+Naturally, you should replace "version" by the version
+you desire.
