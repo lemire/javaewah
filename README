@@ -1,5 +1,5 @@
 JavaEWAH
-(c) Daniel Lemire,
+(c) Daniel Lemire and others,
 http://lemire.me/en/
 
 This is a word-aligned compressed variant of
@@ -19,8 +19,7 @@ BitSet class by Sun).
 For better performance, use a 64-bit JVM over
 64-bit CPUs.
 
-Among other possible open source licenses, this
-code is licensed under Apache License, Version 2.0 (ASL2.0).
+This code is licensed under Apache License, Version 2.0 (ASL2.0).
 
 For more details, see the following paper:
 
@@ -56,7 +55,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
     <dependency>
 	<groupId>com.googlecode.javaewah</groupId>
 	<artifactId>JavaEWAH</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
     </dependency>
 </dependencies>
 
