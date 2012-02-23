@@ -1293,9 +1293,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public void deserialize(DataInput in) throws IOException {
     this.sizeinbits = in.readInt();
     this.actualsizeinwords = in.readInt();
-    int bufferSize = in.readInt();
-    if (this.buffer.length < bufferSize) {
-      this.buffer = new long[bufferSize];
+    if (this.buffer.length < actualsizeinwords) {
+      this.buffer = new long[actualsizeinwords];
     }
     for (int k = 0; k < this.actualsizeinwords; ++k)
       this.buffer[k] = in.readLong();
@@ -1318,11 +1317,20 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public void serialize(DataOutput out) throws IOException {
     out.writeInt(this.sizeinbits);
     out.writeInt(this.actualsizeinwords);
-    out.writeInt(this.buffer.length);
     for (int k = 0; k < this.actualsizeinwords; ++k)
       out.writeLong(this.buffer[k]);
     out.writeInt(this.rlw.position);
   }
+
+  /**
+   * Report the size required to serialize this bitmap
+   *
+   * @return the size in bytes
+   */
+  public int serializedSizeInBytes() {
+    return this.sizeInBytes() + 3 * 4;
+  }
+
 
   /**
    * Clear any set bits and set size in bits back to 0
