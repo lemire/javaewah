@@ -11,6 +11,8 @@ import org.junit.Test;
 import java.util.*;
 import java.io.*;
 
+import junit.framework.Assert;
+
 /**
  * This class is used for unit testing.
  */
@@ -490,6 +492,7 @@ public class EWAHCompressedBitmapTest {
         final BitSet orJdkBitmap = (BitSet) jdkBitmap1.clone();
         orJdkBitmap.or(jdkBitmap2);
         assertEquals(orJdkBitmap, orEwahBitmap);
+        Assert.assertEquals(orEwahBitmap.cardinality(), ewahBitmap1.orCardinality(ewahBitmap2));
       }
       // OR
       {
@@ -810,5 +813,18 @@ public class EWAHCompressedBitmapTest {
     isTrue(7 == positions.get(1));
     isTrue(1000 == positions.get(2));
     isTrue(1001 == positions.get(3));
+  }
+
+  @Test
+  public void testOrCardinality()
+  {
+    EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+    for (int i=0; i<128; i++) {
+      bitmap.set(i);
+    }
+    bitmap.set(1025);
+    bitmap.set(1026);
+
+    Assert.assertEquals(130, bitmap.orCardinality(new EWAHCompressedBitmap()));
   }
 }

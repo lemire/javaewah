@@ -46,7 +46,7 @@ import java.io.*;
  * patents.</p>
  */
 public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
-  Iterable<Integer> {
+  Iterable<Integer>, BitmapStorage {
 
   /**
    * Creates an empty bitmap (no bit set to true).
@@ -537,11 +537,23 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public EWAHCompressedBitmap or(final EWAHCompressedBitmap a) {
     final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
+    or(a, container);
+    return container;
+  }
+
+  public int orCardinality(final EWAHCompressedBitmap a) {
+    final BitCounter counter = new BitCounter();
+    or(a, counter);
+    return counter.getCount();
+  }
+
+  private void or( final EWAHCompressedBitmap a, final BitmapStorage container )
+  {
     final EWAHIterator i = a.getEWAHIterator();
     final EWAHIterator j = getEWAHIterator();
     if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.sizeinbits = sizeInBits();
-      return container;
+      container.setSizeInBits(sizeInBits());
+      return;
     }
     // at this point, this is safe:
     BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
@@ -626,8 +638,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       discharge(rlwi, i, container);
     if (rlwj != null)
       discharge(rlwj, j, container);
-    container.sizeinbits = Math.max(sizeInBits(), a.sizeInBits());
-    return container;
+    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
   }
 
   /**
@@ -638,7 +649,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param container the container
    */
   private static void discharge(final BufferedRunningLengthWord initialWord,
-    final EWAHIterator iterator, final EWAHCompressedBitmap container) {
+    final EWAHIterator iterator, final BitmapStorage container) {
     BufferedRunningLengthWord runningLengthWord = initialWord;
     for (;;) {
       final long runningLength = runningLengthWord.getRunningLength();
@@ -809,7 +820,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param number the number of dirty words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  private long addStreamOfDirtyWords(final long[] data, final long start,
+  public long addStreamOfDirtyWords(final long[] data, final long start,
     final long number) {
     if (number == 0)
       return 0;
@@ -861,6 +872,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     return this.sizeinbits;
   }
 
+  public void setSizeInBits(final int size)
+  {
+    this.sizeinbits = size;
+  }
 
   /**
    * Change the reported size in bits of the *uncompressed* bitmap represented
