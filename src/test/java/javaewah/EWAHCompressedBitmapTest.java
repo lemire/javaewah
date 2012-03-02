@@ -811,4 +811,22 @@ public class EWAHCompressedBitmapTest {
     isTrue(1000 == positions.get(2));
     isTrue(1001 == positions.get(3));
   }
+  
+  /**
+   * Test the intersects method
+   */
+  @Test
+  public void testIntersectsMethod(){
+      System.out.println("testing Intersets Bug");
+      EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+      bitmap.set(1);
+      EWAHCompressedBitmap bitmap2 = new EWAHCompressedBitmap();
+      bitmap2.set(1);
+      bitmap2.set(11);
+      bitmap2.set(111);
+      bitmap2.set(1111111);
+      bitmap2.set(11111111);
+      isTrue(bitmap.intersects(bitmap2));
+      isTrue(bitmap2.intersects(bitmap));
+  }
 }

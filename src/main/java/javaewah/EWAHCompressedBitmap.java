@@ -354,15 +354,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
       if (nbre_dirty_prey > 0) {
         for (int k = 0; k < nbre_dirty_prey; ++k) {
-          if (i_is_prey)
+          if (i_is_prey){
             if( ( i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
               & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k] ) !=0) 
               return true;
-          else
+          }else{
             if( ( i.buffer()[predator.dirtywordoffset + i.dirtyWords()
               + k]
               & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k] ) != 0)
               return true;
+          }
         }
       }
       if (i_is_prey) {
