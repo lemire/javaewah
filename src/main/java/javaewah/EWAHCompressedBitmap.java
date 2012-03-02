@@ -1218,10 +1218,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         counter += wordinbits * localrlw.getRunningLength();
       }
       for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
-        long data = i.buffer()[i.dirtyWords() + j];
-        for (int c = 0; c < wordinbits; ++c)
-          if ((data & (1l << c)) != 0)
-            ++counter;
+        counter += Long.bitCount(i.buffer()[i.dirtyWords() + j]);
       }
     }
     return counter;
