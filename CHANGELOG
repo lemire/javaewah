@@ -1,0 +1,38 @@
+
+version 0.4.0 (Mar 5, 2012)
+
+Several optimizations and (minor) API changes by David McIntosh. We expect
+that the API is backward compatible.
+
+1) slight tweak to serialization to use the actualsizeinwords to set the buffer size when deserializing so it doesn't allocate more memory than it really needs.
+2) added an orCardinality method that is a shortcut for bitmap1.or(bitmap2).cardinality() but doesn't need to create an intermediate bitmap.
+3) added static or and orCardinality methods that can handle N number of bitmaps.  For example, bitmap1.or(bitmap2).or(bitmap3) could be done as EWAHCompressedBitmap.or(bitmap1, bitmap2, bitmap3).  It can be slower when N is small but avoids having to create N-2 intermediate bitmaps.
+4) Long.bitCount is much faster when counting bits in the cardinality() method.
+
+version 0.3.3 (Mar 2, 2012)
+
+Correcting bug in intersect method (Robert Becho).
+
+version 0.3.2 (Jan 16, 2012)
+
+Better documentation and introduction 
+of a few methods (intersects).
+
+version 0.3.1 (Jan 2, 2012)
+
+The code is now built using maven.
+
+version 0.3 (Jun 21, 2011)
+
+The code was optimized slightly for speed. 
+You may a gain of about 20% on some operations, 
+and no gain on other operations.
+
+
+version 0.2 (Mar 4, 2011)
+
+In this release, there is a minor change to the 
+API: the getPositions method now returns an ArrayList 
+instead of a Vector.
+
+version 0.1 : was never released publicly.

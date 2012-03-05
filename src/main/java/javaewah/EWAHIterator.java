@@ -9,6 +9,10 @@ package javaewah;
 /**
  * The class EWAHIterator represents a special type of
  * efficient iterator iterating over (uncompressed) words of bits.
+ *
+ * @author Daniel Lemire
+ * @since 0.1.0
+ *
  */
 public final class EWAHIterator {
   

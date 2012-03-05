@@ -11,6 +11,8 @@ import org.junit.Test;
 import java.util.*;
 import java.io.*;
 
+import junit.framework.Assert;
+
 /**
  * This class is used for unit testing.
  */
@@ -434,6 +436,8 @@ public class EWAHCompressedBitmapTest {
       final BitSet jdkBitmap1 = new BitSet();
       final EWAHCompressedBitmap ewahBitmap2 = new EWAHCompressedBitmap();
       final BitSet jdkBitmap2 = new BitSet();
+      final EWAHCompressedBitmap ewahBitmap3 = new EWAHCompressedBitmap();
+      final BitSet jdkBitmap3 = new BitSet();
       final int len = rnd.nextInt(maxlength);
       for (int pos = 0; pos < len; pos++) { // random *** number of bits set ***
         if (rnd.nextInt(7) == 0) { // random *** increasing *** values
@@ -444,9 +448,14 @@ public class EWAHCompressedBitmapTest {
           ewahBitmap2.set(pos);
           jdkBitmap2.set(pos);
         }
+        if (rnd.nextInt(7) == 0) { // random *** increasing *** values
+          ewahBitmap3.set(pos);
+          jdkBitmap3.set(pos);
+        }
       }
       assertEquals(jdkBitmap1, ewahBitmap1);
       assertEquals(jdkBitmap2, ewahBitmap2);
+      assertEquals(jdkBitmap3, ewahBitmap3);
       // XOR
       {
         final EWAHCompressedBitmap xorEwahBitmap = ewahBitmap1.xor(ewahBitmap2);
@@ -490,6 +499,8 @@ public class EWAHCompressedBitmapTest {
         final BitSet orJdkBitmap = (BitSet) jdkBitmap1.clone();
         orJdkBitmap.or(jdkBitmap2);
         assertEquals(orJdkBitmap, orEwahBitmap);
+        assertEquals(orJdkBitmap, EWAHCompressedBitmap.or(ewahBitmap1, ewahBitmap2));
+        Assert.assertEquals(orEwahBitmap.cardinality(), ewahBitmap1.orCardinality(ewahBitmap2));
       }
       // OR
       {
@@ -497,6 +508,15 @@ public class EWAHCompressedBitmapTest {
         final BitSet orJdkBitmap = (BitSet) jdkBitmap1.clone();
         orJdkBitmap.or(jdkBitmap2);
         assertEquals(orJdkBitmap, orEwahBitmap);
+      }
+      // MULTI OR
+      {
+        final BitSet orJdkBitmap = (BitSet) jdkBitmap1.clone();
+        orJdkBitmap.or(jdkBitmap2);
+        orJdkBitmap.or(jdkBitmap3);
+        assertEquals(orJdkBitmap, EWAHCompressedBitmap.or(ewahBitmap1, ewahBitmap2, ewahBitmap3));
+        assertEquals(orJdkBitmap, EWAHCompressedBitmap.or(ewahBitmap3, ewahBitmap2, ewahBitmap1));
+        Assert.assertEquals(orJdkBitmap.cardinality(), EWAHCompressedBitmap.orCardinality(ewahBitmap1, ewahBitmap2, ewahBitmap3));
       }
     }
   }
@@ -673,7 +693,6 @@ public class EWAHCompressedBitmapTest {
     }
     EWAHCompressedBitmap answer = ewah[0];
     EWAHCompressedBitmap answer2 = ewah[0];
-    ;
     for (int k = 1; k < ewah.length; ++k) {
       answer = answer.andNot(ewah[k]);
       EWAHCompressedBitmap copy = null;
@@ -719,6 +738,7 @@ public class EWAHCompressedBitmapTest {
         assertEqualsPositions(bitsetanswer, answer);
       }
       assertEqualsPositions(bitsetanswer, answer);
+      assertEqualsPositions(bitsetanswer, EWAHCompressedBitmap.or(ewah));
       int k = 0;
       for (int j : answer) {
         if (k != j)
@@ -788,12 +808,12 @@ public class EWAHCompressedBitmapTest {
     bitmap.set(7);
     isTrue(1 == bitmap.cardinality());
     isTrue(1 == bitmap.getPositions().size());
-    isTrue(7 == bitmap.getPositions().get(0));
+    isTrue(7 == bitmap.getPositions().get(0).intValue());
     bitmap.clear();
     bitmap.set( 5000 );
     isTrue(1 == bitmap.cardinality());
     isTrue(1 == bitmap.getPositions().size());
-    isTrue(5000 == bitmap.getPositions().get(0));
+    isTrue(5000 == bitmap.getPositions().get(0).intValue());
     bitmap.set(5001);
     bitmap.set(5005);
     bitmap.set(5100);
@@ -806,10 +826,10 @@ public class EWAHCompressedBitmapTest {
     isTrue(4 == bitmap.cardinality());
     List<Integer> positions = bitmap.getPositions();
     isTrue(4 == positions.size());
-    isTrue(5 == positions.get(0));
-    isTrue(7 == positions.get(1));
-    isTrue(1000 == positions.get(2));
-    isTrue(1001 == positions.get(3));
+    isTrue(5 == positions.get(0).intValue());
+    isTrue(7 == positions.get(1).intValue());
+    isTrue(1000 == positions.get(2).intValue());
+    isTrue(1001 == positions.get(3).intValue());
   }
   
   /**
@@ -828,5 +848,36 @@ public class EWAHCompressedBitmapTest {
       bitmap2.set(11111111);
       isTrue(bitmap.intersects(bitmap2));
       isTrue(bitmap2.intersects(bitmap));
+  }
+
+  @Test
+  public void testOrCardinality()
+  {
+    EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+    for (int i=0; i<128; i++) {
+      bitmap.set(i);
+    }
+    bitmap.set(1025);
+    bitmap.set(1026);
+
+    Assert.assertEquals(130, bitmap.orCardinality(new EWAHCompressedBitmap()));
+  }
+
+  @Test
+  public void testMultiOr()
+  {
+    // test bitmap3 has a literal word while bitmap1/2 have a run of 0
+    EWAHCompressedBitmap bitmap1 = new EWAHCompressedBitmap();
+    bitmap1.set(1000);
+    EWAHCompressedBitmap bitmap2 = new EWAHCompressedBitmap();
+    bitmap2.set(2000);
+    EWAHCompressedBitmap bitmap3 = new EWAHCompressedBitmap();
+    bitmap3.set(500);
+    bitmap3.set(502);
+    bitmap3.set(504);
+
+    EWAHCompressedBitmap expected = bitmap1.or(bitmap2).or(bitmap3).or(bitmap1);
+
+    assertEqualsPositions(expected, EWAHCompressedBitmap.or(bitmap1,bitmap2,bitmap3,bitmap1));
   }
 }

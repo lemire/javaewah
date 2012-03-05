@@ -7,6 +7,9 @@ package javaewah;
 
 /**
  * Mostly for internal use.
+ *
+ * @since 0.1.0
+ * @author Daniel Lemire
  */
 public final class RunningLengthWord {
 

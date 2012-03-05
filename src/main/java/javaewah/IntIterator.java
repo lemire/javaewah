@@ -9,7 +9,8 @@ package javaewah;
  * 
  * The IntIterator interface is used to  iterate over a stream of integers.
  * 
- * @author lemire
+ * @author Daniel Lemire
+ * @since 0.2.0
  *
  */
 public interface IntIterator {
@@ -24,7 +25,7 @@ public interface IntIterator {
   /**
    * Is there more?
    *
-   * @return true, if successful
+   * @return true, if there is more, false otherwise
    */
   public boolean hasNext();
 }

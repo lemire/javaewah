@@ -10,6 +10,10 @@ package javaewah;
 /**
  * Mostly for internal use. Similar to RunningLengthWord, but can
  * be modified without access to the array, and has faster access.
+ *
+ * @author Daniel Lemire
+ * @since 0.1.0
+ *
  */
 public final class BufferedRunningLengthWord {
 
