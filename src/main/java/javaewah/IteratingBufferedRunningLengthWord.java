@@ -63,7 +63,7 @@ public class IteratingBufferedRunningLengthWord {
   /**
    * Get the nth dirty word for the current running length word 
    * @param index zero based index
-   * @return
+   * @return the dirty word
    */
   public long getDirtyWordAt(int index) {
     return this.buffer[this.brlw.dirtywordoffset + this.dirtyWordStartPosition + index];
