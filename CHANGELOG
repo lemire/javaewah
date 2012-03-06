@@ -2,7 +2,8 @@
 version 0.4.0 (Mar 5, 2012)
 
 Several optimizations and (minor) API changes by David McIntosh. We expect
-that the API is backward compatible.
+that the API is backward compatible, howerver serialization won't be
+compatible with previous versions.
 
 1) slight tweak to serialization to use the actualsizeinwords to set the buffer size when deserializing so it doesn't allocate more memory than it really needs.
 2) added an orCardinality method that is a shortcut for bitmap1.or(bitmap2).cardinality() but doesn't need to create an intermediate bitmap.
