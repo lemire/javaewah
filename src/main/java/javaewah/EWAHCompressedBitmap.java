@@ -793,7 +793,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   * container.
   * @since 0.4.0
   */
-  private static void or(BitmapStorage container, EWAHCompressedBitmap...bitmaps) {
+  private static void or(final BitmapStorage container, final EWAHCompressedBitmap...bitmaps) {
     if (bitmaps.length == 2)
     {
       // should be more efficient
@@ -801,6 +801,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       return;
     }
 
+    // Sort the bitmaps in descending order by sizeinbits.  We will exhaust the sorted bitmaps from right to left.
     final EWAHCompressedBitmap[] sortedBitmaps = new EWAHCompressedBitmap[bitmaps.length];
     System.arraycopy(bitmaps, 0, sortedBitmaps, 0, bitmaps.length);
     Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap> () {
