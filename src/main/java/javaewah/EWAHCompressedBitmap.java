@@ -793,8 +793,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   * container.
   * @since 0.4.0
   */
-  private static void or(BitmapStorage container, EWAHCompressedBitmap...bitmaps)
-  {
+  private static void or(BitmapStorage container, EWAHCompressedBitmap...bitmaps) {
     if (bitmaps.length == 2)
     {
       // should be more efficient
@@ -802,37 +801,42 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       return;
     }
 
-    final EWAHIterator[] iterators = new EWAHIterator[bitmaps.length];
-    int maxSize = 0;
-    for (int i = 0; i < bitmaps.length; i++ ) {
-      iterators[i] = bitmaps[i].getEWAHIterator();
-      maxSize = Math.max(maxSize, bitmaps[i].sizeinbits);
-    }
+    final EWAHCompressedBitmap[] sortedBitmaps = new EWAHCompressedBitmap[bitmaps.length];
+    System.arraycopy(bitmaps, 0, sortedBitmaps, 0, bitmaps.length);
+    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap> () {
+      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+        return a.sizeinbits < b.sizeinbits ? 1 : a.sizeinbits == b.sizeinbits ? 0 : -1;
+      }
+    });
 
-    ArrayList<IteratingBufferedRunningLengthWord> rlws = new ArrayList<IteratingBufferedRunningLengthWord>();
-
-    for (EWAHIterator iterator : iterators) {
-      if (iterator.hasNext()) {
-        rlws.add(new IteratingBufferedRunningLengthWord(iterator));
+    final IteratingBufferedRunningLengthWord[] rlws = new IteratingBufferedRunningLengthWord[bitmaps.length];
+    int maxAvailablePos = 0;
+    for (EWAHCompressedBitmap bitmap : sortedBitmaps ) {
+      EWAHIterator iterator = bitmap.getEWAHIterator();
+      if( iterator.hasNext() )
+      {
+        rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord(iterator);
       }
     }
-    if (rlws.size() == 0) { //this never happens...
-      container.setSizeInBits(maxSize);
+
+    if (maxAvailablePos == 0) { //this never happens...
+      container.setSizeInBits(0);
       return;
     }
 
-    ArrayList<IteratingBufferedRunningLengthWord> removeList = new ArrayList<IteratingBufferedRunningLengthWord>();
+    int maxSize = sortedBitmaps[0].sizeinbits;
 
     while (true) {
       long maxOneRl = 0;
       long minZeroRl = Long.MAX_VALUE;
       long minSize = Long.MAX_VALUE;
       int numEmptyRl = 0;
-      for (IteratingBufferedRunningLengthWord rlw : rlws) {
+      for (int i = 0; i < maxAvailablePos; i++) {
+        IteratingBufferedRunningLengthWord rlw = rlws[i];
         long size = rlw.size();
         if (size == 0) {
-          removeList.add(rlw);
-          continue;
+          maxAvailablePos = i;
+          break;
         }
         minSize = Math.min(minSize, size);
 
@@ -854,30 +858,26 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
       }
 
-      if (removeList.size() == rlws.size()) {
+      if (maxAvailablePos == 0) {
         break;
       }
-
-      if (removeList.size() > 0) {
-        rlws.removeAll(removeList);
-        removeList.clear();
-      }
-
-      if (rlws.size() == 1) {
+      else if (maxAvailablePos == 1) {
         // only one bitmap is left so just write the rest of it out
-        rlws.get(0).discharge(container);
+        rlws[0].discharge(container);
         break;
       }
 
       if (maxOneRl > 0) {
         container.addStreamOfEmptyWords(true, maxOneRl);
-        for (IteratingBufferedRunningLengthWord rlw : rlws) {
+        for (int i = 0; i < maxAvailablePos; i++) {
+          IteratingBufferedRunningLengthWord rlw = rlws[i];
           rlw.discardFirstWords(maxOneRl);
         }
       }
       else if (minZeroRl > 0) {
         container.addStreamOfEmptyWords(false, minZeroRl);
-        for (IteratingBufferedRunningLengthWord rlw : rlws) {
+        for (int i = 0; i < maxAvailablePos; i++) {
+          IteratingBufferedRunningLengthWord rlw = rlws[i];
           rlw.discardFirstWords(minZeroRl);
         }
       }
@@ -888,7 +888,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           // if one rlw has dirty words to process and the rest have a run of 0's we can write them out here
           IteratingBufferedRunningLengthWord emptyRl = null;
           long minNonEmptyRl = Long.MAX_VALUE;
-          for (IteratingBufferedRunningLengthWord rlw : rlws) {
+          for (int i = 0; i < maxAvailablePos; i++) {
+            IteratingBufferedRunningLengthWord rlw = rlws[i];
             long rl = rlw.getRunningLength();
             if( rl == 0 )
             {
@@ -907,7 +908,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
         while (index < minSize) {
           long word = 0;
-          for (IteratingBufferedRunningLengthWord rlw : rlws) {
+          for (int i = 0; i < maxAvailablePos; i++) {
+            IteratingBufferedRunningLengthWord rlw = rlws[i];
             if (rlw.getRunningLength() <= index)
             {
               word |= rlw.getDirtyWordAt(index - (int)rlw.getRunningLength());
@@ -916,7 +918,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           container.add(word);
           index++;
         }
-        for (IteratingBufferedRunningLengthWord rlw : rlws) {
+        for (int i = 0; i < maxAvailablePos; i++) {
+          IteratingBufferedRunningLengthWord rlw = rlws[i];
           rlw.discardFirstWords(minSize);
         }
       }
