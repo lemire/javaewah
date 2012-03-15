@@ -20,7 +20,7 @@ public class IteratingBufferedRunningLengthWord {
   public IteratingBufferedRunningLengthWord(final EWAHIterator iterator) {
     this.iterator = iterator;
     this.brlw = new BufferedRunningLengthWord(this.iterator.next());
-    this.dirtyWordStartPosition = this.iterator.dirtyWords();
+    this.dirtyWordStartPosition = this.iterator.dirtyWords() + this.brlw.dirtywordoffset;
     this.buffer = this.iterator.buffer();
   }
 
@@ -66,7 +66,7 @@ public class IteratingBufferedRunningLengthWord {
    * @return the dirty word
    */
   public long getDirtyWordAt(int index) {
-    return this.buffer[this.brlw.dirtywordoffset + this.dirtyWordStartPosition + index];
+    return this.buffer[this.dirtyWordStartPosition + index];
   }
   
   /**
@@ -75,7 +75,7 @@ public class IteratingBufferedRunningLengthWord {
    * @param container
    */
   public void writeDirtyWords(int numWords, BitmapStorage container) {
-    container.addStreamOfDirtyWords(this.buffer, this.brlw.dirtywordoffset + this.dirtyWordStartPosition, numWords);
+    container.addStreamOfDirtyWords(this.buffer, this.dirtyWordStartPosition, numWords);
   }
   
   /**
@@ -94,7 +94,7 @@ public class IteratingBufferedRunningLengthWord {
       this.brlw.RunningLength = 0;
       long toDiscard = x > this.brlw.NumberOfLiteralWords ? this.brlw.NumberOfLiteralWords : x;
     
-      this.brlw.dirtywordoffset += toDiscard;
+      dirtyWordStartPosition += toDiscard;
       this.brlw.NumberOfLiteralWords -= toDiscard;
       x -= toDiscard;
       if (x > 0 || this.brlw.size() == 0) {
@@ -102,7 +102,7 @@ public class IteratingBufferedRunningLengthWord {
           break;
         }
         this.brlw.reset(this.iterator.next());
-        this.dirtyWordStartPosition = this.iterator.dirtyWords();          
+        this.dirtyWordStartPosition = this.iterator.dirtyWords() + this.brlw.dirtywordoffset;
       }
     }
   }
@@ -112,6 +112,8 @@ public class IteratingBufferedRunningLengthWord {
    * @param container target for writes
    */
   public void discharge(BitmapStorage container) {
+    // fix the offset
+    this.brlw.dirtywordoffset = dirtyWordStartPosition - this.iterator.dirtyWords();
     EWAHCompressedBitmap.discharge(this.brlw, this.iterator, container);
   }
   
