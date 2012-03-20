@@ -1410,8 +1410,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       int[] localbuffer = new int[initcapacity];
       int localbuffersize = 0;
       int bufferpos = 0;
-
+      boolean status = queryStatus();
+      
       public boolean hasNext() {
+        return this.status;
+      }
+
+      public boolean queryStatus() {
         while (this.localbuffersize == 0) {
           if (!loadNextRLE())
             return false;
@@ -1465,6 +1470,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final int answer = this.localbuffer[this.bufferpos++];
         if (this.localbuffersize == this.bufferpos) {
           this.localbuffersize = 0;
+          this.status = queryStatus();
         }
         return answer;
       }
