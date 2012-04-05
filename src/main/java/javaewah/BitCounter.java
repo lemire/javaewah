@@ -92,7 +92,7 @@ public final class BitCounter implements BitmapStorage {
   }
 
   /**
-   * As you act on this classe, it records the number of set (true) bits. 
+   * As you act on this class, it records the number of set (true) bits. 
    *
    * @return number of set bits
    */
