@@ -9,6 +9,7 @@ package javaewah;
 import java.util.*;
 import java.io.*;
 
+
 /**
  * <p>This implements the patent-free(1) EWAH scheme. Roughly speaking, it is a
  * 64-bit variant of the BBC compression scheme used by Oracle for its bitmap
@@ -342,78 +343,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @return whether they intersect
    */
   public boolean intersects(final EWAHCompressedBitmap a) {
-    final EWAHIterator i = a.getEWAHIterator();
-    final EWAHIterator j = getEWAHIterator();
-    if ((! i.hasNext()) || (! j.hasNext())) {
-      return false;
+    NonEmptyVirtualStorage nevs = new NonEmptyVirtualStorage();
+    try {
+      this.and(a,nevs);
+    } catch(NonEmptyVirtualStorage.NonEmptyException nee) {
+      return true;
     }
-    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
-    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
-      if (prey.getRunningBit() == false) {
-        predator.discardFirstWords(prey.RunningLength);
-        prey.RunningLength = 0;
-      } else {
-        // we have a stream of 1x11
-        final long predatorrl = predator.getRunningLength();
-        final long preyrl = prey.getRunningLength();
-        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        if(predator.getRunningBit()) return true;
-        if(preyrl > tobediscarded) return true; 
-        predator.discardFirstWords(preyrl);
-        prey.RunningLength = 0;
-      }
-      final long predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
-        if (predator.getRunningBit() == false) {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-        } else {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
-          if(tobediscarded>0) return true;
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-        }
-      }
-      final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-      if (nbre_dirty_prey > 0) {
-        for (int k = 0; k < nbre_dirty_prey; ++k) {
-          if (i_is_prey){
-            if( ( i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
-              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k] ) !=0) 
-              return true;
-          }else{
-            if( ( i.buffer()[predator.dirtywordoffset + i.dirtyWords()
-              + k]
-              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k] ) != 0)
-              return true;
-          }
-        }
-      }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
-      }
-    }
-    return false;
-  }
+    return false;  }
 
 
   /**

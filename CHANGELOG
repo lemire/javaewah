@@ -1,3 +1,7 @@
+version 0.4.2 (April 5, 2012)
+
+* Fixed a bug with intersects method
+
 version 0.4.1 (Mar 20, 2012)
 
 * Resolved "EWAHCompressedBitmap.iterator() does not follow Java's contract for the Iterator interface"
