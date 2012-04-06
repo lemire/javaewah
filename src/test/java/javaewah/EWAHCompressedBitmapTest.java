@@ -476,6 +476,16 @@ public class EWAHCompressedBitmapTest {
         final BitSet andJdkBitmap = (BitSet) jdkBitmap1.clone();
         andJdkBitmap.and(jdkBitmap2);
         assertEquals(andJdkBitmap, andEwahBitmap);
+        assertEquals(andJdkBitmap, EWAHCompressedBitmap.and(ewahBitmap1, ewahBitmap2));
+      }
+      // MULTI AND
+      {
+        final BitSet andJdkBitmap = (BitSet) jdkBitmap1.clone();
+        andJdkBitmap.and(jdkBitmap2);
+        andJdkBitmap.and(jdkBitmap3);
+        assertEquals(andJdkBitmap, EWAHCompressedBitmap.and(ewahBitmap1, ewahBitmap2, ewahBitmap3));
+        assertEquals(andJdkBitmap, EWAHCompressedBitmap.and(ewahBitmap3, ewahBitmap2, ewahBitmap1));
+        Assert.assertEquals(andJdkBitmap.cardinality(), EWAHCompressedBitmap.andCardinality(ewahBitmap1, ewahBitmap2, ewahBitmap3));
       }
       // AND NOT
       {
@@ -643,6 +653,7 @@ public class EWAHCompressedBitmapTest {
     if (answer.getPositions().size() != 0)
       System.out.println(answer.toDebugString());
     isTrue(answer.getPositions().size() == 0);
+    isTrue(EWAHCompressedBitmap.and(ewah).getPositions().size() == 0);
   }
 
   /**
@@ -876,8 +887,113 @@ public class EWAHCompressedBitmapTest {
     bitmap3.set(502);
     bitmap3.set(504);
 
-    EWAHCompressedBitmap expected = bitmap1.or(bitmap2).or(bitmap3).or(bitmap1);
+    EWAHCompressedBitmap expected = bitmap1.or(bitmap2).or(bitmap3);
 
-    assertEqualsPositions(expected, EWAHCompressedBitmap.or(bitmap1,bitmap2,bitmap3,bitmap1));
+    assertEquals(expected, EWAHCompressedBitmap.or(bitmap1,bitmap2,bitmap3));
+  }
+
+  @Test
+  public void testMultiAnd()
+  {
+    // test bitmap3 has a literal word while bitmap1/2 have a run of 1
+    EWAHCompressedBitmap bitmap1 = new EWAHCompressedBitmap();
+    bitmap1.addStreamOfEmptyWords(true, 1000);
+    EWAHCompressedBitmap bitmap2 = new EWAHCompressedBitmap();
+    bitmap2.addStreamOfEmptyWords(true, 2000);
+    EWAHCompressedBitmap bitmap3 = new EWAHCompressedBitmap();
+    bitmap3.set(500);
+    bitmap3.set(502);
+    bitmap3.set(504);
+
+    assertAndEquals(bitmap1,bitmap2,bitmap3);
+
+    //equal
+    bitmap1 = new EWAHCompressedBitmap();
+    bitmap1.set(35);
+    bitmap2 = new EWAHCompressedBitmap();
+    bitmap2.set(35);
+    bitmap3 = new EWAHCompressedBitmap();
+    bitmap3.set(35);
+
+    assertAndEquals(bitmap1,bitmap2,bitmap3);
+
+    // same number of words for each
+    bitmap3.set(63);
+    assertAndEquals(bitmap1,bitmap2,bitmap3);
+
+    // one word bigger
+    bitmap3.set(64);
+    assertAndEquals(bitmap1,bitmap2,bitmap3);
+
+    // two words bigger
+    bitmap3.set(130);
+    assertAndEquals(bitmap1,bitmap2,bitmap3);
+
+    // test that result can still be appended to
+    EWAHCompressedBitmap resultBitmap = EWAHCompressedBitmap.and(bitmap1,bitmap2,bitmap3);
+    resultBitmap.set(131);
+
+    bitmap1.set(131);
+    assertEquals(bitmap1,resultBitmap);
+  }
+
+  @Test
+  public void testAndResultAppend()
+  {
+    EWAHCompressedBitmap bitmap1 = new EWAHCompressedBitmap();
+    bitmap1.set(35);
+    EWAHCompressedBitmap bitmap2 = new EWAHCompressedBitmap();
+    bitmap2.set(35);
+    bitmap2.set(130);
+
+    EWAHCompressedBitmap resultBitmap = bitmap1.and(bitmap2);
+    resultBitmap.set(131);
+
+    bitmap1.set(131);
+    assertEquals(bitmap1,resultBitmap);
+  }
+
+  @Test
+  public void testSetSizeInBits()
+  {
+    testSetSizeInBits(130,131);
+    testSetSizeInBits(63,64);
+    testSetSizeInBits(64,65);
+    testSetSizeInBits(64,128);
+    testSetSizeInBits(35,131);
+    testSetSizeInBits(130,400);
+    testSetSizeInBits(130,191);
+    testSetSizeInBits(130,192);
+    EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+    bitmap.set(31);
+    bitmap.setSizeInBits(130,false);
+    bitmap.set(131);
+    BitSet jdkBitmap = new BitSet();
+    jdkBitmap.set(31);
+    jdkBitmap.set(131);
+    assertEquals(jdkBitmap,bitmap);    
+  }
+
+  private void testSetSizeInBits(int size, int nextBit) {
+    EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+    bitmap.setSizeInBits(size,false);
+    bitmap.set(nextBit);
+    BitSet jdkBitmap = new BitSet();
+    jdkBitmap.set(nextBit);
+    assertEquals(jdkBitmap,bitmap);
+  }
+
+  private void assertAndEquals(EWAHCompressedBitmap...bitmaps)
+  {
+    EWAHCompressedBitmap expected = bitmaps[0];
+    for(int i = 1; i < bitmaps.length; i++) {
+      expected = expected.and(bitmaps[i]);
+    }
+    assertEquals(expected, EWAHCompressedBitmap.and(bitmaps));
+  }
+
+  private void assertEquals(EWAHCompressedBitmap expected, EWAHCompressedBitmap actual) {
+    Assert.assertEquals(expected.sizeinbits, actual.sizeinbits);
+    assertEqualsPositions(expected, actual);
   }
 }
