@@ -974,7 +974,7 @@ public class EWAHCompressedBitmapTest {
     assertEquals(jdkBitmap,bitmap);    
   }
 
-  private void testSetSizeInBits(int size, int nextBit) {
+  private static void testSetSizeInBits(int size, int nextBit) {
     EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
     bitmap.setSizeInBits(size,false);
     bitmap.set(nextBit);
@@ -983,7 +983,7 @@ public class EWAHCompressedBitmapTest {
     assertEquals(jdkBitmap,bitmap);
   }
 
-  private void assertAndEquals(EWAHCompressedBitmap...bitmaps)
+  private static void assertAndEquals(EWAHCompressedBitmap...bitmaps)
   {
     EWAHCompressedBitmap expected = bitmaps[0];
     for(int i = 1; i < bitmaps.length; i++) {
@@ -992,7 +992,7 @@ public class EWAHCompressedBitmapTest {
     assertEquals(expected, EWAHCompressedBitmap.and(bitmaps));
   }
 
-  private void assertEquals(EWAHCompressedBitmap expected, EWAHCompressedBitmap actual) {
+  private static void assertEquals(EWAHCompressedBitmap expected, EWAHCompressedBitmap actual) {
     Assert.assertEquals(expected.sizeinbits, actual.sizeinbits);
     assertEqualsPositions(expected, actual);
   }

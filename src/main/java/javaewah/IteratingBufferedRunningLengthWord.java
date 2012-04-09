@@ -94,7 +94,7 @@ public class IteratingBufferedRunningLengthWord {
       this.brlw.RunningLength = 0;
       long toDiscard = x > this.brlw.NumberOfLiteralWords ? this.brlw.NumberOfLiteralWords : x;
     
-      dirtyWordStartPosition += toDiscard;
+      this.dirtyWordStartPosition += toDiscard;
       this.brlw.NumberOfLiteralWords -= toDiscard;
       x -= toDiscard;
       if (x > 0 || this.brlw.size() == 0) {
@@ -113,7 +113,7 @@ public class IteratingBufferedRunningLengthWord {
    */
   public void discharge(BitmapStorage container) {
     // fix the offset
-    this.brlw.dirtywordoffset = dirtyWordStartPosition - this.iterator.dirtyWords();
+    this.brlw.dirtywordoffset = this.dirtyWordStartPosition - this.iterator.dirtyWords();
     EWAHCompressedBitmap.discharge(this.brlw, this.iterator, container);
   }
   

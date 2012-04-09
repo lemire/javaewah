@@ -1,3 +1,8 @@
+version 0.4.3 (April 9, 2012)
+
+- fast aggregation through logical AND of many bitmaps using a new method 
+- fixed a rarely occuring bug in the set method due to faulty bitmap size extension
+
 version 0.4.2 (April 5, 2012)
 
 * Fixed a bug with intersects method

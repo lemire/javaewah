@@ -218,6 +218,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
    *
+   * @since 0.4.3
    * @param a the other bitmap
    * @return the EWAH compressed bitmap
    */
@@ -333,6 +334,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * Returns a new compressed bitmap containing the bitwise AND values of the
    * provided bitmaps.
    *
+   * @since 0.4.3
    * @param bitmaps bitmaps to AND together
    * @return result of the AND
    */
@@ -352,6 +354,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * of the provided bitmaps.  Avoids needing to
    * allocate an intermediate bitmap to hold the result of the AND.
    *
+   * @since 0.4.3
    * @param bitmaps bitmaps to AND
    * @return the cardinality
    */
@@ -365,6 +368,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   * For internal use.
   * Computes the bitwise and of the provided bitmaps and stores the result in the
   * container.
+  * @param container where the result is stored
+  * @param bitmaps bitmaps to AND
+  * @since 0.4.3
   */
   private static void and(final BitmapStorage container, final EWAHCompressedBitmap...bitmaps) {
     if (bitmaps.length == 2)
@@ -1304,7 +1310,17 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     this.sizeinbits = size;
     return true;
   }
-
+  
+  
+  /**
+   * For internal use. This simply adds a stream of words made of zeroes so that
+   * we pad to the desired size.
+   * 
+   * @param storage bitmap to extend
+   * @param currentSize current size (in bits)
+   * @param newSize new desired size (in bits)
+   * @since 0.4.3
+   */
   private static void extendEmptyBits(final BitmapStorage storage, final int currentSize, final int newSize ) {
     final int currentLeftover = currentSize % 64;
     final int finalLeftover = newSize % 64;
