@@ -668,7 +668,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       }
       if(!i.hasNext()) {// must potentially adjust the last dirty word
         if(rlw1.getNumberOfLiteralWords()==0) return;
-        int usedbitsinlast = this.sizeinbits % wordinbits;
+        final int usedbitsinlast = this.sizeinbits % wordinbits;
         if(usedbitsinlast==0) return;
         i.buffer()[i.dirtyWords() + rlw1.getNumberOfLiteralWords() - 1] &= ( (~0l) >>> (wordinbits - usedbitsinlast));
         return;

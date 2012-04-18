@@ -689,6 +689,22 @@ public class EWAHCompressedBitmapTest {
     }
   }
 
+
+  /**
+   * Test not. (Based on an idea by Ciaran Jessup)
+   */
+  @Test
+  public void testNot() {
+    System.out.println("testing not");
+    EWAHCompressedBitmap ewah = new EWAHCompressedBitmap();
+    for(int i = 0; i<= 184; ++i) {
+      ewah.set(i);
+    }
+    equal(ewah.cardinality(),185);
+    ewah.not();
+    equal(ewah.cardinality(),0);
+  }
+  
   /**
    * Test massive and not.
    */
