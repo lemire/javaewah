@@ -1583,13 +1583,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           this.pos += wordinbits * this.localrlw.getRunningLength();
         }
         for (int j = 0; j < this.localrlw.getNumberOfLiteralWords(); ++j) {
-          final long data = i.buffer()[i.dirtyWords() + j];
-          for (long c = 0; c < wordinbits; ++c) {
-            if (((1l << c) & data) != 0) {
-              add(this.pos);
-            }
-            ++this.pos;
+          long data = i.buffer()[i.dirtyWords() + j];
+          while (data != 0) {
+            final int ntz = Long.numberOfTrailingZeros(data);
+            data ^= (1l << ntz);
+            add(ntz + this.pos) ;
           }
+          this.pos += wordinbits;
         }
       }
 
@@ -1650,13 +1650,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         pos += wordinbits * localrlw.getRunningLength();
       }
       for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
-        final long data = i.buffer()[i.dirtyWords() + j];
-        for (long c = 0; c < wordinbits; ++c) {
-          if (((1l << c) & data) != 0) {
-            v.add(new Integer(pos));
-          }
-          ++pos;
+        long data = i.buffer()[i.dirtyWords() + j];
+        while (data != 0) {
+          final int ntz = Long.numberOfTrailingZeros(data);
+          data ^= (1l << ntz);
+          v.add(new Integer(ntz + pos)) ;
         }
+        pos += wordinbits;
       }
     }
     while ((v.size() > 0)
