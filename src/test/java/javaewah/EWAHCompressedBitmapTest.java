@@ -788,7 +788,9 @@ public class EWAHCompressedBitmapTest {
     }
     IntIterator iterator = bitmap.intIterator();
     List<Integer> v = bitmap.getPositions();
+    int[] array = bitmap.toArray();
     for (int k = 0; k < v.size(); ++k) {
+      isTrue(array[k]== v.get(k).intValue());
       isTrue(iterator.hasNext());
       final int ival = iterator.next();
       final int vval = v.get(k).intValue();
@@ -805,6 +807,7 @@ public class EWAHCompressedBitmapTest {
       equal(ewah.iterator(), bitsToSet);
     }
   }
+
 
   /**
    * Test with parameters.
@@ -835,7 +838,9 @@ public class EWAHCompressedBitmapTest {
     bitmap.set(7);
     isTrue(1 == bitmap.cardinality());
     isTrue(1 == bitmap.getPositions().size());
+    isTrue(1 == bitmap.toArray().length);
     isTrue(7 == bitmap.getPositions().get(0).intValue());
+    isTrue(7 == bitmap.toArray()[0]);
     bitmap.clear();
     bitmap.set( 5000 );
     isTrue(1 == bitmap.cardinality());

@@ -1,3 +1,7 @@
+version 0.4.5 (May 21, 2012)
+- Introduced the toArray method to retrieve set bits.
+
+
 version 0.4.4 (May 21, 2012)
 - Perf. boost when decoding bitmaps.
 

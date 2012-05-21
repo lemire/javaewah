@@ -1521,10 +1521,48 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     return ans;
   }
 
+  
+
+  /**
+   * Populate an array of (sorted integers) corresponding to the location 
+   * of the set bits. 
+   * 
+   * @return the array containing the location of the set bits
+   */
+  public int[] toArray() {
+    int[] ans = new int[this.cardinality()];
+    int inanspos = 0;
+    int pos = 0;
+    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    while (i.hasNext()) {
+      RunningLengthWord localrlw = i.next();
+      if (localrlw.getRunningBit()) {
+        for (int j = 0; j < localrlw.getRunningLength(); ++j) {
+          for (int c = 0; c < wordinbits; ++c) {
+            ans[inanspos++] = pos++;
+          }
+        }
+      } else {
+        pos += wordinbits * localrlw.getRunningLength();
+      }
+      for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
+        long data = i.buffer()[i.dirtyWords() + j];
+        while (data != 0) {
+          final int ntz = Long.numberOfTrailingZeros(data);
+          data ^= (1l << ntz);
+          ans[inanspos++] = ntz + pos ;
+        }
+        pos += wordinbits;
+      }
+    }
+    return ans;
+    
+  }
+  
   /**
    * Iterator over the set bits (this is what most people will want to use to
-   * browse the content). The location of the set bits is returned, in 
-   * increasing order.
+   * browse the content if they want an iterator). The location of the set bits
+   * is returned, in increasing order.
    *
    * @return the int iterator
    */
@@ -1562,7 +1600,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
       private void add(final int val) {
         ++this.localbuffersize;
-        while (this.localbuffersize > this.localbuffer.length) {
+        if (this.localbuffersize > this.localbuffer.length) {
           int[] oldbuffer = this.localbuffer;
           this.localbuffer = new int[this.localbuffer.length * 2];
           System.arraycopy(oldbuffer, 0, this.localbuffer, 0, oldbuffer.length);
@@ -1604,6 +1642,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     };
   }
 
+
+  
   /**
    * iterate over the positions of the true values.
    * This is similar to intIterator(), but it uses
