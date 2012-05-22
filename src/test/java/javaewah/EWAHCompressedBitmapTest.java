@@ -1095,7 +1095,7 @@ public class EWAHCompressedBitmapTest {
   }
 
   private static void assertEquals(EWAHCompressedBitmap expected, EWAHCompressedBitmap actual) {
-    Assert.assertEquals(expected.sizeinbits, actual.sizeinbits);
+    Assert.assertEquals(expected.sizeInBits(), actual.sizeInBits());
     assertEqualsPositions(expected, actual);
   }
 }
