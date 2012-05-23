@@ -128,10 +128,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
         container
           .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final long dw_predator = predator.dirtywordoffset
+        final int dw_predator = predator.dirtywordoffset
           + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
         container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, preyrl - tobediscarded);
+          dw_predator, (int)( preyrl - tobediscarded)); // cast is safe
         predator.discardFirstWords(preyrl);
         prey.discardFirstWords(preyrl);
       } else {
@@ -152,19 +152,19 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       final long predatorrl = predator.getRunningLength();
       if (predatorrl > 0) {
         if (predator.getRunningBit() == false) {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
-          final long dw_prey = prey.dirtywordoffset
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// the cast to int is safe
+          final int dw_prey = prey.dirtywordoffset
             + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
           predator.discardFirstWords(tobediscarded);
           prey.discardFirstWords(tobediscarded);
           container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
             dw_prey, tobediscarded);
         } else {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast to (int) is safe
           final int dw_prey = prey.dirtywordoffset
             + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
           predator.discardFirstWords(tobediscarded);
@@ -270,25 +270,25 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final int dw_predator = predator.dirtywordoffset
           + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
         container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, preyrl - tobediscarded);
+          dw_predator, (int)(preyrl - tobediscarded));// cast is safe
         predator.discardFirstWords(preyrl);
         prey.RunningLength = 0;
       }
       final long predatorrl = predator.getRunningLength();
       if (predatorrl > 0) {
         if (predator.getRunningBit() == false) {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast to int is safe
           predator.discardFirstWords(tobediscarded);
           prey.discardFirstWords(tobediscarded);
           container.addStreamOfEmptyWords(false, tobediscarded);
         } else {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
           final int dw_prey = prey.dirtywordoffset
             + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast is safe
           container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
             dw_prey, tobediscarded);
           predator.discardFirstWords(tobediscarded);
@@ -296,7 +296,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
       }
       // all that is left to do now is to AND the dirty words
-      final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
       if (nbre_dirty_prey > 0) {
         for (int k = 0; k < nbre_dirty_prey; ++k) {
           if (i_is_prey)
@@ -580,29 +580,29 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final int dw_predator = predator.dirtywordoffset
           + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
         if (i_is_prey)
-          container.addStreamOfDirtyWords(j.buffer(), dw_predator, preyrl
-            - tobediscarded);
+          container.addStreamOfDirtyWords(j.buffer(), dw_predator, (int)(preyrl
+            - tobediscarded));// cast is safe
         else
           container.addStreamOfNegatedDirtyWords(i.buffer(), dw_predator,
-            preyrl - tobediscarded);
+            (int)(preyrl - tobediscarded));// cast is safe
         predator.discardFirstWords(preyrl);
         prey.RunningLength = 0;
       }
       final long predatorrl = predator.getRunningLength();
       if (predatorrl > 0) {
         if (predator.getRunningBit() == false) {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl; // cast to int is safe
           predator.discardFirstWords(tobediscarded);
           prey.discardFirstWords(tobediscarded);
           container.addStreamOfEmptyWords(false, tobediscarded);
         } else {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
           final int dw_prey = prey.dirtywordoffset
             + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl; // cast is safe
           if (i_is_prey)
             container.addStreamOfNegatedDirtyWords(i.buffer(), dw_prey,
               tobediscarded);
@@ -613,7 +613,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
       }
       // all that is left to do now is to AND the dirty words
-      final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
       if (nbre_dirty_prey > 0) {
         for (int k = 0; k < nbre_dirty_prey; ++k) {
           if (i_is_prey)
@@ -783,10 +783,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
         container
           .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final long dw_predator = predator.dirtywordoffset
+        final int dw_predator = predator.dirtywordoffset
           + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
         container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, preyrl - tobediscarded);
+          dw_predator, (int)(preyrl - tobediscarded));// cast is safe
         predator.discardFirstWords(preyrl);
         prey.discardFirstWords(preyrl);
         prey.RunningLength = 0;
@@ -799,26 +799,26 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       long predatorrl = predator.getRunningLength();
       if (predatorrl > 0) {
         if (predator.getRunningBit() == false) {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
-          final long dw_prey = prey.dirtywordoffset
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int)predatorrl;// the cast to int is safe here
+          final int dw_prey = prey.dirtywordoffset
             + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
           predator.discardFirstWords(tobediscarded);
           prey.discardFirstWords(tobediscarded);
           container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
             dw_prey, tobediscarded);
         } else {
-          final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final long tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : predatorrl;
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast to int is safe
           container.addStreamOfEmptyWords(true, tobediscarded);
           predator.discardFirstWords(tobediscarded);
           prey.discardFirstWords(tobediscarded);
         }
       }
       // all that is left to do now is to OR the dirty words
-      final long nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
       if (nbre_dirty_prey > 0) {
         for (int k = 0; k < nbre_dirty_prey; ++k) {
           if (i_is_prey)
@@ -1185,19 +1185,19 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param number the number of dirty words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public long addStreamOfNegatedDirtyWords(final long[] data,
-    final long start, final long number) {
+  public int addStreamOfNegatedDirtyWords(final long[] data,
+    final int start, final int number) {
     if (number == 0)
       return 0;
-    final long NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final long whatwecanadd = number < RunningLengthWord.largestliteralcount
+    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
       - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
       - NumberOfLiteralWords;
     this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final long leftovernumber = number - whatwecanadd;
-    negative_push_back(data, (int) start, (int) whatwecanadd);
+    final int leftovernumber = number - whatwecanadd;
+    negative_push_back(data,  start,  whatwecanadd);
     this.sizeinbits += whatwecanadd * wordinbits;
-    long wordsadded = whatwecanadd;
+    int wordsadded = whatwecanadd;
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
@@ -1217,19 +1217,19 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param number the number of dirty words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public long addStreamOfDirtyWords(final long[] data, final long start,
-    final long number) {
+  public int addStreamOfDirtyWords(final long[] data, final int start,
+    final int number) {
     if (number == 0)
       return 0;
-    final long NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final long whatwecanadd = number < RunningLengthWord.largestliteralcount
+    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
       - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
       - NumberOfLiteralWords;
     this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final long leftovernumber = number - whatwecanadd;
-    push_back(data, (int) start, (int) whatwecanadd);
+    final int leftovernumber = number - whatwecanadd;
+    push_back(data,  start,  whatwecanadd);
     this.sizeinbits += whatwecanadd * wordinbits;
-    long wordsadded = whatwecanadd;
+    int wordsadded = whatwecanadd;
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
@@ -1440,7 +1440,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @return the storage cost of the addition
    */
   private int addLiteralWord(final long newdata) {
-    final long numbersofar = this.rlw.getNumberOfLiteralWords();
+    final int numbersofar = this.rlw.getNumberOfLiteralWords();
     if (numbersofar >= RunningLengthWord.largestliteralcount) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;

@@ -118,7 +118,7 @@ public final class RunningLengthWord {
   private static final int literalbits = 64 - 1 - runninglengthbits;
   
   /** largest number of dirty words in a run. */
-  public static final long largestliteralcount = (1l << literalbits) - 1;
+  public static final int largestliteralcount = (1 << literalbits) - 1;
   
   /** largest number of clean words in a run */
   public static final long largestrunninglengthcount = (1l << runninglengthbits) - 1;
