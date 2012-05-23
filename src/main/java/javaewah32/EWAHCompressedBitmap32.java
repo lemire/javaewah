@@ -15,7 +15,7 @@ import javaewah.IntIterator;
  * 32-bit variant of the BBC compression scheme used by Oracle for its bitmap
  * indexes.</p>
  * 
- * <p>In contrast witht the 64-bit EWAH scheme (javaewah.EWAHCompressedBitmap),
+ * <p>In contrast with the 64-bit EWAH scheme (javaewah.EWAHCompressedBitmap),
  * you can expect this class to compress better, but to be slower at 
  * processing the data. In effect, there is a trade-off between memory
  * usage and performances.</p>
