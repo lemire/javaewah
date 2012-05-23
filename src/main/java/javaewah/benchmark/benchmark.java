@@ -1,0 +1,224 @@
+package javaewah.benchmark;
+
+import java.text.DecimalFormat;
+import java.util.List;
+
+import javaewah.EWAHCompressedBitmap;
+import javaewah32.EWAHCompressedBitmap32;
+
+public class benchmark {
+
+  public static void main(String args[]) {
+    test(10, 18, 1);//100//1000);
+  }
+
+  public static void test(int N, int nbr, int repeat) {
+    DecimalFormat df = new DecimalFormat("0.###");
+    ClusteredDataGenerator cdg = new ClusteredDataGenerator();
+    for (int sparsity = 31 - nbr; sparsity >= 0; sparsity -= 1) {
+      long bogus = 0;
+      String line = "";
+      long bef, aft;
+      line += sparsity;
+      int[][] data = new int[N][];
+      int Max = (1 << (nbr + sparsity));
+      System.out.println("# generating random data...");
+      for (int k = 0; k < N; ++k)
+        data[k] = cdg.generateClustered(1 << nbr, Max);
+      System.out.println("# generating random data... ok.");
+      // building
+      bef = System.currentTimeMillis();
+      EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
+      for (int r = 0; r < repeat; ++r) {
+        for (int k = 0; k < N; ++k) {
+          ewah[k] = new EWAHCompressedBitmap();
+          for (int x = 0; x < data.length; ++x) {
+            ewah[k].set(x);
+          }
+        }
+      }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          int[] array = ewah[k].toArray();
+          bogus += array.length;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          int[] array = new int[ewah[k].cardinality()];
+          int c = 0;
+          for (int x : ewah[k])
+            array[c++] = x;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          List<Integer> L = ewah[k].getPositions();
+          int[] array = new int[L.size()];
+          int c = 0;
+          for (int x : L)
+            array[c++] = x;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+
+      // logical or
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap ewahor = ewah[0];
+          for (int j = 1; j < k; ++j) {
+            ewahor = ewahor.or(ewah[j]);
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // fast logical or
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+          for (int j = 0; j < k + 1; ++j) {
+            ewahcp[j] = ewah[k];
+          }
+          EWAHCompressedBitmap ewahor = EWAHCompressedBitmap.or(ewahcp);
+          bogus += ewahor.sizeInBits();
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // logical and
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap ewahand = ewah[0];
+          for (int j = 1; j < k; ++j) {
+            ewahand = ewahand.and(ewah[j]);
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // fast logical and
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+          for (int j = 0; j < k + 1; ++j) {
+            ewahcp[j] = ewah[k];
+          }
+          EWAHCompressedBitmap ewahand = EWAHCompressedBitmap.and(ewahcp);
+          bogus += ewahand.sizeInBits();
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+
+      ewah = null;
+      line += "\t";
+      // building
+      bef = System.currentTimeMillis();
+      EWAHCompressedBitmap32[] ewah32 = new EWAHCompressedBitmap32[N];
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          ewah32[k] = new EWAHCompressedBitmap32();
+          for (int x = 0; x < data.length; ++x) {
+            ewah32[k].set(x);
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          int[] array = ewah32[k].toArray();
+          bogus += array.length;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          int[] array = new int[ewah32[k].cardinality()];
+          int c = 0;
+          for (int x : ewah32[k])
+            array[c++] = x;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          List<Integer> L = ewah32[k].getPositions();
+          int[] array = new int[L.size()];
+          int c = 0;
+          for (int x : L)
+            array[c++] = x;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // logical or
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap32 ewahor = ewah32[0];
+          for (int j = 1; j < k; ++j) {
+            ewahor = ewahor.or(ewah32[j]);
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // fast logical or
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
+          for (int j = 0; j < k + 1; ++j) {
+            ewahcp[j] = ewah32[k];
+          }
+          EWAHCompressedBitmap32 ewahor = EWAHCompressedBitmap32.or(ewahcp);
+          bogus += ewahor.sizeInBits();
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // logical and
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap32 ewahand = ewah32[0];
+          for (int j = 1; j < k; ++j) {
+            ewahand = ewahand.and(ewah32[j]);
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // fast logical or
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
+          for (int j = 0; j < k + 1; ++j) {
+            ewahcp[j] = ewah32[k];
+          }
+          EWAHCompressedBitmap32 ewahand = EWAHCompressedBitmap32.and(ewahcp);
+          bogus += ewahand.sizeInBits();
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      ewah32 = null;
+
+      System.out.println(line);
+      System.out.println("# bogus =" + bogus);
+    }
+  }
+}
