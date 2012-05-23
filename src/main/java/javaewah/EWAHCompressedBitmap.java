@@ -1149,52 +1149,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     this.sizeinbits = i + 1;
     return true;
   }
-
-  public boolean oldset(final int i) {
-    if (i < this.sizeinbits)
-      return false;
-    boolean sameWord = false;
-    // must I complete a word?
-    if ((this.sizeinbits % wordinbits) != 0) {
-      final int possiblesizeinbits = (this.sizeinbits / wordinbits)
-        * wordinbits + wordinbits;
-      if (possiblesizeinbits < i + 1) {
-        this.sizeinbits = possiblesizeinbits;
-      } else {
-        // we are modifying the word at the end of the bitmap
-        sameWord = true;
-      }
-    }
-    addStreamOfEmptyWords(false, (i / wordinbits) - this.sizeinbits
-      / wordinbits);
-    final int bittoflip = i - (this.sizeinbits / wordinbits * wordinbits);
-    // next, we set the bit
-    if ((this.rlw.getNumberOfLiteralWords() == 0)
-      || ((this.sizeinbits - 1) / wordinbits < i / wordinbits)) {
-      final long newdata = 1l << bittoflip;
-      addLiteralWord(newdata);
-      if (sameWord && !this.rlw.getRunningBit()
-        && this.rlw.getRunningLength() > 0) {
-        // the previous literal word is replacing the last running word
-        this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
-      }
-    } else {
-      this.buffer[this.actualsizeinwords - 1] |= 1l << bittoflip;
-      // check if we just completed a stream of 1s
-      if (this.buffer[this.actualsizeinwords - 1] == ~0l) {
-        // we remove the last dirty word
-        this.buffer[this.actualsizeinwords - 1] = 0;
-        --this.actualsizeinwords;
-        this.rlw
-          .setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
-        // next we add one clean word
-        addEmptyWord(true);
-      }
-    }
-    this.sizeinbits = i + 1;
-    return true;
-  }
-
   /**
    * Adding words directly to the bitmap (for expert use).
    * 
