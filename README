@@ -8,9 +8,9 @@ This code is licensed under Apache License, Version 2.0 (ASL2.0).
 
 
 This is a word-aligned compressed variant of
-the Java Bitset class. It uses a 64-bit RLE-like
-compression scheme. It can be used to implement
-bitmap indexes.
+the Java Bitset class. We provide both a 64-bit 
+and a 32-bit RLE-like compression scheme. It can
+be used to implement bitmap indexes.
 
 The goal of word-aligned compression is not to 
 achieve the best compression, but rather to 
@@ -23,7 +23,10 @@ BitSet class by Sun).
 
 
 For better performance, use a 64-bit JVM over
-64-bit CPUs.
+64-bit CPUs when using the 64-bit scheme (javaewah.EWAHCompressedBitmap).
+
+The 32-bit version (javaewah32.EWAHCompressedBitmap32) should
+compress better but be comparatively slower.
 
 
 For more details regarding the compression format, please
@@ -61,7 +64,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
     <dependency>
 	<groupId>com.googlecode.javaewah</groupId>
 	<artifactId>JavaEWAH</artifactId>
-	<version>0.3.2</version>
+	<version>0.5.0</version>
     </dependency>
 </dependencies>
 
