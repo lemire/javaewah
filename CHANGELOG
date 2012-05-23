@@ -1,3 +1,7 @@
+version 0.5.0 (May 23, 2012)
+- Added a 32-bit version of the compression scheme.
+
+
 version 0.4.5 (May 21, 2012)
 - Introduced the toArray method to retrieve set bits.
 
