@@ -11,7 +11,7 @@ package javaewah;
  * @since 0.1.0
  * @author Daniel Lemire
  */
-public final class RunningLengthWord {
+public final class RunningLengthWord  {
 
   /**
    * Instantiates a new running length word.
@@ -111,6 +111,10 @@ public final class RunningLengthWord {
   
   /** The position in array. */
   public int position;
+  
+
+
+
   
   /** number of bits dedicated to marking  of the running length of clean words */  
   public static final int runninglengthbits = 32;

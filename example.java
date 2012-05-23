@@ -21,18 +21,18 @@ public class example {
     System.out.println();
     System.out.println("bitmap 1 OR bitmap 2:");
     EWAHCompressedBitmap orbitmap = ewahBitmap1.or(ewahBitmap2);
-    for (int k : orbitmap)
+    for (int k : orbitmap.toArray())
       System.out.println(k);
     System.out.println("memory usage: " + orbitmap.sizeInBytes() + " bytes");
     System.out.println();
     System.out.println("bitmap 1 AND bitmap 2:");
     EWAHCompressedBitmap andbitmap = ewahBitmap1.and(ewahBitmap2);
-    for (int k : andbitmap)
+    for (int k : andbitmap.toArray())
       System.out.println(k);
     System.out.println("memory usage: " + andbitmap.sizeInBytes() + " bytes");
     System.out.println("bitmap 1 XOR bitmap 2:");
     EWAHCompressedBitmap xorbitmap = ewahBitmap1.xor(ewahBitmap2);
-    for (int k : xorbitmap)
+    for (int k : xorbitmap.toArray())
       System.out.println(k);
     System.out.println("memory usage: " + andbitmap.sizeInBytes() + " bytes");
 

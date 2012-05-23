@@ -1,5 +1,6 @@
 package javaewah32;
 
+
 /*
  * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
  * Licensed under APL 2.0.
@@ -111,6 +112,7 @@ public final class RunningLengthWord32 {
   
   /** The position in array. */
   public int position;
+  
   
   /** number of bits dedicated to marking  of the running length of clean words */  
   public static final int runninglengthbits = 16;

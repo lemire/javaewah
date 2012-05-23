@@ -1123,9 +1123,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     if (i < this.sizeinbits)
       return false;
     // distance in words:
-    final int dist = (i + wordinbits) / wordinbits - (this.sizeinbits
-      + wordinbits - 1)
-      / wordinbits;
+    final int dist = (i + wordinbits) / wordinbits
+      - (this.sizeinbits + wordinbits - 1) / wordinbits;
     if ((dist > 0) || (this.sizeinbits == 0)) {// easy
       addStreamOfEmptyWords(false, dist - 1);
       addLiteralWord(1l << (i % wordinbits));
@@ -1149,6 +1148,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     this.sizeinbits = i + 1;
     return true;
   }
+
   /**
    * Adding words directly to the bitmap (for expert use).
    * 
@@ -1173,7 +1173,47 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    *          the number
    * @return the number of words added to the buffer
    */
-  public int addStreamOfEmptyWords(final boolean v, final long number) {
+  public int addStreamOfEmptyWords(final boolean v, long number) {
+    if (number == 0)
+      return 0;
+    this.sizeinbits += number * wordinbits;
+    int wordsadded = 0;
+    if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
+      this.rlw.setRunningBit(v);
+    } else if ((this.rlw.getNumberOfLiteralWords() != 0)
+      || (this.rlw.getRunningBit() != v)) {
+      push_back(0);
+      ++wordsadded;
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+    }
+    final long runlen = this.rlw.getRunningLength();
+    final long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount
+      - runlen ? number : RunningLengthWord.largestrunninglengthcount - runlen;
+    this.rlw.setRunningLength(runlen + whatwecanadd);
+    number -= whatwecanadd;
+    while (number >= RunningLengthWord.largestrunninglengthcount) {
+      push_back(0);
+      ++wordsadded;
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(RunningLengthWord.largestrunninglengthcount);
+      number -= RunningLengthWord.largestrunninglengthcount;
+    }
+    if (number > 0) {
+      push_back(0);
+      ++wordsadded;
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(number);
+    }
+    return wordsadded;
+  }
+
+  public int oldaddStreamOfEmptyWords(final boolean v, final long number) {
     if (number == 0)
       return 0;
     final boolean noliteralword = (this.rlw.getNumberOfLiteralWords() == 0);
@@ -1811,6 +1851,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public Object clone() throws java.lang.CloneNotSupportedException {
     final EWAHCompressedBitmap clone = (EWAHCompressedBitmap) super.clone();
     clone.buffer = this.buffer.clone();
+    clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
     clone.actualsizeinwords = this.actualsizeinwords;
     clone.sizeinbits = this.sizeinbits;
     return clone;

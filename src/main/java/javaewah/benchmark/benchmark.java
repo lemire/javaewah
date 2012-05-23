@@ -9,13 +9,13 @@ import javaewah32.EWAHCompressedBitmap32;
 public class benchmark {
 
   public static void main(String args[]) {
-    test(10, 18, 1);//100//1000);
+    test(100, 18, 1000);
   }
 
   public static void test(int N, int nbr, int repeat) {
     DecimalFormat df = new DecimalFormat("0.###");
     ClusteredDataGenerator cdg = new ClusteredDataGenerator();
-    for (int sparsity = 31 - nbr; sparsity >= 0; sparsity -= 1) {
+    for (int sparsity = 0; sparsity < 31 - nbr; sparsity += 1) {
       long bogus = 0;
       String line = "";
       long bef, aft;
