@@ -21,6 +21,10 @@ import javaewah.IntIterator;
  * data. In effect, there is a trade-off between memory usage and performances.
  * </p>
  * 
+ * <p>In contrast with the 64-bit EWAH scheme (javaewah.EWAHCompressedBitmap),
+ * you can expect this class to compress better, but to be slower at 
+ * processing the data. In effect, there is a trade-off between memory
+ * usage and performances.</p>
  * 
  * @see javaewah.EWAHCompressedBitmap
  * 
