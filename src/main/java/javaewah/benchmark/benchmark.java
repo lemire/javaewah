@@ -9,13 +9,13 @@ import javaewah32.EWAHCompressedBitmap32;
 public class benchmark {
 
   public static void main(String args[]) {
-    test(100, 18, 1000);
+    test(100, 18, 10);
   }
 
   public static void test(int N, int nbr, int repeat) {
     DecimalFormat df = new DecimalFormat("0.###");
     ClusteredDataGenerator cdg = new ClusteredDataGenerator();
-    for (int sparsity = 0; sparsity < 31 - nbr; sparsity += 1) {
+    for (int sparsity = 1; sparsity < 31 - nbr; sparsity += 1) {
       long bogus = 0;
       String line = "";
       long bef, aft;
@@ -29,15 +29,19 @@ public class benchmark {
       // building
       bef = System.currentTimeMillis();
       EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
+      int size = 0;
       for (int r = 0; r < repeat; ++r) {
+        size = 0; 
         for (int k = 0; k < N; ++k) {
           ewah[k] = new EWAHCompressedBitmap();
           for (int x = 0; x < data[k].length; ++x) {
             ewah[k].set(data[k][x]);
           }
+          size += ewah[k].sizeInBytes();
         }
       }
       aft = System.currentTimeMillis();
+      line += "\t" + size;
       line += "\t" + df.format((aft - bef) / 1000.0);
       // uncompressing
       bef = System.currentTimeMillis();
@@ -126,14 +130,18 @@ public class benchmark {
       // building
       bef = System.currentTimeMillis();
       EWAHCompressedBitmap32[] ewah32 = new EWAHCompressedBitmap32[N];
+      int size32 = 0;
       for (int r = 0; r < repeat; ++r)
+        size32 = 0;
         for (int k = 0; k < N; ++k) {
           ewah32[k] = new EWAHCompressedBitmap32();
-          for (int x = 0; x < data.length; ++x) {
-            ewah32[k].set(x);
+          for (int x = 0; x < data[k].length; ++x) {
+            ewah32[k].set(data[k][x]);
           }
+          size32 += ewah32[k].sizeInBytes();
         }
       aft = System.currentTimeMillis();
+      line += "\t"+ size32;
       line += "\t" + df.format((aft - bef) / 1000.0);
       // uncompressing
       bef = System.currentTimeMillis();
