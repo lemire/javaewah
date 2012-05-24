@@ -1131,10 +1131,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       this.sizeinbits = i + 1;
       return true;
     }
+    this.sizeinbits = i + 1;
     if (this.rlw.getNumberOfLiteralWords() == 0) {
       this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
       addLiteralWord(1l << (i % wordinbits));
-      this.sizeinbits = i + 1;
       return true;
     }
     this.buffer[this.actualsizeinwords - 1] |= 1l << (i % wordinbits);
@@ -1145,7 +1145,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       // next we add one clean word
       addEmptyWord(true);
     }
-    this.sizeinbits = i + 1;
     return true;
   }
 
