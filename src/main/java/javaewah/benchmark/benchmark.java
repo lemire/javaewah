@@ -32,8 +32,8 @@ public class benchmark {
       for (int r = 0; r < repeat; ++r) {
         for (int k = 0; k < N; ++k) {
           ewah[k] = new EWAHCompressedBitmap();
-          for (int x = 0; x < data.length; ++x) {
-            ewah[k].set(x);
+          for (int x = 0; x < data[k].length; ++x) {
+            ewah[k].set(data[k][x]);
           }
         }
       }
