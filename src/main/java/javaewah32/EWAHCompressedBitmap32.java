@@ -1091,7 +1091,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final int dist = (i + wordinbits) / wordinbits - (this.sizeinbits
       + wordinbits - 1)
       / wordinbits;
-    if ((dist > 0) || (this.sizeinbits == 0)) {// easy
+    if (dist > 0) {// easy
       addStreamOfEmptyWords(false, dist - 1);
       addLiteralWord(1 << (i % wordinbits));
       this.sizeinbits = i + 1;
@@ -1114,6 +1114,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     this.sizeinbits = i + 1;
     return true;
   }
+  
   /**
    * Adding words directly to the bitmap (for expert use).
    * 
