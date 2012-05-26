@@ -870,16 +870,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           rlwi = null;
           break;
         }
-        rlwi.reset(i.next());// = new
-        // BufferedRunningLengthWord(i.next());
+        rlwi.reset(i.next());
       } else {
         if (!j.hasNext()) {
           rlwj = null;
           break;
         }
-        rlwj.reset(j.next());// = new
-        // BufferedRunningLengthWord(
-        // j.next());
+        rlwj.reset(j.next());
       }
     }
     if (rlwi != null)
@@ -1125,13 +1122,12 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     // distance in words:
     final int dist = (i + wordinbits) / wordinbits
       - (this.sizeinbits + wordinbits - 1) / wordinbits;
+    this.sizeinbits = i + 1;
     if (dist > 0)  {// easy
-      addStreamOfEmptyWords(false, dist - 1);
+      fastaddStreamOfEmptyWords(false, dist - 1);
       addLiteralWord(1l << (i % wordinbits));
-      this.sizeinbits = i + 1;
       return true;
     }
-    this.sizeinbits = i + 1;
     if (this.rlw.getNumberOfLiteralWords() == 0) {
       this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
       addLiteralWord(1l << (i % wordinbits));
@@ -1211,39 +1207,51 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
     return wordsadded;
   }
-
-  public int oldaddStreamOfEmptyWords(final boolean v, final long number) {
-    if (number == 0)
-      return 0;
-    final boolean noliteralword = (this.rlw.getNumberOfLiteralWords() == 0);
-    final long runlen = this.rlw.getRunningLength();
-    if ((noliteralword) && (runlen == 0)) {
+  
+  /**
+   * For experts: You want to add many zeroes or ones faster?
+   * 
+   * This method does not update sizeinbits.
+   * 
+   * @param v
+   *          the boolean value
+   * @param number
+   *          the number (must be greater than 0)
+   * @return nothing
+   */
+  private void fastaddStreamOfEmptyWords(final boolean v, long number) {
+    if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
       this.rlw.setRunningBit(v);
-    }
-    int wordsadded = 0;
-    if ((noliteralword) && (this.rlw.getRunningBit() == v)
-      && (runlen < RunningLengthWord.largestrunninglengthcount)) {
-      long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount
-        - runlen ? number : RunningLengthWord.largestrunninglengthcount
-        - runlen;
-      this.rlw.setRunningLength(runlen + whatwecanadd);
-      this.sizeinbits += whatwecanadd * wordinbits;
-      if (number - whatwecanadd > 0)
-        wordsadded += addStreamOfEmptyWords(v, number - whatwecanadd);
-    } else {
+    } else if ((this.rlw.getNumberOfLiteralWords() != 0)
+      || (this.rlw.getRunningBit() != v)) {
       push_back(0);
-      ++wordsadded;
       this.rlw.position = this.actualsizeinwords - 1;
-      final long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount ? number
-        : RunningLengthWord.largestrunninglengthcount;
-      this.rlw.setRunningBit(v);
-      this.rlw.setRunningLength(whatwecanadd);
-      this.sizeinbits += whatwecanadd * wordinbits;
-      if (number - whatwecanadd > 0)
-        wordsadded += addStreamOfEmptyWords(v, number - whatwecanadd);
+      if (v)
+        this.rlw.setRunningBit(v);
     }
-    return wordsadded;
+    final long runlen = this.rlw.getRunningLength();
+    final long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount
+      - runlen ? number : RunningLengthWord.largestrunninglengthcount - runlen;
+    this.rlw.setRunningLength(runlen + whatwecanadd);
+    number -= whatwecanadd;
+    while (number >= RunningLengthWord.largestrunninglengthcount) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(RunningLengthWord.largestrunninglengthcount);
+      number -= RunningLengthWord.largestrunninglengthcount;
+    }
+    if (number > 0) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(number);
+    }
   }
+
+
 
   /**
    * Same as addStreamOfDirtyWords, but the words are negated.
