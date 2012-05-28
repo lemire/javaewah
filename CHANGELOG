@@ -1,3 +1,7 @@
+version 0.5.1 (May 28, 2012)
+- Fixed minor performance regression.
+
+
 version 0.5.0 (May 23, 2012)
 - Added a 32-bit version of the compression scheme.
 

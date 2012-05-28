@@ -23,7 +23,7 @@ public interface BitmapStorage32 {
    * @param newdata the word
    * @return the number of words added to the buffer
    */  
-  public int add(final int newdata);
+  public void add(final int newdata);
   
   /**
    * For experts: You want to add many
@@ -33,7 +33,7 @@ public interface BitmapStorage32 {
    * @param number how many to words add
    * @return the number of words added to the buffer
    */
-  public int addStreamOfEmptyWords(final boolean v, final int number);
+  public void addStreamOfEmptyWords(final boolean v, final int number);
   
   /**
    * if you have several dirty words to copy over, this might be faster.
@@ -43,7 +43,7 @@ public interface BitmapStorage32 {
    * @param number the number of dirty words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfDirtyWords(final int[] data, final int start,
+  public void addStreamOfDirtyWords(final int[] data, final int start,
       final int number);
 
   /**
@@ -54,7 +54,7 @@ public interface BitmapStorage32 {
    * @param number the number of dirty words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfNegatedDirtyWords( int[] data, final int start,
+  public void addStreamOfNegatedDirtyWords( int[] data, final int start,
   final int number);
   /**
    * directly set the sizeinbits field

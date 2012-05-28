@@ -23,12 +23,10 @@ public final class BitCounter32 implements BitmapStorage32 {
    * Virtually add words directly to the bitmap
    *
    * @param newdata the word
-   * @return the number of words added to the buffer
    */  
   // @Override : causes problems with Java 1.5
-  public int add(final int newdata) {
+  public void add(final int newdata) {
     this.oneBits += Integer.bitCount(newdata);
-    return 0;
   }
 
 
@@ -38,14 +36,12 @@ public final class BitCounter32 implements BitmapStorage32 {
    *
    * @param v zeros or ones
    * @param number how many to words add
-   * @return the number of words added to the buffer
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfEmptyWords(boolean v, int number) {
+  public void addStreamOfEmptyWords(boolean v, int number) {
     if (v) {
       this.oneBits += number * EWAHCompressedBitmap32.wordinbits;
     }
-    return 0;
   }
 
   /**
@@ -54,14 +50,12 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param data the dirty words
    * @param start the starting point in the array
    * @param number the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfDirtyWords(int[] data, int start, int number) {
+  public void addStreamOfDirtyWords(int[] data, int start, int number) {
     for(int i=start;i<start+number;i++) {
       add(data[i]);      
     }
-    return 0;
   }
   
   /**
@@ -70,15 +64,13 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param data the dirty words
    * @param start the starting point in the array
    * @param number the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfNegatedDirtyWords(int[] data, int start,
+  public void addStreamOfNegatedDirtyWords(int[] data, int start,
     int number) {
     for(int i=start;i<start+number;i++) {
       add(~data[i]);      
     }
-    return 0;
   }  
   
   /**

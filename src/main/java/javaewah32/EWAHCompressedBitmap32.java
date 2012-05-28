@@ -1119,10 +1119,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @param newdata
    *          the word
-   * @return the number of words added to the buffer
    */
-  public int add(final int newdata) {
-    return add(newdata, wordinbits);
+  public void add(final int newdata) {
+    add(newdata, wordinbits);
   }
 
   /**
@@ -1133,19 +1132,16 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the boolean value
    * @param number
    *          the number
-   * @return the number of words added to the buffer
    */
-  public int addStreamOfEmptyWords(final boolean v, int number) {
+  public void addStreamOfEmptyWords(final boolean v, int number) {
     if (number == 0)
-      return 0;
+      return ;
     this.sizeinbits += number * wordinbits;
-    int wordsadded = 0;
     if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
       this.rlw.setRunningBit(v);
     } else if ((this.rlw.getNumberOfLiteralWords() != 0)
       || (this.rlw.getRunningBit() != v)) {
       push_back(0);
-      ++wordsadded;
       this.rlw.position = this.actualsizeinwords - 1;
       if (v)
         this.rlw.setRunningBit(v);
@@ -1157,7 +1153,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     number -= whatwecanadd;
     while (number >= RunningLengthWord32.largestrunninglengthcount) {
       push_back(0);
-      ++wordsadded;
       this.rlw.position = this.actualsizeinwords - 1;
       if (v)
         this.rlw.setRunningBit(v);
@@ -1166,13 +1161,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
     if (number > 0) {
       push_back(0);
-      ++wordsadded;
       this.rlw.position = this.actualsizeinwords - 1;
       if (v)
         this.rlw.setRunningBit(v);
       this.rlw.setRunningLength(number);
     }
-    return wordsadded;
   }
   /**
    * For experts: You want to add many zeroes or ones faster?
@@ -1183,7 +1176,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the boolean value
    * @param number
    *          the number (must be greater than 0)
-   * @return nothing
    */
   private void fastaddStreamOfEmptyWords(final boolean v, int number) {
     if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
@@ -1235,7 +1227,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       this.rlw.setRunningLength(runlen + whatwecanadd);
       this.sizeinbits += whatwecanadd * wordinbits;
       if (number - whatwecanadd > 0)
-        wordsadded += addStreamOfEmptyWords(v, number - whatwecanadd);
+        addStreamOfEmptyWords(v, number - whatwecanadd);
     } else {
       push_back(0);
       ++wordsadded;
@@ -1246,7 +1238,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       this.rlw.setRunningLength(whatwecanadd);
       this.sizeinbits += whatwecanadd * wordinbits;
       if (number - whatwecanadd > 0)
-        wordsadded += addStreamOfEmptyWords(v, number - whatwecanadd);
+        addStreamOfEmptyWords(v, number - whatwecanadd);
     }
     return wordsadded;
   }
@@ -1260,12 +1252,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfNegatedDirtyWords(final int[] data, final int start,
+  public void addStreamOfNegatedDirtyWords(final int[] data, final int start,
     final int number) {
     if (number == 0)
-      return 0;
+      return;
     final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
     final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
       - NumberOfLiteralWords ? number : RunningLengthWord32.largestliteralcount
@@ -1274,15 +1265,12 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final int leftovernumber = number - whatwecanadd;
     negative_push_back(data, start, whatwecanadd);
     this.sizeinbits += whatwecanadd * wordinbits;
-    int wordsadded = whatwecanadd;
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
-      ++wordsadded;
-      wordsadded += addStreamOfDirtyWords(data, start + whatwecanadd,
+      addStreamOfDirtyWords(data, start + whatwecanadd,
         leftovernumber);
     }
-    return wordsadded;
   }
 
   /**
@@ -1295,12 +1283,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfDirtyWords(final int[] data, final int start,
+  public void addStreamOfDirtyWords(final int[] data, final int start,
     final int number) {
     if (number == 0)
-      return 0;
+      return ;
     final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
     final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
       - NumberOfLiteralWords ? number : RunningLengthWord32.largestliteralcount
@@ -1309,15 +1296,12 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final int leftovernumber = number - whatwecanadd;
     push_back(data, start, whatwecanadd);
     this.sizeinbits += whatwecanadd * wordinbits;
-    int wordsadded = whatwecanadd;
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
-      ++wordsadded;
-      wordsadded += addStreamOfDirtyWords(data, start + whatwecanadd,
+      addStreamOfDirtyWords(data, start + whatwecanadd,
         leftovernumber);
     }
-    return wordsadded;
   }
 
   /**
@@ -1327,16 +1311,15 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the word
    * @param bitsthatmatter
    *          the number of significant bits (by default it should be 32)
-   * @return the number of words added to the buffer
    */
-  public int add(final int newdata, final int bitsthatmatter) {
+  public void add(final int newdata, final int bitsthatmatter) {
     this.sizeinbits += bitsthatmatter;
     if (newdata == 0) {
-      return addEmptyWord(false);
+      addEmptyWord(false);
     } else if (newdata == ~0) {
-      return addEmptyWord(true);
+      addEmptyWord(true);
     } else {
-      return addLiteralWord(newdata);
+      addLiteralWord(newdata);
     }
   }
 

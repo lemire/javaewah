@@ -21,9 +21,8 @@ public interface BitmapStorage {
    * 
    * @param newdata
    *          the word
-   * @return the number of words added to the buffer
    */
-  public int add(final long newdata);
+  public void add(final long newdata);
 
   /**
    * For experts: You want to add many zeroes or ones? This is the method you
@@ -33,9 +32,8 @@ public interface BitmapStorage {
    *          zeros or ones
    * @param number
    *          how many to words add
-   * @return the number of words added to the buffer
    */
-  public int addStreamOfEmptyWords(final boolean v, final long number);
+  public void addStreamOfEmptyWords(final boolean v, final long number);
 
   /**
    * if you have several dirty words to copy over, this might be faster.
@@ -46,9 +44,8 @@ public interface BitmapStorage {
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfDirtyWords(final long[] data, final int start,
+  public void addStreamOfDirtyWords(final long[] data, final int start,
     final int number);
 
   /**
@@ -60,9 +57,8 @@ public interface BitmapStorage {
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
-  public int addStreamOfNegatedDirtyWords(long[] data, final int start,
+  public void addStreamOfNegatedDirtyWords(long[] data, final int start,
     final int number);
 
   /**

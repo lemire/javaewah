@@ -22,9 +22,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * If the word to be added is non-zero, a NonEmptyException exception is thrown.
    * @see javaewah.BitmapStorage#add(int)
    */
-  public int add(int newdata) {
+  public void add(int newdata) {
     if(newdata!=0) throw new NonEmptyException(); 
-    return 0;
   }
 
   /**
@@ -33,9 +32,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * 
    * @see javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, int)
    */
-  public int addStreamOfEmptyWords(boolean v, int number) {
+  public void addStreamOfEmptyWords(boolean v, int number) {
     if(v) throw new NonEmptyException(); 
-    return 0;
   }
 
   /**
@@ -43,7 +41,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * 
    * @see javaewah.BitmapStorage#addStreamOfDirtyWords(int[], int, int)
    */
-  public int addStreamOfDirtyWords(int[] data, int start, int number) {
+  public void addStreamOfDirtyWords(int[] data, int start, int number) {
     throw new NonEmptyException();
   }
 
@@ -52,7 +50,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * 
    * @see javaewah.BitmapStorage#addStreamOfNegatedDirtyWords(int[], int, int)
    */
-  public int addStreamOfNegatedDirtyWords(int[] data, int start, int number) {
+  public void addStreamOfNegatedDirtyWords(int[] data, int start, int number) {
     throw new NonEmptyException();
   }
 

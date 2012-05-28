@@ -21,12 +21,11 @@ public final class BitCounter implements BitmapStorage {
    * 
    * @param newdata
    *          the word
-   * @return the number of words added to the buffer
    */
   // @Override : causes problems with Java 1.5
-  public int add(final long newdata) {
+  public void add(final long newdata) {
     this.oneBits += Long.bitCount(newdata);
-    return 0;
+    return;
   }
 
   /**
@@ -39,11 +38,11 @@ public final class BitCounter implements BitmapStorage {
    * @return the number of words added to the buffer
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfEmptyWords(boolean v, long number) {
+  public void addStreamOfEmptyWords(boolean v, long number) {
     if (v) {
       this.oneBits += number * EWAHCompressedBitmap.wordinbits;
     }
-    return 0;
+    return;
   }
 
   /**
@@ -55,14 +54,13 @@ public final class BitCounter implements BitmapStorage {
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfDirtyWords(long[] data, int start, int number) {
     for (int i = start; i < start + number; i++) {
       add(data[i]);
     }
-    return 0;
+    return;
   }
 
   /**
@@ -74,14 +72,13 @@ public final class BitCounter implements BitmapStorage {
    *          the starting point in the array
    * @param number
    *          the number of dirty words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   // @Override : causes problems with Java 1.5
-  public int addStreamOfNegatedDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfNegatedDirtyWords(long[] data, int start, int number) {
     for (int i = start; i < start + number; i++) {
       add(~data[i]);
     }
-    return 0;
+    return;
   }
 
   /**

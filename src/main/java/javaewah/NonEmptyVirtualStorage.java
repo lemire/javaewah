@@ -24,10 +24,10 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see javaewah.BitmapStorage#add(long)
    */
-  public int add(long newdata) {
+  public void add(long newdata) {
     if (newdata != 0)
       throw new NonEmptyException();
-    return 0;
+    return;
   }
 
   /**
@@ -36,10 +36,10 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, long)
    */
-  public int addStreamOfEmptyWords(boolean v, long number) {
+  public void addStreamOfEmptyWords(boolean v, long number) {
     if (v)
       throw new NonEmptyException();
-    return 0;
+    return;
   }
 
   /**
@@ -47,7 +47,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see javaewah.BitmapStorage#addStreamOfDirtyWords(long[], long, long)
    */
-  public int addStreamOfDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfDirtyWords(long[] data, int start, int number) {
     throw new NonEmptyException();
   }
 
@@ -57,7 +57,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * @see javaewah.BitmapStorage#addStreamOfNegatedDirtyWords(long[], long,
    *      long)
    */
-  public int addStreamOfNegatedDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfNegatedDirtyWords(long[] data, int start, int number) {
     throw new NonEmptyException();
   }
 
