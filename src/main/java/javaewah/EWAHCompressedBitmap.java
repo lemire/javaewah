@@ -1115,8 +1115,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param i
    *          the index
    * @return true if the value was set (always true when i>= sizeInBits()).
+   * @throws IndexOutOfBoundsException if i is negative or greater than Integer.MAX_VALUE - 64
    */
   public boolean set(final int i) {
+    if ((i > Integer.MAX_VALUE - wordinbits) || (i<0))
+      throw new IndexOutOfBoundsException("Set values should be between 0 and "+(Integer.MAX_VALUE - wordinbits)); 
     if (i < this.sizeinbits)
       return false;
     // distance in words:

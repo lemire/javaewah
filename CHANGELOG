@@ -1,3 +1,7 @@
+version 0.5.2 (July 9th, 2012)
+- Now being explicit about range of allowed set values, throws exceptions when out of range.
+
+
 version 0.5.1 (May 28, 2012)
 - Fixed minor performance regression.
 

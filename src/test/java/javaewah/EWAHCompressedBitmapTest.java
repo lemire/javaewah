@@ -289,6 +289,20 @@ public class EWAHCompressedBitmapTest {
     }
     Assert.assertTrue(myarray1.sizeInBits() == N);
   }
+  
+  @Test
+  public void testExtremeRange() {
+    System.out.println("testing EWAH at its extreme range");
+    int N = 1024;
+    EWAHCompressedBitmap myarray1 = new EWAHCompressedBitmap();
+    for (int i = 0; i < N; ++i) {
+      myarray1.set(Integer.MAX_VALUE  - 64 - N + i);
+      Assert.assertTrue(myarray1.cardinality() == i+1);
+      int[] val = myarray1.toArray();
+      Assert.assertTrue(val[0] == Integer.MAX_VALUE - 64 - N);
+    }
+  }
+
 
   /**
    * Test cardinality.
@@ -297,7 +311,7 @@ public class EWAHCompressedBitmapTest {
   public void testCardinality() {
     System.out.println("testing EWAH cardinality");
     EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
-    bitmap.set(Integer.MAX_VALUE);
+    bitmap.set(Integer.MAX_VALUE - 64);
     // System.out.format("Total Items %d\n", bitmap.cardinality());
     Assert.assertTrue(bitmap.cardinality() == 1);
   }
