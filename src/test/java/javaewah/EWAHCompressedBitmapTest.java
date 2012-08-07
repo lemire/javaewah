@@ -881,8 +881,50 @@ public class EWAHCompressedBitmapTest {
       bitmap2.set(11111111);
       Assert.assertTrue(bitmap.intersects(bitmap2));
       Assert.assertTrue(bitmap2.intersects(bitmap));
+
+      EWAHCompressedBitmap bitmap3 = new EWAHCompressedBitmap();
+      bitmap3.set(101);
+      EWAHCompressedBitmap bitmap4 = new EWAHCompressedBitmap();
+      for (int i = 0; i < 100; i++) {
+          bitmap4.set(i);
+      }
+      Assert.assertFalse(bitmap3.intersects(bitmap4));
+      Assert.assertFalse(bitmap4.intersects(bitmap3));
+
+      EWAHCompressedBitmap bitmap5 = new EWAHCompressedBitmap();
+      bitmap5.set(0);
+      bitmap5.set(10);
+      bitmap5.set(20);
+      EWAHCompressedBitmap bitmap6 = new EWAHCompressedBitmap();
+      bitmap6.set(1);
+      bitmap6.set(11);
+      bitmap6.set(21);
+      bitmap6.set(1111111);
+      bitmap6.set(11111111);
+      Assert.assertFalse(bitmap5.intersects(bitmap6));
+      Assert.assertFalse(bitmap6.intersects(bitmap5));
+
+      bitmap5.set(21);
+      Assert.assertTrue(bitmap5.intersects(bitmap6));
+      Assert.assertTrue(bitmap6.intersects(bitmap5));
+
+      EWAHCompressedBitmap bitmap7 = new EWAHCompressedBitmap();
+      bitmap7.set(1);
+      bitmap7.set(10);
+      bitmap7.set(20);
+      bitmap7.set(1111111);
+      bitmap7.set(11111111);
+      EWAHCompressedBitmap bitmap8 = new EWAHCompressedBitmap();
+      for (int i = 0; i < 1000; i++) {
+          if (i != 1 && i!=10 && i!=20){
+              bitmap8.set(i);
+          }
+      }
+      Assert.assertFalse(bitmap7.intersects(bitmap8));
+      Assert.assertFalse(bitmap8.intersects(bitmap7));
   }
 
+  @Test
   public void testOrCardinality() {
     System.out.println("testing Or Cardinality");
     for (int N = 0; N < 1024; ++N) {
