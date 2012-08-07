@@ -51,7 +51,6 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
       if(number>0){
           throw new NonEmptyException();
       }
-      return;
   }
 
   /**
@@ -64,7 +63,6 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
       if(number>0){
           throw new NonEmptyException();
       }
-      return;
   }
 
   /**

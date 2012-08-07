@@ -37,7 +37,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   }
 
   /**
-   * throws a NonEmptyException exception
+   * throws a NonEmptyException exception when number > 0
    * 
    * @see javaewah.BitmapStorage#addStreamOfDirtyWords(int[], int, int)
    */
@@ -48,7 +48,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   }
 
   /**
-   * throws a NonEmptyException exception
+   * throws a NonEmptyException exception when number > 0
    * 
    * @see javaewah.BitmapStorage#addStreamOfNegatedDirtyWords(int[], int, int)
    */
