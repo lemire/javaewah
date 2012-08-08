@@ -893,23 +893,64 @@ public class EWAHCompressedBitmap32Test {
     Assert.assertTrue(1001 == positions.get(3).intValue());
   }
 
-  /**
-   * Test the intersects method
-   */
-  @Test
-  public void testIntersectsMethod() {
-    System.out.println("testing Intersets Bug");
-    EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
-    bitmap.set(1);
-    EWAHCompressedBitmap32 bitmap2 = new EWAHCompressedBitmap32();
-    bitmap2.set(1);
-    bitmap2.set(11);
-    bitmap2.set(111);
-    bitmap2.set(1111111);
-    bitmap2.set(11111111);
-    Assert.assertTrue(bitmap.intersects(bitmap2));
-    Assert.assertTrue(bitmap2.intersects(bitmap));
-  }
+    /**
+     * Test the intersects method
+     */
+    @Test
+    public void testIntersectsMethod(){
+        System.out.println("testing Intersets Bug");
+        EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
+        bitmap.set(1);
+        EWAHCompressedBitmap32 bitmap2 = new EWAHCompressedBitmap32();
+        bitmap2.set(1);
+        bitmap2.set(11);
+        bitmap2.set(111);
+        bitmap2.set(1111111);
+        bitmap2.set(11111111);
+        Assert.assertTrue(bitmap.intersects(bitmap2));
+        Assert.assertTrue(bitmap2.intersects(bitmap));
+
+        EWAHCompressedBitmap32 bitmap3 = new EWAHCompressedBitmap32();
+        bitmap3.set(101);
+        EWAHCompressedBitmap32 bitmap4 = new EWAHCompressedBitmap32();
+        for (int i = 0; i < 100; i++) {
+            bitmap4.set(i);
+        }
+        Assert.assertFalse(bitmap3.intersects(bitmap4));
+        Assert.assertFalse(bitmap4.intersects(bitmap3));
+
+        EWAHCompressedBitmap32 bitmap5 = new EWAHCompressedBitmap32();
+        bitmap5.set(0);
+        bitmap5.set(10);
+        bitmap5.set(20);
+        EWAHCompressedBitmap32 bitmap6 = new EWAHCompressedBitmap32();
+        bitmap6.set(1);
+        bitmap6.set(11);
+        bitmap6.set(21);
+        bitmap6.set(1111111);
+        bitmap6.set(11111111);
+        Assert.assertFalse(bitmap5.intersects(bitmap6));
+        Assert.assertFalse(bitmap6.intersects(bitmap5));
+
+        bitmap5.set(21);
+        Assert.assertTrue(bitmap5.intersects(bitmap6));
+        Assert.assertTrue(bitmap6.intersects(bitmap5));
+
+        EWAHCompressedBitmap32 bitmap7 = new EWAHCompressedBitmap32();
+        bitmap7.set(1);
+        bitmap7.set(10);
+        bitmap7.set(20);
+        bitmap7.set(1111111);
+        bitmap7.set(11111111);
+        EWAHCompressedBitmap32 bitmap8 = new EWAHCompressedBitmap32();
+        for (int i = 0; i < 1000; i++) {
+            if (i != 1 && i!=10 && i!=20){
+                bitmap8.set(i);
+            }
+        }
+        Assert.assertFalse(bitmap7.intersects(bitmap8));
+        Assert.assertFalse(bitmap8.intersects(bitmap7));
+    }
 
   @Test
   public void testOrCardinality() {
