@@ -129,6 +129,48 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
+   * For internal use.
+   * 
+   * @param v
+   *          the boolean value
+   */
+  private void addEmptyWord(final boolean v) {
+    final boolean noliteralword = (this.rlw.getNumberOfLiteralWords() == 0);
+    final long runlen = this.rlw.getRunningLength();
+    if ((noliteralword) && (runlen == 0)) {
+      this.rlw.setRunningBit(v);
+    }
+    if ((noliteralword) && (this.rlw.getRunningBit() == v)
+      && (runlen < RunningLengthWord.largestrunninglengthcount)) {
+      this.rlw.setRunningLength(runlen + 1);
+      return;
+    }
+    push_back(0);
+    this.rlw.position = this.actualsizeinwords - 1;
+    this.rlw.setRunningBit(v);
+    this.rlw.setRunningLength(1);
+    return;
+  }
+
+  /**
+   * For internal use.
+   * 
+   * @param newdata
+   *          the dirty word
+   */
+  private void addLiteralWord(final long newdata) {
+    final int numbersofar = this.rlw.getNumberOfLiteralWords();
+    if (numbersofar >= RunningLengthWord.largestliteralcount) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      this.rlw.setNumberOfLiteralWords(1);
+      push_back(newdata);
+    }
+    this.rlw.setNumberOfLiteralWords(numbersofar + 1);
+    push_back(newdata);
+  }
+
+  /**
    * if you have several dirty words to copy over, this might be faster.
    * 
    * 
@@ -257,6 +299,106 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
+   * Computes new compressed bitmap containing the bitwise AND values of the
+   * current bitmap with some other bitmap.
+   * 
+   * The running time is proportional to the sum of the compressed sizes (as
+   * reported by sizeInBytes()).
+   * 
+   * @since 0.4.0
+   * @param a
+   *          the other bitmap
+   * @param container
+   *          where we store the result
+   */
+  private void and(final EWAHCompressedBitmap a, final BitmapStorage container) {
+    final EWAHIterator i = a.getEWAHIterator();
+    final EWAHIterator j = getEWAHIterator();
+    if (!(i.hasNext() && j.hasNext())) {// this never happens...
+      container.setSizeInBits(sizeInBits());
+    }
+    // at this point, this is safe:
+    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
+    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
+    while (true) {
+      final boolean i_is_prey = rlwi.size() < rlwj.size();
+      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
+      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
+      if (prey.getRunningBit() == false) {
+        container.addStreamOfEmptyWords(false, prey.RunningLength);
+        predator.discardFirstWords(prey.RunningLength);
+        prey.RunningLength = 0;
+      } else {
+        // we have a stream of 1x11
+        final long predatorrl = predator.getRunningLength();
+        final long preyrl = prey.getRunningLength();
+        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
+        container
+          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
+        final int dw_predator = predator.dirtywordoffset
+          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
+        container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
+          dw_predator, (int) (preyrl - tobediscarded));// cast is safe
+        predator.discardFirstWords(preyrl);
+        prey.RunningLength = 0;
+      }
+      final long predatorrl = predator.getRunningLength();
+      if (predatorrl > 0) {
+        if (predator.getRunningBit() == false) {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast to int is safe
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+          container.addStreamOfEmptyWords(false, tobediscarded);
+        } else {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int dw_prey = prey.dirtywordoffset
+            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast is safe
+          container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
+            dw_prey, tobediscarded);
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+        }
+      }
+      // all that is left to do now is to AND the dirty words
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      if (nbre_dirty_prey > 0) {
+        for (int k = 0; k < nbre_dirty_prey; ++k) {
+          if (i_is_prey)
+            container.add(i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
+              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
+          else
+            container.add(i.buffer()[predator.dirtywordoffset + i.dirtyWords()
+              + k]
+              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
+        }
+        predator.discardFirstWords(nbre_dirty_prey);
+      }
+      if (i_is_prey) {
+        if (!i.hasNext()) {
+          rlwi = null;
+          break;
+        }
+        rlwi.reset(i.next());
+      } else {
+        if (!j.hasNext()) {
+          rlwj = null;
+          break;
+        }
+        rlwj.reset(j.next());
+      }
+    }
+    if (rlwi != null)
+      dischargeAsEmpty(rlwi, i, container);
+    if (rlwj != null)
+      dischargeAsEmpty(rlwj, j, container);
+    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+  }
+
+  /**
    * Returns the cardinality of the result of a bitwise AND of the values of the
    * current bitmap with some other bitmap. Avoids needing to allocate an
    * intermediate bitmap to hold the result of the OR.
@@ -290,6 +432,117 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         : a.actualsizeinwords);
     andNot(a, container);
     return container;
+  }
+
+  /**
+   * Returns a new compressed bitmap containing the bitwise AND NOT values of
+   * the current bitmap with some other bitmap.
+   * 
+   * The running time is proportional to the sum of the compressed sizes (as
+   * reported by sizeInBytes()).
+   * 
+   * @since 0.4.0
+   * @param a
+   *          the other bitmap
+   * @return the EWAH compressed bitmap
+   */
+  private void andNot(final EWAHCompressedBitmap a,
+    final BitmapStorage container) {
+    final EWAHIterator i = a.getEWAHIterator();
+    final EWAHIterator j = getEWAHIterator();
+    if (!(i.hasNext() && j.hasNext())) {// this never happens...
+      container.setSizeInBits(sizeInBits());
+    }
+    // at this point, this is safe:
+    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
+    rlwi.setRunningBit(!rlwi.getRunningBit());
+    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
+    while (true) {
+      final boolean i_is_prey = rlwi.size() < rlwj.size();
+      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
+      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
+
+      if (prey.getRunningBit() == false) {
+        container.addStreamOfEmptyWords(false, prey.RunningLength);
+        predator.discardFirstWords(prey.RunningLength);
+        prey.RunningLength = 0;
+      } else {
+        // we have a stream of 1x11
+        final long predatorrl = predator.getRunningLength();
+        final long preyrl = prey.getRunningLength();
+        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
+        container
+          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
+        final int dw_predator = predator.dirtywordoffset
+          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
+        if (i_is_prey)
+          container.addStreamOfDirtyWords(j.buffer(), dw_predator,
+            (int) (preyrl - tobediscarded));// cast is safe
+        else
+          container.addStreamOfNegatedDirtyWords(i.buffer(), dw_predator,
+            (int) (preyrl - tobediscarded));// cast is safe
+        predator.discardFirstWords(preyrl);
+        prey.RunningLength = 0;
+      }
+      final long predatorrl = predator.getRunningLength();
+      if (predatorrl > 0) {
+        if (predator.getRunningBit() == false) {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl; // cast to int is safe
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+          container.addStreamOfEmptyWords(false, tobediscarded);
+        } else {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int dw_prey = prey.dirtywordoffset
+            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl; // cast is safe
+          if (i_is_prey)
+            container.addStreamOfNegatedDirtyWords(i.buffer(), dw_prey,
+              tobediscarded);
+          else
+            container.addStreamOfDirtyWords(j.buffer(), dw_prey, tobediscarded);
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+        }
+      }
+      // all that is left to do now is to AND the dirty words
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      if (nbre_dirty_prey > 0) {
+        for (int k = 0; k < nbre_dirty_prey; ++k) {
+          if (i_is_prey)
+            container.add((~i.buffer()[prey.dirtywordoffset + i.dirtyWords()
+              + k])
+              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
+          else
+            container.add((~i.buffer()[predator.dirtywordoffset
+              + i.dirtyWords() + k])
+              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
+        }
+        predator.discardFirstWords(nbre_dirty_prey);
+      }
+      if (i_is_prey) {
+        if (!i.hasNext()) {
+          rlwi = null;
+          break;
+        }
+        rlwi.reset(i.next());
+        rlwi.setRunningBit(!rlwi.getRunningBit());
+      } else {
+        if (!j.hasNext()) {
+          rlwj = null;
+          break;
+        }
+        rlwj.reset(j.next());
+      }
+    }
+    if (rlwi != null)
+      dischargeAsEmpty(rlwi, i, container);
+    if (rlwj != null)
+      discharge(rlwj, j, container);
+    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
   }
 
   /**
@@ -395,6 +648,61 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
+   * For experts: You want to add many zeroes or ones faster?
+   * 
+   * This method does not update sizeinbits.
+   * 
+   * @param v
+   *          the boolean value
+   * @param number
+   *          the number (must be greater than 0)
+   * @return nothing
+   */
+  private void fastaddStreamOfEmptyWords(final boolean v, long number) {
+    if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
+      this.rlw.setRunningBit(v);
+    } else if ((this.rlw.getNumberOfLiteralWords() != 0)
+      || (this.rlw.getRunningBit() != v)) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+    }
+
+    final long runlen = this.rlw.getRunningLength();
+    final long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount
+      - runlen ? number : RunningLengthWord.largestrunninglengthcount - runlen;
+    this.rlw.setRunningLength(runlen + whatwecanadd);
+    number -= whatwecanadd;
+
+    while (number >= RunningLengthWord.largestrunninglengthcount) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(RunningLengthWord.largestrunninglengthcount);
+      number -= RunningLengthWord.largestrunninglengthcount;
+    }
+    if (number > 0) {
+      push_back(0);
+      this.rlw.position = this.actualsizeinwords - 1;
+      if (v)
+        this.rlw.setRunningBit(v);
+      this.rlw.setRunningLength(number);
+    }
+  }
+
+  /**
+   * Gets an EWAHIterator over the data. This is a customized iterator which
+   * iterates over run length word. For experts only.
+   * 
+   * @return the EWAHIterator
+   */
+  private EWAHIterator getEWAHIterator() {
+    return new EWAHIterator(this.buffer, this.actualsizeinwords);
+  }
+
+  /**
    * get the locations of the true values as one vector. (may use more memory
    * than iterator())
    * 
@@ -477,25 +785,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public IntIterator intIterator() {
     final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
     return new IntIterator() {
-      public boolean hasNext() {
-        return this.status;
-      }
-      public int next() {
-        final int answer = this.localbuffer[this.bufferpos++];
-        if (this.localbuffersize == this.bufferpos) {
-          this.localbuffersize = 0;
-          this.status = queryStatus();
-        }
-        return answer;
-      }
-      public boolean queryStatus() {
-        while (this.localbuffersize == 0) {
-          if (!loadNextRLE())
-            return false;
-          loadBuffer();
-        }
-        return true;
-      }
       private void add(final int val) {
         ++this.localbuffersize;
         if (this.localbuffersize > this.localbuffer.length) {
@@ -504,6 +793,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           System.arraycopy(oldbuffer, 0, this.localbuffer, 0, oldbuffer.length);
         }
         this.localbuffer[this.localbuffersize - 1] = val;
+      }
+      public boolean hasNext() {
+        return this.status;
       }
       private void loadBuffer() {
         this.bufferpos = 0;
@@ -541,6 +833,22 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           return true;
         }
         return false;
+      }
+      public int next() {
+        final int answer = this.localbuffer[this.bufferpos++];
+        if (this.localbuffersize == this.bufferpos) {
+          this.localbuffersize = 0;
+          this.status = queryStatus();
+        }
+        return answer;
+      }
+      public boolean queryStatus() {
+        while (this.localbuffersize == 0) {
+          if (!loadNextRLE())
+            return false;
+          loadBuffer();
+        }
+        return true;
       }
       int bufferpos = 0;
 
@@ -583,6 +891,29 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
+   * For internal use.
+   * 
+   * @param data
+   *          the array of words to be added
+   * @param start
+   *          the starting point
+   * @param number
+   *          the number of words to add
+   */
+  private void negative_push_back(final long[] data, final int start,
+    final int number) {
+    while (this.actualsizeinwords + number >= this.buffer.length) {
+      final long oldbuffer[] = this.buffer;
+      this.buffer = new long[oldbuffer.length * 2];
+      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
+      this.rlw.array = this.buffer;
+    }
+    for (int k = 0; k < number; ++k)
+      this.buffer[this.actualsizeinwords + k] = ~data[start + k];
+    this.actualsizeinwords += number;
+  }
+  
+  /**
    * Negate (bitwise) the current bitmap. To get a negated copy, do
    * ((EWAHCompressedBitmap) mybitmap.clone()).not();
    * 
@@ -612,6 +943,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
   }
 
+
+
   /**
    * Returns a new compressed bitmap containing the bitwise OR values of the
    * current bitmap with some other bitmap.
@@ -631,6 +964,106 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
+   * Computes the bitwise or between the current bitmap and the bitmap "a".
+   * Stores the result in the container.
+   * 
+   * @since 0.4.0
+   * @param a
+   *          the other bitmap
+   * @param container
+   *          where we store the result
+   */
+  private void or(final EWAHCompressedBitmap a, final BitmapStorage container) {
+    final EWAHIterator i = a.getEWAHIterator();
+    final EWAHIterator j = getEWAHIterator();
+    if (!(i.hasNext() && j.hasNext())) {// this never happens...
+      container.setSizeInBits(sizeInBits());
+      return;
+    }
+    // at this point, this is safe:
+    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
+    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
+    // RunningLength;
+    while (true) {
+      final boolean i_is_prey = rlwi.size() < rlwj.size();
+      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
+      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
+      if (prey.getRunningBit() == false) {
+        final long predatorrl = predator.getRunningLength();
+        final long preyrl = prey.getRunningLength();
+        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
+        container
+          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
+        final int dw_predator = predator.dirtywordoffset
+          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
+        container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
+          dw_predator, (int) (preyrl - tobediscarded));// cast is safe
+        predator.discardFirstWords(preyrl);
+        prey.discardFirstWords(preyrl);
+        prey.RunningLength = 0;
+      } else {
+        // we have a stream of 1x11
+        container.addStreamOfEmptyWords(true, prey.RunningLength);
+        predator.discardFirstWords(prey.RunningLength);
+        prey.RunningLength = 0;
+      }
+      long predatorrl = predator.getRunningLength();
+      if (predatorrl > 0) {
+        if (predator.getRunningBit() == false) {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// the cast to int is safe here
+          final int dw_prey = prey.dirtywordoffset
+            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+          container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
+            dw_prey, tobediscarded);
+        } else {
+          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
+            : (int) predatorrl;// cast to int is safe
+          container.addStreamOfEmptyWords(true, tobediscarded);
+          predator.discardFirstWords(tobediscarded);
+          prey.discardFirstWords(tobediscarded);
+        }
+      }
+      // all that is left to do now is to OR the dirty words
+      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
+      if (nbre_dirty_prey > 0) {
+        for (int k = 0; k < nbre_dirty_prey; ++k) {
+          if (i_is_prey)
+            container.add(i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
+              | j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
+          else
+            container.add(i.buffer()[predator.dirtywordoffset + i.dirtyWords()
+              + k]
+              | j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
+        }
+        predator.discardFirstWords(nbre_dirty_prey);
+      }
+      if (i_is_prey) {
+        if (!i.hasNext()) {
+          rlwi = null;
+          break;
+        }
+        rlwi.reset(i.next());
+      } else {
+        if (!j.hasNext()) {
+          rlwj = null;
+          break;
+        }
+        rlwj.reset(j.next());
+      }
+    }
+    if (rlwi != null)
+      discharge(rlwi, i, container);
+    if (rlwj != null)
+      discharge(rlwj, j, container);
+    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+  }
+
+  /**
    * Returns the cardinality of the result of a bitwise OR of the values of the
    * current bitmap with some other bitmap. Avoids needing to allocate an
    * intermediate bitmap to hold the result of the OR.
@@ -646,11 +1079,66 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     return counter.getCount();
   }
 
+  /**
+   * For internal use.
+   * 
+   * @param data
+   *          the word to be added
+   */
+  private void push_back(final long data) {
+    if (this.actualsizeinwords == this.buffer.length) {
+      final long oldbuffer[] = this.buffer;
+      this.buffer = new long[oldbuffer.length * 2];
+      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
+      this.rlw.array = this.buffer;
+    }
+    this.buffer[this.actualsizeinwords++] = data;
+  }
+
+  /**
+   * For internal use.
+   * 
+   * @param data
+   *          the array of words to be added
+   * @param start
+   *          the starting point
+   * @param number
+   *          the number of words to add
+   */
+  private void push_back(final long[] data, final int start, final int number) {
+    while (this.actualsizeinwords + number >= this.buffer.length) {
+      final long oldbuffer[] = this.buffer;
+      this.buffer = new long[oldbuffer.length * 2];
+      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
+      this.rlw.array = this.buffer;
+    }
+    System.arraycopy(data, start, this.buffer, this.actualsizeinwords, number);
+    this.actualsizeinwords += number;
+  }
+
   /*
    * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
    */
   public void readExternal(ObjectInput in) throws IOException {
     deserialize(in);
+  }
+
+  /**
+   * For internal use (trading off memory for speed).
+   * 
+   * @param size
+   *          the number of words to allocate
+   * @return True if the operation was a success.
+   */
+  private boolean reserve(final int size) {
+    if (size > this.buffer.length) {
+      final long oldbuffer[] = this.buffer;
+      this.buffer = new long[size];
+      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
+      this.rlw.array = this.buffer;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -718,7 +1206,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
     return true;
   }
-  
+
   /**
    * set the size in bits
    * 
@@ -727,8 +1215,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public void setSizeInBits(final int size) {
     this.sizeinbits = size;
   }
-
-
 
   /**
    * Change the reported size in bits of the *uncompressed* bitmap represented
@@ -902,508 +1388,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Returns the cardinality of the result of a bitwise XOR of the values of the
-   * current bitmap with some other bitmap. Avoids needing to allocate an
-   * intermediate bitmap to hold the result of the OR.
-   * 
-   * @since 0.4.0
-   * @param a
-   *          the other bitmap
-   * @return the cardinality
-   */
-  public int xorCardinality(final EWAHCompressedBitmap a) {
-    final BitCounter counter = new BitCounter();
-    xor(a, counter);
-    return counter.getCount();
-  }
-
-  /**
-   * For internal use.
-   * 
-   * @param v
-   *          the boolean value
-   */
-  private void addEmptyWord(final boolean v) {
-    final boolean noliteralword = (this.rlw.getNumberOfLiteralWords() == 0);
-    final long runlen = this.rlw.getRunningLength();
-    if ((noliteralword) && (runlen == 0)) {
-      this.rlw.setRunningBit(v);
-    }
-    if ((noliteralword) && (this.rlw.getRunningBit() == v)
-      && (runlen < RunningLengthWord.largestrunninglengthcount)) {
-      this.rlw.setRunningLength(runlen + 1);
-      return;
-    }
-    push_back(0);
-    this.rlw.position = this.actualsizeinwords - 1;
-    this.rlw.setRunningBit(v);
-    this.rlw.setRunningLength(1);
-    return;
-  }
-
-  /**
-   * For internal use.
-   * 
-   * @param newdata
-   *          the dirty word
-   */
-  private void addLiteralWord(final long newdata) {
-    final int numbersofar = this.rlw.getNumberOfLiteralWords();
-    if (numbersofar >= RunningLengthWord.largestliteralcount) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      this.rlw.setNumberOfLiteralWords(1);
-      push_back(newdata);
-    }
-    this.rlw.setNumberOfLiteralWords(numbersofar + 1);
-    push_back(newdata);
-  }
-
-  /**
-   * Computes new compressed bitmap containing the bitwise AND values of the
-   * current bitmap with some other bitmap.
-   * 
-   * The running time is proportional to the sum of the compressed sizes (as
-   * reported by sizeInBytes()).
-   * 
-   * @since 0.4.0
-   * @param a
-   *          the other bitmap
-   * @param container
-   *          where we store the result
-   */
-  private void and(final EWAHCompressedBitmap a, final BitmapStorage container) {
-    final EWAHIterator i = a.getEWAHIterator();
-    final EWAHIterator j = getEWAHIterator();
-    if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.setSizeInBits(sizeInBits());
-    }
-    // at this point, this is safe:
-    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
-    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
-      if (prey.getRunningBit() == false) {
-        container.addStreamOfEmptyWords(false, prey.RunningLength);
-        predator.discardFirstWords(prey.RunningLength);
-        prey.RunningLength = 0;
-      } else {
-        // we have a stream of 1x11
-        final long predatorrl = predator.getRunningLength();
-        final long preyrl = prey.getRunningLength();
-        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container
-          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final int dw_predator = predator.dirtywordoffset
-          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
-        container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, (int) (preyrl - tobediscarded));// cast is safe
-        predator.discardFirstWords(preyrl);
-        prey.RunningLength = 0;
-      }
-      final long predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
-        if (predator.getRunningBit() == false) {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl;// cast to int is safe
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          container.addStreamOfEmptyWords(false, tobediscarded);
-        } else {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int dw_prey = prey.dirtywordoffset
-            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl;// cast is safe
-          container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
-            dw_prey, tobediscarded);
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-        }
-      }
-      // all that is left to do now is to AND the dirty words
-      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-      if (nbre_dirty_prey > 0) {
-        for (int k = 0; k < nbre_dirty_prey; ++k) {
-          if (i_is_prey)
-            container.add(i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
-              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
-          else
-            container.add(i.buffer()[predator.dirtywordoffset + i.dirtyWords()
-              + k]
-              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
-        }
-        predator.discardFirstWords(nbre_dirty_prey);
-      }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
-      }
-    }
-    if (rlwi != null)
-      dischargeAsEmpty(rlwi, i, container);
-    if (rlwj != null)
-      dischargeAsEmpty(rlwj, j, container);
-    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
-  }
-
-  /**
-   * Returns a new compressed bitmap containing the bitwise AND NOT values of
-   * the current bitmap with some other bitmap.
-   * 
-   * The running time is proportional to the sum of the compressed sizes (as
-   * reported by sizeInBytes()).
-   * 
-   * @since 0.4.0
-   * @param a
-   *          the other bitmap
-   * @return the EWAH compressed bitmap
-   */
-  private void andNot(final EWAHCompressedBitmap a,
-    final BitmapStorage container) {
-    final EWAHIterator i = a.getEWAHIterator();
-    final EWAHIterator j = getEWAHIterator();
-    if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.setSizeInBits(sizeInBits());
-    }
-    // at this point, this is safe:
-    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
-    rlwi.setRunningBit(!rlwi.getRunningBit());
-    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
-
-      if (prey.getRunningBit() == false) {
-        container.addStreamOfEmptyWords(false, prey.RunningLength);
-        predator.discardFirstWords(prey.RunningLength);
-        prey.RunningLength = 0;
-      } else {
-        // we have a stream of 1x11
-        final long predatorrl = predator.getRunningLength();
-        final long preyrl = prey.getRunningLength();
-        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container
-          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final int dw_predator = predator.dirtywordoffset
-          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
-        if (i_is_prey)
-          container.addStreamOfDirtyWords(j.buffer(), dw_predator,
-            (int) (preyrl - tobediscarded));// cast is safe
-        else
-          container.addStreamOfNegatedDirtyWords(i.buffer(), dw_predator,
-            (int) (preyrl - tobediscarded));// cast is safe
-        predator.discardFirstWords(preyrl);
-        prey.RunningLength = 0;
-      }
-      final long predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
-        if (predator.getRunningBit() == false) {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl; // cast to int is safe
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          container.addStreamOfEmptyWords(false, tobediscarded);
-        } else {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int dw_prey = prey.dirtywordoffset
-            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl; // cast is safe
-          if (i_is_prey)
-            container.addStreamOfNegatedDirtyWords(i.buffer(), dw_prey,
-              tobediscarded);
-          else
-            container.addStreamOfDirtyWords(j.buffer(), dw_prey, tobediscarded);
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-        }
-      }
-      // all that is left to do now is to AND the dirty words
-      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-      if (nbre_dirty_prey > 0) {
-        for (int k = 0; k < nbre_dirty_prey; ++k) {
-          if (i_is_prey)
-            container.add((~i.buffer()[prey.dirtywordoffset + i.dirtyWords()
-              + k])
-              & j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
-          else
-            container.add((~i.buffer()[predator.dirtywordoffset
-              + i.dirtyWords() + k])
-              & j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
-        }
-        predator.discardFirstWords(nbre_dirty_prey);
-      }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-        rlwi.setRunningBit(!rlwi.getRunningBit());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
-      }
-    }
-    if (rlwi != null)
-      dischargeAsEmpty(rlwi, i, container);
-    if (rlwj != null)
-      discharge(rlwj, j, container);
-    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
-  }
-
-  /**
-   * For experts: You want to add many zeroes or ones faster?
-   * 
-   * This method does not update sizeinbits.
-   * 
-   * @param v
-   *          the boolean value
-   * @param number
-   *          the number (must be greater than 0)
-   * @return nothing
-   */
-  private void fastaddStreamOfEmptyWords(final boolean v, long number) {
-    if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
-      this.rlw.setRunningBit(v);
-    } else if ((this.rlw.getNumberOfLiteralWords() != 0)
-      || (this.rlw.getRunningBit() != v)) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      if (v)
-        this.rlw.setRunningBit(v);
-    }
-
-    final long runlen = this.rlw.getRunningLength();
-    final long whatwecanadd = number < RunningLengthWord.largestrunninglengthcount
-      - runlen ? number : RunningLengthWord.largestrunninglengthcount - runlen;
-    this.rlw.setRunningLength(runlen + whatwecanadd);
-    number -= whatwecanadd;
-
-    while (number >= RunningLengthWord.largestrunninglengthcount) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      if (v)
-        this.rlw.setRunningBit(v);
-      this.rlw.setRunningLength(RunningLengthWord.largestrunninglengthcount);
-      number -= RunningLengthWord.largestrunninglengthcount;
-    }
-    if (number > 0) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      if (v)
-        this.rlw.setRunningBit(v);
-      this.rlw.setRunningLength(number);
-    }
-  }
-
-  /**
-   * Gets an EWAHIterator over the data. This is a customized iterator which
-   * iterates over run length word. For experts only.
-   * 
-   * @return the EWAHIterator
-   */
-  private EWAHIterator getEWAHIterator() {
-    return new EWAHIterator(this.buffer, this.actualsizeinwords);
-  }
-
-  /**
-   * For internal use.
-   * 
-   * @param data
-   *          the array of words to be added
-   * @param start
-   *          the starting point
-   * @param number
-   *          the number of words to add
-   */
-  private void negative_push_back(final long[] data, final int start,
-    final int number) {
-    while (this.actualsizeinwords + number >= this.buffer.length) {
-      final long oldbuffer[] = this.buffer;
-      this.buffer = new long[oldbuffer.length * 2];
-      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
-    }
-    for (int k = 0; k < number; ++k)
-      this.buffer[this.actualsizeinwords + k] = ~data[start + k];
-    this.actualsizeinwords += number;
-  }
-
-  /**
-   * Computes the bitwise or between the current bitmap and the bitmap "a".
-   * Stores the result in the container.
-   * 
-   * @since 0.4.0
-   * @param a
-   *          the other bitmap
-   * @param container
-   *          where we store the result
-   */
-  private void or(final EWAHCompressedBitmap a, final BitmapStorage container) {
-    final EWAHIterator i = a.getEWAHIterator();
-    final EWAHIterator j = getEWAHIterator();
-    if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.setSizeInBits(sizeInBits());
-      return;
-    }
-    // at this point, this is safe:
-    BufferedRunningLengthWord rlwi = new BufferedRunningLengthWord(i.next());
-    BufferedRunningLengthWord rlwj = new BufferedRunningLengthWord(j.next());
-    // RunningLength;
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord predator = i_is_prey ? rlwj : rlwi;
-      if (prey.getRunningBit() == false) {
-        final long predatorrl = predator.getRunningLength();
-        final long preyrl = prey.getRunningLength();
-        final long tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container
-          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final int dw_predator = predator.dirtywordoffset
-          + (i_is_prey ? j.dirtyWords() : i.dirtyWords());
-        container.addStreamOfDirtyWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, (int) (preyrl - tobediscarded));// cast is safe
-        predator.discardFirstWords(preyrl);
-        prey.discardFirstWords(preyrl);
-        prey.RunningLength = 0;
-      } else {
-        // we have a stream of 1x11
-        container.addStreamOfEmptyWords(true, prey.RunningLength);
-        predator.discardFirstWords(prey.RunningLength);
-        prey.RunningLength = 0;
-      }
-      long predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
-        if (predator.getRunningBit() == false) {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl;// the cast to int is safe here
-          final int dw_prey = prey.dirtywordoffset
-            + (i_is_prey ? i.dirtyWords() : j.dirtyWords());
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          container.addStreamOfDirtyWords(i_is_prey ? i.buffer() : j.buffer(),
-            dw_prey, tobediscarded);
-        } else {
-          final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_dirty_prey) ? nbre_dirty_prey
-            : (int) predatorrl;// cast to int is safe
-          container.addStreamOfEmptyWords(true, tobediscarded);
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-        }
-      }
-      // all that is left to do now is to OR the dirty words
-      final int nbre_dirty_prey = prey.getNumberOfLiteralWords();
-      if (nbre_dirty_prey > 0) {
-        for (int k = 0; k < nbre_dirty_prey; ++k) {
-          if (i_is_prey)
-            container.add(i.buffer()[prey.dirtywordoffset + i.dirtyWords() + k]
-              | j.buffer()[predator.dirtywordoffset + j.dirtyWords() + k]);
-          else
-            container.add(i.buffer()[predator.dirtywordoffset + i.dirtyWords()
-              + k]
-              | j.buffer()[prey.dirtywordoffset + j.dirtyWords() + k]);
-        }
-        predator.discardFirstWords(nbre_dirty_prey);
-      }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
-      }
-    }
-    if (rlwi != null)
-      discharge(rlwi, i, container);
-    if (rlwj != null)
-      discharge(rlwj, j, container);
-    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
-  }
-
-  /**
-   * For internal use.
-   * 
-   * @param data
-   *          the word to be added
-   */
-  private void push_back(final long data) {
-    if (this.actualsizeinwords == this.buffer.length) {
-      final long oldbuffer[] = this.buffer;
-      this.buffer = new long[oldbuffer.length * 2];
-      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
-    }
-    this.buffer[this.actualsizeinwords++] = data;
-  }
-
-  /**
-   * For internal use.
-   * 
-   * @param data
-   *          the array of words to be added
-   * @param start
-   *          the starting point
-   * @param number
-   *          the number of words to add
-   */
-  private void push_back(final long[] data, final int start, final int number) {
-    while (this.actualsizeinwords + number >= this.buffer.length) {
-      final long oldbuffer[] = this.buffer;
-      this.buffer = new long[oldbuffer.length * 2];
-      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
-    }
-    System.arraycopy(data, start, this.buffer, this.actualsizeinwords, number);
-    this.actualsizeinwords += number;
-  }
-
-  /**
-   * For internal use (trading off memory for speed).
-   * 
-   * @param size
-   *          the number of words to allocate
-   * @return True if the operation was a success.
-   */
-  private boolean reserve(final int size) {
-    if (size > this.buffer.length) {
-      final long oldbuffer[] = this.buffer;
-      this.buffer = new long[size];
-      System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
-      return true;
-    }
-    return false;
-  }
-
-  /**
    * Computes a new compressed bitmap containing the bitwise XOR values of the
    * current bitmap with some other bitmap.
    * 
@@ -1517,74 +1501,18 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Returns a new compressed bitmap containing the bitwise AND values of the
-   * provided bitmaps.
-   * 
-   * @since 0.4.3
-   * @param bitmaps
-   *          bitmaps to AND together
-   * @return result of the AND
-   */
-  public static EWAHCompressedBitmap and(final EWAHCompressedBitmap... bitmaps) {
-    final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
-    int largestSize = 0;
-    for (EWAHCompressedBitmap bitmap : bitmaps) {
-      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
-    }
-    container.reserve((int) (largestSize * 1.5));
-    and(container, bitmaps);
-    return container;
-  }
-
-  /**
-   * Returns the cardinality of the result of a bitwise AND of the values of the
-   * provided bitmaps. Avoids needing to allocate an intermediate bitmap to hold
-   * the result of the AND.
-   * 
-   * @since 0.4.3
-   * @param bitmaps
-   *          bitmaps to AND
-   * @return the cardinality
-   */
-  public static int andCardinality(final EWAHCompressedBitmap... bitmaps) {
-    final BitCounter counter = new BitCounter();
-    and(counter, bitmaps);
-    return counter.getCount();
-  }
-
-  /**
-   * Returns a new compressed bitmap containing the bitwise OR values of the
-   * provided bitmaps.
+   * Returns the cardinality of the result of a bitwise XOR of the values of the
+   * current bitmap with some other bitmap. Avoids needing to allocate an
+   * intermediate bitmap to hold the result of the OR.
    * 
    * @since 0.4.0
-   * @param bitmaps
-   *          bitmaps to OR together
-   * @return result of the OR
-   */
-  public static EWAHCompressedBitmap or(final EWAHCompressedBitmap... bitmaps) {
-    final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
-    int largestSize = 0;
-    for (EWAHCompressedBitmap bitmap : bitmaps) {
-      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
-    }
-    container.reserve((int) (largestSize * 1.5));
-    or(container, bitmaps);
-    return container;
-  }
-
-  /**
-   * Returns the cardinality of the result of a bitwise OR of the values of the
-   * provided bitmaps. Avoids needing to allocate an intermediate bitmap to hold
-   * the result of the OR.
-   * 
-   * @since 0.4.0
-   * @param bitmaps
-   *          bitmaps to OR
+   * @param a
+   *          the other bitmap
    * @return the cardinality
    */
-  public static int orCardinality(final EWAHCompressedBitmap... bitmaps) {
+  public int xorCardinality(final EWAHCompressedBitmap a) {
     final BitCounter counter = new BitCounter();
-    or(counter, bitmaps);
+    xor(a, counter);
     return counter.getCount();
   }
 
@@ -1714,6 +1642,68 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       }
     }
     container.setSizeInBits(maxSize);
+  }
+
+  /**
+   * Returns a new compressed bitmap containing the bitwise AND values of the
+   * provided bitmaps.
+   * 
+   * @since 0.4.3
+   * @param bitmaps
+   *          bitmaps to AND together
+   * @return result of the AND
+   */
+  public static EWAHCompressedBitmap and(final EWAHCompressedBitmap... bitmaps) {
+    final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
+    int largestSize = 0;
+    for (EWAHCompressedBitmap bitmap : bitmaps) {
+      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
+    }
+    container.reserve((int) (largestSize * 1.5));
+    and(container, bitmaps);
+    return container;
+  }
+
+  /**
+   * Returns the cardinality of the result of a bitwise AND of the values of the
+   * provided bitmaps. Avoids needing to allocate an intermediate bitmap to hold
+   * the result of the AND.
+   * 
+   * @since 0.4.3
+   * @param bitmaps
+   *          bitmaps to AND
+   * @return the cardinality
+   */
+  public static int andCardinality(final EWAHCompressedBitmap... bitmaps) {
+    final BitCounter counter = new BitCounter();
+    and(counter, bitmaps);
+    return counter.getCount();
+  }
+
+  /**
+   * For internal use.
+   * 
+   * @param initialWord
+   *          the initial word
+   * @param iterator
+   *          the iterator
+   * @param container
+   *          the container
+   */
+  protected static void discharge(final BufferedRunningLengthWord initialWord,
+    final EWAHIterator iterator, final BitmapStorage container) {
+    BufferedRunningLengthWord runningLengthWord = initialWord;
+    for (;;) {
+      final long runningLength = runningLengthWord.getRunningLength();
+      container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(),
+        runningLength);
+      container.addStreamOfDirtyWords(iterator.buffer(), iterator.dirtyWords()
+        + runningLengthWord.dirtywordoffset,
+        runningLengthWord.getNumberOfLiteralWords());
+      if (!iterator.hasNext())
+        break;
+      runningLengthWord = new BufferedRunningLengthWord(iterator.next());
+    }
   }
 
   /**
@@ -1897,29 +1887,39 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * For internal use.
+   * Returns a new compressed bitmap containing the bitwise OR values of the
+   * provided bitmaps.
    * 
-   * @param initialWord
-   *          the initial word
-   * @param iterator
-   *          the iterator
-   * @param container
-   *          the container
+   * @since 0.4.0
+   * @param bitmaps
+   *          bitmaps to OR together
+   * @return result of the OR
    */
-  protected static void discharge(final BufferedRunningLengthWord initialWord,
-    final EWAHIterator iterator, final BitmapStorage container) {
-    BufferedRunningLengthWord runningLengthWord = initialWord;
-    for (;;) {
-      final long runningLength = runningLengthWord.getRunningLength();
-      container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(),
-        runningLength);
-      container.addStreamOfDirtyWords(iterator.buffer(), iterator.dirtyWords()
-        + runningLengthWord.dirtywordoffset,
-        runningLengthWord.getNumberOfLiteralWords());
-      if (!iterator.hasNext())
-        break;
-      runningLengthWord = new BufferedRunningLengthWord(iterator.next());
+  public static EWAHCompressedBitmap or(final EWAHCompressedBitmap... bitmaps) {
+    final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
+    int largestSize = 0;
+    for (EWAHCompressedBitmap bitmap : bitmaps) {
+      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
     }
+    container.reserve((int) (largestSize * 1.5));
+    or(container, bitmaps);
+    return container;
+  }
+
+  /**
+   * Returns the cardinality of the result of a bitwise OR of the values of the
+   * provided bitmaps. Avoids needing to allocate an intermediate bitmap to hold
+   * the result of the OR.
+   * 
+   * @since 0.4.0
+   * @param bitmaps
+   *          bitmaps to OR
+   * @return the cardinality
+   */
+  public static int orCardinality(final EWAHCompressedBitmap... bitmaps) {
+    final BitCounter counter = new BitCounter();
+    or(counter, bitmaps);
+    return counter.getCount();
   }
 
   /** The actual size in words. */
@@ -1934,16 +1934,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   /** sizeinbits: number of bits in the (uncompressed) bitmap. */
   int sizeinbits = 0;
 
-  /** optimization option **/
-  public static final boolean usetrailingzeros = true;
-
-  /** The Constant wordinbits represents the number of bits in a long. */
-  public static final int wordinbits = 64;
-
   /**
    * The Constant defaultbuffersize: default memory allocation when the object
    * is constructed.
    */
   static final int defaultbuffersize = 4;
+
+  /** optimization option **/
+  public static final boolean usetrailingzeros = true;
+
+  /** The Constant wordinbits represents the number of bits in a long. */
+  public static final int wordinbits = 64;
 
 }
