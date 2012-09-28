@@ -35,6 +35,24 @@ public final class RunningLengthWord32 {
   }
 
   /**
+   * Gets the running bit.
+   *
+   * @return the running bit
+   */
+  public boolean getRunningBit() {
+    return (this.array[this.position] & 1) != 0;
+  }
+
+  /**
+   * Gets the running length.
+   *
+   * @return the running length
+   */
+  public int getRunningLength() {
+    return (this.array[this.position] >>> 1) & largestrunninglengthcount;
+  }
+
+  /**
    * Sets the number of literal words.
    *
    * @param number the new number of literal words
@@ -55,24 +73,6 @@ public final class RunningLengthWord32 {
       this.array[this.position] |= 1;
     else
       this.array[this.position] &= ~1;
-  }
-
-  /**
-   * Gets the running bit.
-   *
-   * @return the running bit
-   */
-  public boolean getRunningBit() {
-    return (this.array[this.position] & 1) != 0;
-  }
-
-  /**
-   * Gets the running length.
-   *
-   * @return the running length
-   */
-  public int getRunningLength() {
-    return (this.array[this.position] >>> 1) & largestrunninglengthcount;
   }
 
   /**
@@ -112,8 +112,7 @@ public final class RunningLengthWord32 {
   
   /** The position in array. */
   public int position;
-  
-  
+
   /** number of bits dedicated to marking  of the running length of clean words */  
   public static final int runninglengthbits = 16;
   
@@ -125,12 +124,12 @@ public final class RunningLengthWord32 {
   /** largest number of clean words in a run */
   public static final int largestrunninglengthcount = (1 << runninglengthbits) - 1;
   
-  private static final int shiftedlargestrunninglengthcount = largestrunninglengthcount << 1;
-  
-  private static final int notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
-  
   private static final int runninglengthplusrunningbit = (1 << (runninglengthbits + 1)) - 1;
   
+  private static final int shiftedlargestrunninglengthcount = largestrunninglengthcount << 1;
+  
   private static final int notrunninglengthplusrunningbit = ~runninglengthplusrunningbit;
+  
+  private static final int notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
   
 }

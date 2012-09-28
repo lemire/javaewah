@@ -34,6 +34,24 @@ public final class RunningLengthWord  {
   }
 
   /**
+   * Gets the running bit.
+   *
+   * @return the running bit
+   */
+  public boolean getRunningBit() {
+    return (this.array[this.position] & 1) != 0;
+  }
+
+  /**
+   * Gets the running length.
+   *
+   * @return the running length
+   */
+  public long getRunningLength() {
+    return (this.array[this.position] >>> 1) & largestrunninglengthcount;
+  }
+
+  /**
    * Sets the number of literal words.
    *
    * @param number the new number of literal words
@@ -54,24 +72,6 @@ public final class RunningLengthWord  {
       this.array[this.position] |= 1l;
     else
       this.array[this.position] &= ~1l;
-  }
-
-  /**
-   * Gets the running bit.
-   *
-   * @return the running bit
-   */
-  public boolean getRunningBit() {
-    return (this.array[this.position] & 1) != 0;
-  }
-
-  /**
-   * Gets the running length.
-   *
-   * @return the running length
-   */
-  public long getRunningLength() {
-    return (this.array[this.position] >>> 1) & largestrunninglengthcount;
   }
 
   /**
@@ -115,11 +115,11 @@ public final class RunningLengthWord  {
 
 
 
-  
   /** number of bits dedicated to marking  of the running length of clean words */  
   public static final int runninglengthbits = 32;
   
   private static final int literalbits = 64 - 1 - runninglengthbits;
+
   
   /** largest number of dirty words in a run. */
   public static final int largestliteralcount = (1 << literalbits) - 1;
@@ -127,12 +127,13 @@ public final class RunningLengthWord  {
   /** largest number of clean words in a run */
   public static final long largestrunninglengthcount = (1l << runninglengthbits) - 1;
   
-  private static final long shiftedlargestrunninglengthcount = largestrunninglengthcount << 1;
-  
-  private static final long notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
-  
   private static final long runninglengthplusrunningbit = (1l << (runninglengthbits + 1)) - 1;
   
+  private static final long shiftedlargestrunninglengthcount = largestrunninglengthcount << 1;
+
+  
   private static final long notrunninglengthplusrunningbit = ~runninglengthplusrunningbit;
+  
+  private static final long notshiftedlargestrunninglengthcount = ~shiftedlargestrunninglengthcount;
   
 }

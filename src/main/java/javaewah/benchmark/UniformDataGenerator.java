@@ -11,10 +11,8 @@ import java.util.TreeSet;
  * @author Daniel Lemire
  */
 public class UniformDataGenerator {
-        Random rand = new Random();
-    public UniformDataGenerator(){
-    }
-
+        public UniformDataGenerator(){
+        }
     /**
     * generates randomly N distinct integers from 0 to Max.
     */
@@ -36,6 +34,8 @@ public class UniformDataGenerator {
             ans[k]=i.next().intValue();
         return ans;
     }
+
+    Random rand = new Random();
 
     
 }

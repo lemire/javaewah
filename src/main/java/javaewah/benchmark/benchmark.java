@@ -1,15 +1,18 @@
 package javaewah.benchmark;
 
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import javaewah.EWAHCompressedBitmap;
+import javaewah.FastAggregation;
 import javaewah32.EWAHCompressedBitmap32;
 
 public class benchmark {
 
   public static void main(String args[]) {
-    test(100, 18, 10);
+    test(100, 16, 1);
   }
 
   public static void test(int N, int nbr, int repeat) {
@@ -31,7 +34,7 @@ public class benchmark {
       EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
       int size = 0;
       for (int r = 0; r < repeat; ++r) {
-        size = 0; 
+        size = 0;
         for (int k = 0; k < N; ++k) {
           ewah[k] = new EWAHCompressedBitmap();
           for (int x = 0; x < data[k].length; ++x) {
@@ -100,6 +103,26 @@ public class benchmark {
         }
       aft = System.currentTimeMillis();
       line += "\t" + df.format((aft - bef) / 1000.0);
+
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r) {
+        /*
+         * PriorityQueue<EWAHCompressedBitmap> pq = new
+         * PriorityQueue<EWAHCompressedBitmap>( N, new
+         * Comparator<EWAHCompressedBitmap>() { public int
+         * compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) { return
+         * a.sizeInBits() - b.sizeInBits(); } }); for (EWAHCompressedBitmap x :
+         * ewah) pq.add(x); while (pq.size() > 1) { EWAHCompressedBitmap x1 =
+         * pq.poll(); EWAHCompressedBitmap x2 = pq.poll(); pq.add(x1.or(x2)); }
+         */
+        EWAHCompressedBitmap bitmapor = FastAggregation.or(ewah);
+
+        ;// pq.poll();
+        bogus += bitmapor.sizeInBits();
+      }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+
       // logical and
       bef = System.currentTimeMillis();
       for (int r = 0; r < repeat; ++r)
@@ -125,6 +148,15 @@ public class benchmark {
       aft = System.currentTimeMillis();
       line += "\t" + df.format((aft - bef) / 1000.0);
 
+      // fast logical and
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r) {
+        EWAHCompressedBitmap ewahand = FastAggregation.and(ewah);
+        bogus += ewahand.sizeInBits();
+      }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+
       ewah = null;
       line += "\t";
       // building
@@ -133,15 +165,15 @@ public class benchmark {
       int size32 = 0;
       for (int r = 0; r < repeat; ++r)
         size32 = 0;
-        for (int k = 0; k < N; ++k) {
-          ewah32[k] = new EWAHCompressedBitmap32();
-          for (int x = 0; x < data[k].length; ++x) {
-            ewah32[k].set(data[k][x]);
-          }
-          size32 += ewah32[k].sizeInBytes();
+      for (int k = 0; k < N; ++k) {
+        ewah32[k] = new EWAHCompressedBitmap32();
+        for (int x = 0; x < data[k].length; ++x) {
+          ewah32[k].set(data[k][x]);
         }
+        size32 += ewah32[k].sizeInBytes();
+      }
       aft = System.currentTimeMillis();
-      line += "\t"+ size32;
+      line += "\t" + size32;
       line += "\t" + df.format((aft - bef) / 1000.0);
       // uncompressing
       bef = System.currentTimeMillis();

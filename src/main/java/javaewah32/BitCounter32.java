@@ -16,9 +16,6 @@ package javaewah32;
 
 public final class BitCounter32 implements BitmapStorage32 {
 
-  private int oneBits;
-  
-  
   /**
    * Virtually add words directly to the bitmap
    *
@@ -27,6 +24,21 @@ public final class BitCounter32 implements BitmapStorage32 {
   // @Override : causes problems with Java 1.5
   public void add(final int newdata) {
     this.oneBits += Integer.bitCount(newdata);
+  }
+  
+  
+  /**
+   * virtually add several  dirty words.
+   *
+   * @param data the dirty words
+   * @param start the starting point in the array
+   * @param number the number of dirty words to add
+   */
+  // @Override : causes problems with Java 1.5
+  public void addStreamOfDirtyWords(int[] data, int start, int number) {
+    for(int i=start;i<start+number;i++) {
+      add(data[i]);      
+    }
   }
 
 
@@ -45,20 +57,6 @@ public final class BitCounter32 implements BitmapStorage32 {
   }
 
   /**
-   * virtually add several  dirty words.
-   *
-   * @param data the dirty words
-   * @param start the starting point in the array
-   * @param number the number of dirty words to add
-   */
-  // @Override : causes problems with Java 1.5
-  public void addStreamOfDirtyWords(int[] data, int start, int number) {
-    for(int i=start;i<start+number;i++) {
-      add(data[i]);      
-    }
-  }
-  
-  /**
    * virtually add several negated dirty words.
    *
    * @param data the dirty words
@@ -71,6 +69,15 @@ public final class BitCounter32 implements BitmapStorage32 {
     for(int i=start;i<start+number;i++) {
       add(~data[i]);      
     }
+  }
+  
+  /**
+   * As you act on this class, it records the number of set (true) bits. 
+   *
+   * @return number of set bits
+   */
+  public int getCount() {
+    return this.oneBits;
   }  
   
   /**
@@ -83,14 +90,7 @@ public final class BitCounter32 implements BitmapStorage32 {
     // no action
   }
 
-  /**
-   * As you act on this class, it records the number of set (true) bits. 
-   *
-   * @return number of set bits
-   */
-  public int getCount() {
-    return this.oneBits;
-  }
+  private int oneBits;
 
 
   

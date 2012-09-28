@@ -26,16 +26,6 @@ public interface BitmapStorage32 {
   public void add(final int newdata);
   
   /**
-   * For experts: You want to add many
-   * zeroes or ones? This is the method you use.
-   *
-   * @param v zeros or ones
-   * @param number how many to words add
-   * @return the number of words added to the buffer
-   */
-  public void addStreamOfEmptyWords(final boolean v, final int number);
-  
-  /**
    * if you have several dirty words to copy over, this might be faster.
    *
    * @param data the dirty words
@@ -45,6 +35,16 @@ public interface BitmapStorage32 {
    */
   public void addStreamOfDirtyWords(final int[] data, final int start,
       final int number);
+  
+  /**
+   * For experts: You want to add many
+   * zeroes or ones? This is the method you use.
+   *
+   * @param v zeros or ones
+   * @param number how many to words add
+   * @return the number of words added to the buffer
+   */
+  public void addStreamOfEmptyWords(final boolean v, final int number);
 
   /**
    * Like "addStreamOfDirtyWords" but negates the words being added.

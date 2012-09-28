@@ -16,16 +16,6 @@ package javaewah32;
  */
 public final class EWAHIterator32 {
   
-  /** The current running length word. */
-  RunningLengthWord32 rlw;
-  
-  /** The size in words. */
-  int size;
-  
-  /** The pointer represent the location of the current running length
-   *  word in the array of words (embedded in the rlw attribute). */
-  int pointer;
-
   /**
    * Instantiates a new eWAH iterator.
    *
@@ -36,6 +26,24 @@ public final class EWAHIterator32 {
     this.rlw = new RunningLengthWord32(a, 0);
     this.size = sizeinwords;
     this.pointer = 0;
+  }
+  
+  /**
+   * Access to the array of words
+   *
+   * @return the int[]
+   */
+  public int[] buffer() {
+    return this.rlw.array;
+  }
+  
+  /**
+   * Position of the dirty words represented by this running length word.
+   *
+   * @return the int
+   */
+  public int dirtyWords() {
+    return this.pointer - this.rlw.getNumberOfLiteralWords();
   }
 
   /**
@@ -58,22 +66,14 @@ public final class EWAHIterator32 {
     return this.rlw;
   }
 
-  /**
-   * Position of the dirty words represented by this running length word.
-   *
-   * @return the int
-   */
-  public int dirtyWords() {
-    return this.pointer - this.rlw.getNumberOfLiteralWords();
-  }
+  /** The pointer represent the location of the current running length
+   *  word in the array of words (embedded in the rlw attribute). */
+  int pointer;
 
-  /**
-   * Access to the array of words
-   *
-   * @return the int[]
-   */
-  public int[] buffer() {
-    return this.rlw.array;
-  }
+  /** The current running length word. */
+  RunningLengthWord32 rlw;
+
+  /** The size in words. */
+  int size;
 
 }

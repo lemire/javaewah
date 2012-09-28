@@ -25,60 +25,6 @@ public class IteratingBufferedRunningLengthWord {
   }
 
   /**
-   * Gets the number of literal words for the current running length word.
-   *
-   * @return the number of literal words
-   */
-  public int getNumberOfLiteralWords() {
-    return this.brlw.NumberOfLiteralWords;
-  }
-
-  /**
-   * Gets the running bit.
-   *
-   * @return the running bit
-   */
-  public boolean getRunningBit() {
-    return this.brlw.RunningBit;
-  }
-
-  /**
-   * Gets the running length.
-   *
-   * @return the running length
-   */
-  public long getRunningLength() {
-    return this.brlw.RunningLength;
-  }
-
-  /**
-   * Size in uncompressed words of the current running length word.
-   *
-   * @return the long
-   */
-  public long size() {
-    return this.brlw.size();
-  }
-
-  /**
-   * Get the nth dirty word for the current running length word 
-   * @param index zero based index
-   * @return the dirty word
-   */
-  public long getDirtyWordAt(int index) {
-    return this.buffer[this.dirtyWordStartPosition + index];
-  }
-  
-  /**
-   * write the first N dirty words to the target bitmap.  Does not discard the words or perform iteration.
-   * @param numWords
-   * @param container
-   */
-  public void writeDirtyWords(int numWords, BitmapStorage container) {
-    container.addStreamOfDirtyWords(this.buffer, this.dirtyWordStartPosition, numWords);
-  }
-  
-  /**
    * Discard first words, iterating to the next running length word if needed.
    *
    * @param x the x
@@ -106,7 +52,7 @@ public class IteratingBufferedRunningLengthWord {
       }
     }
   }
-  
+
   /**
    * Write out the remaining words
    * @param container target for writes
@@ -116,9 +62,63 @@ public class IteratingBufferedRunningLengthWord {
     this.brlw.dirtywordoffset = this.dirtyWordStartPosition - this.iterator.dirtyWords();
     EWAHCompressedBitmap.discharge(this.brlw, this.iterator, container);
   }
+
+  /**
+   * Get the nth dirty word for the current running length word 
+   * @param index zero based index
+   * @return the dirty word
+   */
+  public long getDirtyWordAt(int index) {
+    return this.buffer[this.dirtyWordStartPosition + index];
+  }
+
+  /**
+   * Gets the number of literal words for the current running length word.
+   *
+   * @return the number of literal words
+   */
+  public int getNumberOfLiteralWords() {
+    return this.brlw.NumberOfLiteralWords;
+  }
+
+  /**
+   * Gets the running bit.
+   *
+   * @return the running bit
+   */
+  public boolean getRunningBit() {
+    return this.brlw.RunningBit;
+  }
   
+  /**
+   * Gets the running length.
+   *
+   * @return the running length
+   */
+  public long getRunningLength() {
+    return this.brlw.RunningLength;
+  }
+  
+  /**
+   * Size in uncompressed words of the current running length word.
+   *
+   * @return the long
+   */
+  public long size() {
+    return this.brlw.size();
+  }
+  
+  /**
+   * write the first N dirty words to the target bitmap.  Does not discard the words or perform iteration.
+   * @param numWords
+   * @param container
+   */
+  public void writeDirtyWords(int numWords, BitmapStorage container) {
+    container.addStreamOfDirtyWords(this.buffer, this.dirtyWordStartPosition, numWords);
+  }
+  
+  private BufferedRunningLengthWord brlw;
   private long[] buffer;
   private int dirtyWordStartPosition;
-  private BufferedRunningLengthWord brlw;
   private EWAHIterator iterator;
 }

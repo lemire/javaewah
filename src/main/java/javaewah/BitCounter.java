@@ -14,8 +14,6 @@ package javaewah;
 
 public final class BitCounter implements BitmapStorage {
 
-  private int oneBits;
-
   /**
    * Virtually add words directly to the bitmap
    * 
@@ -25,23 +23,6 @@ public final class BitCounter implements BitmapStorage {
   // @Override : causes problems with Java 1.5
   public void add(final long newdata) {
     this.oneBits += Long.bitCount(newdata);
-    return;
-  }
-
-  /**
-   * virtually add many zeroes or ones.
-   * 
-   * @param v
-   *          zeros or ones
-   * @param number
-   *          how many to words add
-   * @return the number of words added to the buffer
-   */
-  // @Override : causes problems with Java 1.5
-  public void addStreamOfEmptyWords(boolean v, long number) {
-    if (v) {
-      this.oneBits += number * EWAHCompressedBitmap.wordinbits;
-    }
     return;
   }
 
@@ -59,6 +40,23 @@ public final class BitCounter implements BitmapStorage {
   public void addStreamOfDirtyWords(long[] data, int start, int number) {
     for (int i = start; i < start + number; i++) {
       add(data[i]);
+    }
+    return;
+  }
+
+  /**
+   * virtually add many zeroes or ones.
+   * 
+   * @param v
+   *          zeros or ones
+   * @param number
+   *          how many to words add
+   * @return the number of words added to the buffer
+   */
+  // @Override : causes problems with Java 1.5
+  public void addStreamOfEmptyWords(boolean v, long number) {
+    if (v) {
+      this.oneBits += number * EWAHCompressedBitmap.wordinbits;
     }
     return;
   }
@@ -82,6 +80,15 @@ public final class BitCounter implements BitmapStorage {
   }
 
   /**
+   * As you act on this class, it records the number of set (true) bits.
+   * 
+   * @return number of set bits
+   */
+  public int getCount() {
+    return this.oneBits;
+  }
+
+  /**
    * should directly set the sizeinbits field, but is effectively ignored in
    * this class.
    * 
@@ -93,13 +100,6 @@ public final class BitCounter implements BitmapStorage {
     // no action
   }
 
-  /**
-   * As you act on this class, it records the number of set (true) bits.
-   * 
-   * @return number of set bits
-   */
-  public int getCount() {
-    return this.oneBits;
-  }
+  private int oneBits;
 
 }

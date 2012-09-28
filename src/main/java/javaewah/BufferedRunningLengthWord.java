@@ -20,15 +20,6 @@ public final class BufferedRunningLengthWord {
   /**
    * Instantiates a new buffered running length word.
    *
-   * @param rlw the rlw
-   */
-  public BufferedRunningLengthWord(final RunningLengthWord rlw) {
-    this(rlw.array[rlw.position]);
-  }
-
-  /**
-   * Instantiates a new buffered running length word.
-   *
    * @param a the word
    */
   public BufferedRunningLengthWord(final long a) {
@@ -38,25 +29,28 @@ public final class BufferedRunningLengthWord {
   }
 
   /**
-   * Reset the values of this running length word so that it has the same values
-   * as the other running length word.
+   * Instantiates a new buffered running length word.
    *
-   * @param rlw the other running length word 
+   * @param rlw the rlw
    */
-  public void reset(final RunningLengthWord rlw) {
-    reset(rlw.array[rlw.position]);
+  public BufferedRunningLengthWord(final RunningLengthWord rlw) {
+    this(rlw.array[rlw.position]);
   }
 
   /**
-   * Reset the values using the provided word.
+   * Discard first words.
    *
-   * @param a the word
+   * @param x the x
    */
-  public void reset(final long a) {
-    this.NumberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runninglengthbits));
-    this.RunningBit = (a & 1) != 0;
-    this.RunningLength = (int) ((a >>> 1) & RunningLengthWord.largestrunninglengthcount);
-    this.dirtywordoffset = 0;
+  public void discardFirstWords(long x) {
+    if (this.RunningLength >= x) {
+      this.RunningLength -= x;
+      return;
+    }
+    x -= this.RunningLength;
+    this.RunningLength = 0;
+    this.dirtywordoffset += x;
+    this.NumberOfLiteralWords -= x;
   }
 
   /**
@@ -66,24 +60,6 @@ public final class BufferedRunningLengthWord {
    */
   public int getNumberOfLiteralWords() {
     return this.NumberOfLiteralWords;
-  }
-
-  /**
-   * Sets the number of literal words.
-   *
-   * @param number the new number of literal words
-   */
-  public void setNumberOfLiteralWords(final int number) {
-    this.NumberOfLiteralWords = number;
-  }
-
-  /**
-   * Sets the running bit.
-   *
-   * @param b the new running bit
-   */
-  public void setRunningBit(final boolean b) {
-    this.RunningBit = b;
   }
 
   /**
@@ -102,6 +78,46 @@ public final class BufferedRunningLengthWord {
    */
   public long getRunningLength() {
     return this.RunningLength;
+  }
+
+  /**
+   * Reset the values using the provided word.
+   *
+   * @param a the word
+   */
+  public void reset(final long a) {
+    this.NumberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runninglengthbits));
+    this.RunningBit = (a & 1) != 0;
+    this.RunningLength = (int) ((a >>> 1) & RunningLengthWord.largestrunninglengthcount);
+    this.dirtywordoffset = 0;
+  }
+
+  /**
+   * Reset the values of this running length word so that it has the same values
+   * as the other running length word.
+   *
+   * @param rlw the other running length word 
+   */
+  public void reset(final RunningLengthWord rlw) {
+    reset(rlw.array[rlw.position]);
+  }
+
+  /**
+   * Sets the number of literal words.
+   *
+   * @param number the new number of literal words
+   */
+  public void setNumberOfLiteralWords(final int number) {
+    this.NumberOfLiteralWords = number;
+  }
+
+  /**
+   * Sets the running bit.
+   *
+   * @param b the new running bit
+   */
+  public void setRunningBit(final boolean b) {
+    this.RunningBit = b;
   }
 
   /**
@@ -132,22 +148,9 @@ public final class BufferedRunningLengthWord {
       + getNumberOfLiteralWords();
   }
 
-  /**
-   * Discard first words.
-   *
-   * @param x the x
-   */
-  public void discardFirstWords(long x) {
-    if (this.RunningLength >= x) {
-      this.RunningLength -= x;
-      return;
-    }
-    x -= this.RunningLength;
-    this.RunningLength = 0;
-    this.dirtywordoffset += x;
-    this.NumberOfLiteralWords -= x;
-  }
-
+  /** how many dirty words have we read so far? */
+  public int dirtywordoffset = 0;
+  
   /** The Number of literal words. */
   public int NumberOfLiteralWords;
   
@@ -156,9 +159,6 @@ public final class BufferedRunningLengthWord {
   
   /** The Running length. */
   public long RunningLength;
-  
-  /** how many dirty words have we read so far? */
-  public int dirtywordoffset = 0;
 
   
 }
