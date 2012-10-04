@@ -3,6 +3,7 @@ package javaewah.benchmark;
 import java.text.DecimalFormat;
 import java.util.List;
 import javaewah.EWAHCompressedBitmap;
+import javaewah.IntIterator;
 import javaewah32.EWAHCompressedBitmap32;
 
 public class benchmark {
@@ -71,6 +72,17 @@ public class benchmark {
           int c = 0;
           for (int x : L)
             array[c++] = x;
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          IntIterator iter = ewah[k].intIterator();
+          while (iter.hasNext()) {
+            bogus += iter.next();
+          }
         }
       aft = System.currentTimeMillis();
       line += "\t" + df.format((aft - bef) / 1000.0);
@@ -177,6 +189,18 @@ public class benchmark {
         }
       aft = System.currentTimeMillis();
       line += "\t" + df.format((aft - bef) / 1000.0);
+      // uncompressing
+      bef = System.currentTimeMillis();
+      for (int r = 0; r < repeat; ++r)
+        for (int k = 0; k < N; ++k) {
+          IntIterator iter = ewah32[k].intIterator();
+          while (iter.hasNext()) {
+            bogus += iter.next();
+          }
+        }
+      aft = System.currentTimeMillis();
+      line += "\t" + df.format((aft - bef) / 1000.0);
+
       // logical or
       bef = System.currentTimeMillis();
       for (int r = 0; r < repeat; ++r)
