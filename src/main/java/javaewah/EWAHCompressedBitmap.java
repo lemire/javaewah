@@ -1,7 +1,7 @@
 package javaewah;
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho and and Colby Ranger
+ * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho and and Google Inc.
  * Licensed under APL 2.0.
  */
 
@@ -788,93 +788,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @return the int iterator
    */
   public IntIterator intIterator() {
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
-    return new IntIterator() {
-      private void add(final int val) {
-        ++this.localbuffersize;
-        if (this.localbuffersize > this.localbuffer.length) {
-          int[] oldbuffer = this.localbuffer;
-          this.localbuffer = new int[this.localbuffer.length * 2];
-          System.arraycopy(oldbuffer, 0, this.localbuffer, 0, oldbuffer.length);
-        }
-        this.localbuffer[this.localbuffersize - 1] = val;
-      }
-
-      public boolean hasNext() {
-        return this.status;
-      }
-
-      private void loadBuffer() {
-        this.bufferpos = 0;
-        this.localbuffersize = 0;
-        if (this.localrlw.getRunningBit()) {
-          for (int j = 0; j < this.localrlw.getRunningLength(); ++j) {
-            for (int c = 0; c < wordinbits; ++c) {
-              add(this.pos++);
-            }
-          }
-        } else {
-          this.pos += wordinbits * this.localrlw.getRunningLength();
-        }
-        for (int j = 0; j < this.localrlw.getNumberOfLiteralWords(); ++j) {
-          long data = i.buffer()[i.dirtyWords() + j];
-          if (!usetrailingzeros) {
-            for (int c = 0; c < wordinbits; ++c) {
-              if ((data & (1l << c)) != 0)
-                add(c + this.pos);
-            }
-            this.pos += wordinbits;
-          } else {
-            while (data != 0) {
-              final int ntz = Long.numberOfTrailingZeros(data);
-              data ^= (1l << ntz);
-              add(ntz + this.pos);
-            }
-            this.pos += wordinbits;
-          }
-        }
-      }
-
-      private boolean loadNextRLE() {
-        while (i.hasNext()) {
-          this.localrlw = i.next();
-          return true;
-        }
-        return false;
-      }
-
-      public int next() {
-        final int answer = this.localbuffer[this.bufferpos++];
-        if (this.localbuffersize == this.bufferpos) {
-          this.localbuffersize = 0;
-          this.status = queryStatus();
-        }
-        return answer;
-      }
-
-      public boolean queryStatus() {
-        while (this.localbuffersize == 0) {
-          if (!loadNextRLE())
-            return false;
-          loadBuffer();
-        }
-        return true;
-      }
-
-      int bufferpos = 0;
-
-      int[] localbuffer = new int[initcapacity];
-
-      int localbuffersize = 0;
-
-      RunningLengthWord localrlw = null;
-
-      int pos = 0;
-
-      boolean status = queryStatus();
-
-      final static int initcapacity = 512;
-    };
+    return new IntIteratorImpl(
+        new EWAHIterator(this.buffer, this.actualsizeinwords));
   }
 
   /**

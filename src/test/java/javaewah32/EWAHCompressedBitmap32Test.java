@@ -1,8 +1,7 @@
 package javaewah32;
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Colby Ranger
-
+ * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Google Inc.
  * Licensed under APL 2.0.
  */
 
