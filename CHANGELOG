@@ -1,11 +1,15 @@
-version 0.5.3 (August 7th, 2012)
+version 0.5.4 (October 5, 2012)
+ - Changed the semantics of "equals" to be more consistent with BitSet from the Java API. (Colby Ranger)
+
+
+version 0.5.3 (August 7, 2012)
  - Correct a bug where the intersects method was returning false positives. The bug occurs when we attempt to add zero set bits to the stream of dirty words. Fixed / tested for 64 bit and 32 bit variants, also testing every flow through the and() method when called from intersects method.
  - Re-enable the testOrCardinality for the 64 bit variant.
  - Change behavior of NonEmptyException so we only throw the Exception if the number of dirty words is positive (and thus we are trying to set none).
  - Fix documentation in 32 bit impl.
  - remove unneeded returns in 64 bit implementation.
 
-version 0.5.2 (July 9th, 2012)
+version 0.5.2 (July 9, 2012)
 - Now being explicit about range of allowed set values, throws exceptions when out of range.
 
 
