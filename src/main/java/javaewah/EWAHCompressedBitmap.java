@@ -743,16 +743,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     int karprabin = 0;
     final int B = 31;
     final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
-    while (i.hasNext()) {
+    while( i.hasNext() ) {
+      i.next();
       if (i.rlw.getRunningBit() == true) {
         karprabin += B * karprabin
           + (i.rlw.getRunningLength() & ((1l << 32) - 1));
         karprabin += B * karprabin + (i.rlw.getRunningLength() >>> 32);
       }
-      for (int k = i.dirtyWords(); k < i.dirtyWords()
-        + i.rlw.getNumberOfLiteralWords(); ++k) {
-        karprabin += B * karprabin + (this.buffer[k] & ((1l << 32) - 1));
-        karprabin += B * karprabin + (this.buffer[k] >>> 32);
+      for (int k = 0; k <  i.rlw.getNumberOfLiteralWords(); ++k) {
+        karprabin += B * karprabin + (this.buffer[i.dirtyWords() + k] & ((1l << 32) - 1));
+        karprabin += B * karprabin + (this.buffer[i.dirtyWords() + k] >>> 32);
       }
     }
     return karprabin;
@@ -1688,6 +1688,23 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     final BitCounter counter = new BitCounter();
     and(counter, bitmaps);
     return counter.getCount();
+  }
+  
+  /**
+   * Return a bitmap with the bit set to true at the given
+   * positions. The positions should be given in sorted order.
+   * 
+   * (This is a convenience method.)
+   * 
+   * @since 0.4.5
+   * @param setbits list of set bit positions
+   * @return the bitmap
+   */
+  public static EWAHCompressedBitmap bitmapOf(int ... setbits) {
+    EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+    for (int k : setbits)
+      a.set(k);
+    return a;
   }
 
   /**

@@ -1,3 +1,9 @@
+version 0.5.5 (October 5, 2012)
+ - Fixed bug with new hashCode (from previous version), added unit test (Colby Ranger)
+ - better example.java
+ - new "bitmapOf" method (Colby Ranger)
+
+
 version 0.5.4 (October 5, 2012)
  - Changed the semantics of "equals" to be more consistent with BitSet from the Java API. (Colby Ranger)
 

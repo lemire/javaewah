@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.util.*;
 import java.io.*;
 
+import javaewah.EWAHCompressedBitmap;
 import javaewah.IntIterator;
 import junit.framework.Assert;
 
@@ -676,6 +677,14 @@ public class EWAHCompressedBitmap32Test {
     for (int k = 0; k < val.length; ++k) {
       Assert.assertEquals(result.get(k).intValue(), val[k]);
     }
+  }
+  
+  @Test
+  public void testHashCode() {
+    System.out.println("testing hashCode");
+    EWAHCompressedBitmap ewcb = EWAHCompressedBitmap.bitmapOf(50, 70).and(EWAHCompressedBitmap.bitmapOf(50, 1000));
+    Assert.assertEquals(EWAHCompressedBitmap.bitmapOf(50), ewcb);
+    Assert.assertEquals(EWAHCompressedBitmap.bitmapOf(50).hashCode(), ewcb.hashCode());
   }
 
   @Test
