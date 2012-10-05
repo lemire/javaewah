@@ -1,7 +1,7 @@
 package javaewah32;
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
+ * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, and Colby Ranger
  * Licensed under APL 2.0.
  */
 
@@ -603,6 +603,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /**
    * Check to see whether the two compressed bitmaps contain the same set bits.
    * 
+   * @author Colby Ranger
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override

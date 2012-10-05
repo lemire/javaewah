@@ -2,7 +2,8 @@ package javaewah;
 
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon and David McIntosh
+ * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Colby Ranger
+
  * Licensed under APL 2.0.
  */
 
