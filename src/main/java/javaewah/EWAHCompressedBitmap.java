@@ -196,8 +196,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfDirtyWords(data, start + whatwecanadd,
-        leftovernumber);
+      addStreamOfDirtyWords(data, start + whatwecanadd, leftovernumber);
     }
     return;
   }
@@ -271,8 +270,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     if (leftovernumber > 0) {
       push_back(0);
       this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfDirtyWords(data, start + whatwecanadd,
-        leftovernumber);
+      addStreamOfDirtyWords(data, start + whatwecanadd, leftovernumber);
     }
     return;
   }
@@ -627,21 +625,18 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
-   * Check to see whether the two compressed bitmaps contain the same data.
+   * Check to see whether the two compressed bitmaps contain the same set bits.
    * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
   public boolean equals(Object o) {
     if (o instanceof EWAHCompressedBitmap) {
-      EWAHCompressedBitmap other = (EWAHCompressedBitmap) o;
-      if (this.sizeinbits == other.sizeinbits
-        && this.actualsizeinwords == other.actualsizeinwords
-        && this.rlw.position == other.rlw.position) {
-        for (int k = 0; k < this.actualsizeinwords; ++k)
-          if (this.buffer[k] != other.buffer[k])
-            return false;
+      try {
+        this.xor((EWAHCompressedBitmap) o, new NonEmptyVirtualStorage());
         return true;
+      } catch (NonEmptyVirtualStorage.NonEmptyException e) {
+        return false;
       }
     }
     return false;
@@ -747,11 +742,20 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public int hashCode() {
     int karprabin = 0;
     final int B = 31;
-    for (int k = 0; k < this.actualsizeinwords; ++k) {
-      karprabin += B * karprabin + (this.buffer[k] & ((1l << 32) - 1));
-      karprabin += B * karprabin + (this.buffer[k] >>> 32);
+    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    while (i.hasNext()) {
+      if (i.rlw.getRunningBit() == true) {
+        karprabin += B * karprabin
+          + (i.rlw.getRunningLength() & ((1l << 32) - 1));
+        karprabin += B * karprabin + (i.rlw.getRunningLength() >>> 32);
+      }
+      for (int k = i.dirtyWords(); k < i.dirtyWords()
+        + i.rlw.getNumberOfLiteralWords(); ++k) {
+        karprabin += B * karprabin + (this.buffer[k] & ((1l << 32) - 1));
+        karprabin += B * karprabin + (this.buffer[k] >>> 32);
+      }
     }
-    return this.sizeinbits ^ karprabin;
+    return karprabin;
   }
 
   /**
@@ -794,9 +798,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
         this.localbuffer[this.localbuffersize - 1] = val;
       }
+
       public boolean hasNext() {
         return this.status;
       }
+
       private void loadBuffer() {
         this.bufferpos = 0;
         this.localbuffersize = 0;
@@ -827,6 +833,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           }
         }
       }
+
       private boolean loadNextRLE() {
         while (i.hasNext()) {
           this.localrlw = i.next();
@@ -834,6 +841,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
         return false;
       }
+
       public int next() {
         final int answer = this.localbuffer[this.bufferpos++];
         if (this.localbuffersize == this.bufferpos) {
@@ -842,6 +850,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
         return answer;
       }
+
       public boolean queryStatus() {
         while (this.localbuffersize == 0) {
           if (!loadNextRLE())
@@ -850,6 +859,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
         return true;
       }
+
       int bufferpos = 0;
 
       int[] localbuffer = new int[initcapacity];
@@ -912,7 +922,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       this.buffer[this.actualsizeinwords + k] = ~data[start + k];
     this.actualsizeinwords += number;
   }
-  
+
   /**
    * Negate (bitwise) the current bitmap. To get a negated copy, do
    * ((EWAHCompressedBitmap) mybitmap.clone()).not();
@@ -942,8 +952,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       }
     }
   }
-
-
 
   /**
    * Returns a new compressed bitmap containing the bitwise OR values of the
@@ -1174,19 +1182,21 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param i
    *          the index
    * @return true if the value was set (always true when i>= sizeInBits()).
-   * @throws IndexOutOfBoundsException if i is negative or greater than Integer.MAX_VALUE - 64
+   * @throws IndexOutOfBoundsException
+   *           if i is negative or greater than Integer.MAX_VALUE - 64
    */
   public boolean set(final int i) {
-    if ((i > Integer.MAX_VALUE - wordinbits) || (i<0))
-      throw new IndexOutOfBoundsException("Set values should be between 0 and "+(Integer.MAX_VALUE - wordinbits)); 
+    if ((i > Integer.MAX_VALUE - wordinbits) || (i < 0))
+      throw new IndexOutOfBoundsException("Set values should be between 0 and "
+        + (Integer.MAX_VALUE - wordinbits));
     if (i < this.sizeinbits)
       return false;
     // distance in words:
     final int dist = (i + wordinbits) / wordinbits
       - (this.sizeinbits + wordinbits - 1) / wordinbits;
     this.sizeinbits = i + 1;
-    if (dist > 0)  {// easy
-      if(dist>1)
+    if (dist > 0) {// easy
+      if (dist > 1)
         fastaddStreamOfEmptyWords(false, dist - 1);
       addLiteralWord(1l << (i % wordinbits));
       return true;

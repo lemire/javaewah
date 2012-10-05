@@ -14,7 +14,5 @@ public interface LogicalElement<T> {
   public void not();
   public LogicalElement or(T le);
   public int sizeInBits();
-
   public T xor(T le);
-
 }
