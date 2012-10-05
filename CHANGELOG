@@ -1,3 +1,7 @@
+version 0.5.6 (October 5, 2012)
+ - Improve performance of the IntIterator implementation (Colby Ranger)
+ - Fix copyright notice (Google Inc. via Colby Ranger)
+
 version 0.5.5 (October 5, 2012)
  - Fixed bug with new hashCode (from previous version), added unit test (Colby Ranger)
  - better example.java

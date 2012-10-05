@@ -1,7 +1,7 @@
 package javaewah32;
 
 /*
- * Copyright 2012, Google Inc.
+ * Copyright 2012, Google Inc.  
  * Licensed under APL 2.0.
  */
 
