@@ -1,4 +1,4 @@
-import javaewah.EWAHCompressedBitmap;
+import com.googlecode.javaewah.EWAHCompressedBitmap;
 import java.io.*;
 
 public class example {
