@@ -38,11 +38,11 @@ public final class EWAHIterator32 {
   }
   
   /**
-   * Position of the dirty words represented by this running length word.
+   * Position of the literal words represented by this running length word.
    *
    * @return the int
    */
-  public int dirtyWords() {
+  public int literalWords() {
     return this.pointer - this.rlw.getNumberOfLiteralWords();
   }
 

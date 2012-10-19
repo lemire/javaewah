@@ -1,3 +1,7 @@
+version 0.6.1 (October 18, 2012)
+ - Optimized the logical and operation and rewrote the logical or operation
+ - Sometimes we used the term "literal" and sometimes "dirty". We now use only the term "literal".
+
 version 0.6.0 (October 15, 2012)
  - Moved packages from javaewah to com.googlecode.javaewah (request by Eclipse)
 

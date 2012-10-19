@@ -20,7 +20,7 @@ public class IteratingBufferedRunningLengthWord32 {
   public IteratingBufferedRunningLengthWord32(final EWAHIterator32 iterator) {
     this.iterator = iterator;
     this.brlw = new BufferedRunningLengthWord32(this.iterator.next());
-    this.dirtyWordStartPosition = this.iterator.dirtyWords() + this.brlw.dirtywordoffset;
+    this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
     this.buffer = this.iterator.buffer();
   }
 
@@ -40,7 +40,7 @@ public class IteratingBufferedRunningLengthWord32 {
       this.brlw.RunningLength = 0;
       int toDiscard = x > this.brlw.NumberOfLiteralWords ? this.brlw.NumberOfLiteralWords : x;
     
-      this.dirtyWordStartPosition += toDiscard;
+      this.literalWordStartPosition += toDiscard;
       this.brlw.NumberOfLiteralWords -= toDiscard;
       x -= toDiscard;
       if (x > 0 || this.brlw.size() == 0) {
@@ -48,7 +48,7 @@ public class IteratingBufferedRunningLengthWord32 {
           break;
         }
         this.brlw.reset(this.iterator.next());
-        this.dirtyWordStartPosition = this.iterator.dirtyWords() + this.brlw.dirtywordoffset;
+        this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
       }
     }
   }
@@ -59,17 +59,17 @@ public class IteratingBufferedRunningLengthWord32 {
    */
   public void discharge(BitmapStorage32 container) {
     // fix the offset
-    this.brlw.dirtywordoffset = this.dirtyWordStartPosition - this.iterator.dirtyWords();
+    this.brlw.literalwordoffset = this.literalWordStartPosition - this.iterator.literalWords();
     EWAHCompressedBitmap32.discharge(this.brlw, this.iterator, container);
   }
 
   /**
-   * Get the nth dirty word for the current running length word 
+   * Get the nth literal word for the current running length word 
    * @param index zero based index
-   * @return the dirty word
+   * @return the literal word
    */
-  public int getDirtyWordAt(int index) {
-    return this.buffer[this.dirtyWordStartPosition + index];
+  public int getLiteralWordAt(int index) {
+    return this.buffer[this.literalWordStartPosition + index];
   }
 
   /**
@@ -109,16 +109,16 @@ public class IteratingBufferedRunningLengthWord32 {
   }
   
   /**
-   * write the first N dirty words to the target bitmap.  Does not discard the words or perform iteration.
+   * write the first N literal words to the target bitmap.  Does not discard the words or perform iteration.
    * @param numWords
    * @param container
    */
-  public void writeDirtyWords(int numWords, BitmapStorage32 container) {
-    container.addStreamOfDirtyWords(this.buffer, this.dirtyWordStartPosition, numWords);
+  public void writeLiteralWords(int numWords, BitmapStorage32 container) {
+    container.addStreamOfLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
   }
   
   private BufferedRunningLengthWord32 brlw;
   private int[] buffer;
-  private int dirtyWordStartPosition;
+  private int literalWordStartPosition;
   private EWAHIterator32 iterator;
 }

@@ -26,14 +26,14 @@ public interface BitmapStorage32 {
   public void add(final int newdata);
   
   /**
-   * if you have several dirty words to copy over, this might be faster.
+   * if you have several literal words to copy over, this might be faster.
    *
-   * @param data the dirty words
+   * @param data the literal words
    * @param start the starting point in the array
-   * @param number the number of dirty words to add
+   * @param number the number of literal words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public void addStreamOfDirtyWords(final int[] data, final int start,
+  public void addStreamOfLiteralWords(final int[] data, final int start,
       final int number);
   
   /**
@@ -47,14 +47,14 @@ public interface BitmapStorage32 {
   public void addStreamOfEmptyWords(final boolean v, final int number);
 
   /**
-   * Like "addStreamOfDirtyWords" but negates the words being added.
+   * Like "addStreamOfLiteralWords" but negates the words being added.
    *
-   * @param data the dirty words
+   * @param data the literal words
    * @param start the starting point in the array
-   * @param number the number of dirty words to add
+   * @param number the number of literal words to add
    * @return how many (compressed) words were added to the bitmap
    */
-  public void addStreamOfNegatedDirtyWords( int[] data, final int start,
+  public void addStreamOfNegatedLiteralWords( int[] data, final int start,
   final int number);
   /**
    * directly set the sizeinbits field

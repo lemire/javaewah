@@ -27,17 +27,17 @@ public final class BitCounter implements BitmapStorage {
   }
 
   /**
-   * virtually add several dirty words.
+   * virtually add several literal words.
    * 
    * @param data
-   *          the dirty words
+   *          the literal words
    * @param start
    *          the starting point in the array
    * @param number
-   *          the number of dirty words to add
+   *          the number of literal words to add
    */
   // @Override : causes problems with Java 1.5
-  public void addStreamOfDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfLiteralWords(long[] data, int start, int number) {
     for (int i = start; i < start + number; i++) {
       add(data[i]);
     }
@@ -62,17 +62,17 @@ public final class BitCounter implements BitmapStorage {
   }
 
   /**
-   * virtually add several negated dirty words.
+   * virtually add several negated literal words.
    * 
    * @param data
-   *          the dirty words
+   *          the literal words
    * @param start
    *          the starting point in the array
    * @param number
-   *          the number of dirty words to add
+   *          the number of literal words to add
    */
   // @Override : causes problems with Java 1.5
-  public void addStreamOfNegatedDirtyWords(long[] data, int start, int number) {
+  public void addStreamOfNegatedLiteralWords(long[] data, int start, int number) {
     for (int i = start; i < start + number; i++) {
       add(~data[i]);
     }

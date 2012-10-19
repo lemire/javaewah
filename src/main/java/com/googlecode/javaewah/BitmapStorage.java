@@ -25,16 +25,16 @@ public interface BitmapStorage {
   public void add(final long newdata);
 
   /**
-   * if you have several dirty words to copy over, this might be faster.
+   * if you have several literal words to copy over, this might be faster.
    * 
    * @param data
-   *          the dirty words
+   *          the literal words
    * @param start
    *          the starting point in the array
    * @param number
-   *          the number of dirty words to add
+   *          the number of literal words to add
    */
-  public void addStreamOfDirtyWords(final long[] data, final int start,
+  public void addStreamOfLiteralWords(final long[] data, final int start,
     final int number);
 
   /**
@@ -49,16 +49,16 @@ public interface BitmapStorage {
   public void addStreamOfEmptyWords(final boolean v, final long number);
 
   /**
-   * Like "addStreamOfDirtyWords" but negates the words being added.
+   * Like "addStreamOfLiteralWords" but negates the words being added.
    * 
    * @param data
-   *          the dirty words
+   *          the literal words
    * @param start
    *          the starting point in the array
    * @param number
-   *          the number of dirty words to add
+   *          the number of literal words to add
    */
-  public void addStreamOfNegatedDirtyWords(long[] data, final int start,
+  public void addStreamOfNegatedLiteralWords(long[] data, final int start,
     final int number);
 
   /**

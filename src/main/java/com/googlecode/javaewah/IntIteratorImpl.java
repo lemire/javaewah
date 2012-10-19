@@ -59,7 +59,7 @@ final class IntIteratorImpl implements IntIterator {
       this.position = this.runningLength;
     }
 
-    this.wordPosition = this.ewahIter.dirtyWords();
+    this.wordPosition = this.ewahIter.literalWords();
     this.wordLength = this.wordPosition + rlw.getNumberOfLiteralWords();
   }
 

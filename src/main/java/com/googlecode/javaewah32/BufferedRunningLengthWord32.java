@@ -49,7 +49,7 @@ public final class BufferedRunningLengthWord32 {
     }
     x -= this.RunningLength;
     this.RunningLength = 0;
-    this.dirtywordoffset += x;
+    this.literalwordoffset += x;
     this.NumberOfLiteralWords -= x;
   }
 
@@ -89,7 +89,7 @@ public final class BufferedRunningLengthWord32 {
     this.NumberOfLiteralWords = (a >>> (1 + RunningLengthWord32.runninglengthbits));
     this.RunningBit = (a & 1) != 0;
     this.RunningLength = ((a >>> 1) & RunningLengthWord32.largestrunninglengthcount);
-    this.dirtywordoffset = 0;
+    this.literalwordoffset = 0;
   }
 
   /**
@@ -148,8 +148,8 @@ public final class BufferedRunningLengthWord32 {
       + getNumberOfLiteralWords();
   }
 
-  /** how many dirty words have we read so far? */
-  public int dirtywordoffset = 0;
+  /** how many literal words have we read so far? */
+  public int literalwordoffset = 0;
   
   /** The Number of literal words. */
   public int NumberOfLiteralWords;
