@@ -319,23 +319,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
           prey.discardFirstWords(predator.getRunningLength());
           predator.discardFirstWords(predator.getRunningLength());
         } else {
-          int index = 0;
-          while ((index < predator.getRunningLength()) && (prey.size() > 0)) {
-            int pl = prey.getRunningLength();
-            if (index + pl > predator.getRunningLength()) {
-              pl = predator.getRunningLength() - index;
-            }
-            container.addStreamOfEmptyWords(prey.getRunningBit(), pl);
-            prey.discardFirstWords(pl);
-            index += pl;
-            int pd = prey.getNumberOfLiteralWords();
-            if (pd + index > predator.getRunningLength()) {
-              pd = predator.getRunningLength() - index;
-            }
-            prey.writeLiteralWords(pd, container);
-            prey.discardFirstWords(pd);
-            index += pd;
-          }
+          int index = prey.discharge(container, predator.getRunningLength());
           container.addStreamOfEmptyWords(false, predator.getRunningLength()
             - index);
           predator.discardFirstWords(predator.getRunningLength());
@@ -352,10 +336,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
     boolean i_remains = rlwi.size()>0;
     final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
-    while(remaining.size()>0) {
-      container.addStreamOfEmptyWords(false, remaining.size());
-      remaining.discardFirstWords(remaining.size());
-    }
+    remaining.dischargeAsEmpty(container);
     container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
   }
 
@@ -905,25 +886,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
           prey.discardFirstWords(predator.getRunningLength());
           predator.discardFirstWords(predator.getRunningLength());
         } else {
-          int index = 0;
-          while ((index < predator.getRunningLength()) && (prey.size() > 0)) {
-
-            int pl = prey.getRunningLength();
-            if (index + pl > predator.getRunningLength()) {
-              pl = predator.getRunningLength() - index;
-            }
-            container.addStreamOfEmptyWords(prey.getRunningBit(), pl);
-            prey.discardFirstWords(pl);
-            index += pl;
-            int pd = prey.getNumberOfLiteralWords();
-            if (pd + index > predator.getRunningLength()) {
-              pd = predator.getRunningLength() - index;
-            }
-            prey.writeLiteralWords(pd, container);
-            prey.discardFirstWords(pd);
-            index += pd;
-
-          }
+          int index = prey.discharge(container, predator.getRunningLength());
           container.addStreamOfEmptyWords(false, predator.getRunningLength()
             - index);
           predator.discardFirstWords(predator.getRunningLength());

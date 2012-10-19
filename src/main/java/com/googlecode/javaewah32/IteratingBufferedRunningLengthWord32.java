@@ -1,5 +1,7 @@
 package com.googlecode.javaewah32;
 
+
+
 /*
  * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
  * Licensed under APL 2.0.
@@ -52,7 +54,74 @@ public class IteratingBufferedRunningLengthWord32 {
       }
     }
   }
+  /**
+   * Write out up to max words, returns how many were written
+   * @param container target for writes
+   * @param max maximal number of writes
+   * @return how many written
+   */
+  public int discharge(BitmapStorage32 container, int max) {
+    int index = 0;
+    while ((index < max) && (size() > 0)) {
+      // first run
+      int pl = getRunningLength();
+      if (index + pl > max) {
+        pl = max - index;
+      }
+      container.addStreamOfEmptyWords(getRunningBit(), pl);
+      discardFirstWords(pl);
+      index += pl;
+      int pd = getNumberOfLiteralWords();
+      if (pd + index > max) {
+        pd = max - index;
+      }
+      writeLiteralWords(pd, container);
+      discardFirstWords(pd);
+      index += pd;
+    }
+    return index;
+  }
 
+  /**
+   * Write out up to max words (negated), returns how many were written
+   * @param container target for writes
+   * @param max maximal number of writes
+   * @return how many written
+   */
+  public int dischargeNegated(BitmapStorage32 container, int max) {
+    int index = 0;
+    while ((index < max) && (size() > 0)) {
+      // first run
+      int pl = getRunningLength();
+      if (index + pl > max) {
+        pl = max - index;
+      }
+      container.addStreamOfEmptyWords(!getRunningBit(), pl);
+      discardFirstWords(pl);
+      index += pl;
+      int pd = getNumberOfLiteralWords();
+      if (pd + index > max) {
+        pd = max - index;
+      }
+      writeNegatedLiteralWords(pd, container);
+      discardFirstWords(pd);
+      index += pd;
+    }
+    return index;
+  }
+
+
+  /**
+   * Write out the remain words, transforming them to zeroes.
+   * @param container target for writes
+   */
+  public void dischargeAsEmpty(BitmapStorage32 container) {
+    while(size()>0) {
+      container.addStreamOfEmptyWords(false, size());
+      discardFirstWords(size());
+    }
+  }
+  
   /**
    * Write out the remaining words
    * @param container target for writes
@@ -116,6 +185,17 @@ public class IteratingBufferedRunningLengthWord32 {
   public void writeLiteralWords(int numWords, BitmapStorage32 container) {
     container.addStreamOfLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
   }
+  
+
+  /**
+   * write the first N literal words (negated) to the target bitmap.  Does not discard the words or perform iteration.
+   * @param numWords
+   * @param container
+   */
+  public void writeNegatedLiteralWords(int numWords, BitmapStorage32 container) {
+    container.addStreamOfNegatedLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
+  }
+  
   
   private BufferedRunningLengthWord32 brlw;
   private int[] buffer;
