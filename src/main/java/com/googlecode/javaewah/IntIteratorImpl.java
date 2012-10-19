@@ -8,7 +8,7 @@ package com.googlecode.javaewah;
 import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
 
 /**
- * The IntIteratorImpl implements the 64 bit implementation of the
+ * The IntIteratorImpl is the 64 bit implementation of the
  * IntIterator interface, which efficiently returns the stream of integers
  * represented by an EWAHIterator.
  *

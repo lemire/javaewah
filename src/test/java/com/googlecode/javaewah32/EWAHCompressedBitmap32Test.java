@@ -76,6 +76,14 @@ public class EWAHCompressedBitmap32Test {
     equal(ab, bitsetab);
     EWAHCompressedBitmap32 bb = aa.or(ab);
     EWAHCompressedBitmap32 bbAnd = aa.and(ab);
+    try {
+      EWAHCompressedBitmap32 abnot = (EWAHCompressedBitmap32)ab.clone();
+      abnot.not();
+      EWAHCompressedBitmap32 bbAnd2 = aa.andNot(abnot);
+      assertEquals(bbAnd2,bbAnd);
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
     BitSet bitsetbb = (BitSet) bitsetaa.clone();
     bitsetbb.or(bitsetab);
     BitSet bitsetbbAnd = (BitSet) bitsetaa.clone();

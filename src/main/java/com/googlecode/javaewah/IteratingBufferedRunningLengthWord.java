@@ -11,7 +11,7 @@ package com.googlecode.javaewah;
  * @since 0.4.0
  * @author David McIntosh
  */
-public class IteratingBufferedRunningLengthWord {
+public final class IteratingBufferedRunningLengthWord {
   /**
    * Instantiates a new iterating buffered running length word.
    *
@@ -23,7 +23,7 @@ public class IteratingBufferedRunningLengthWord {
     this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
     this.buffer = this.iterator.buffer();
   }
-
+  
   /**
    * Discard first words, iterating to the next running length word if needed.
    *
@@ -129,7 +129,7 @@ public class IteratingBufferedRunningLengthWord {
    */
   public void discharge(BitmapStorage container) {
     this.brlw.literalwordoffset = this.literalWordStartPosition - this.iterator.literalWords();
-    EWAHCompressedBitmap.discharge(this.brlw, this.iterator, container);
+    discharge(this.brlw, this.iterator, container);
   }
 
   /**
@@ -193,6 +193,32 @@ public class IteratingBufferedRunningLengthWord {
    */
   public void writeNegatedLiteralWords(int numWords, BitmapStorage container) {
     container.addStreamOfNegatedLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
+  }
+  
+  /**
+   * For internal use.
+   * 
+   * @param initialWord
+   *          the initial word
+   * @param iterator
+   *          the iterator
+   * @param container
+   *          the container
+   */
+  private static void discharge(final BufferedRunningLengthWord initialWord,
+    final EWAHIterator iterator, final BitmapStorage container) {
+    BufferedRunningLengthWord runningLengthWord = initialWord;
+    for (;;) {
+      final long runningLength = runningLengthWord.getRunningLength();
+      container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(),
+        runningLength);
+      container.addStreamOfLiteralWords(iterator.buffer(), iterator.literalWords()
+        + runningLengthWord.literalwordoffset,
+        runningLengthWord.getNumberOfLiteralWords());
+      if (!iterator.hasNext())
+        break;
+      runningLengthWord = new BufferedRunningLengthWord(iterator.next());
+    }
   }
   
   private BufferedRunningLengthWord brlw;

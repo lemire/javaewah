@@ -11,7 +11,7 @@ import com.googlecode.javaewah.IntIterator;
 
 
 /**
- * The IntIteratorImpl32 implements the 32 bit implementation of the
+ * The IntIteratorImpl32 is the 32 bit implementation of the
  * IntIterator interface, which efficiently returns the stream of integers
  * represented by an EWAHIterator32.
  *

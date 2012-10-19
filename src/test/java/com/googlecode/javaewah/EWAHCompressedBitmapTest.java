@@ -80,6 +80,14 @@ public class EWAHCompressedBitmapTest {
     equal(ab, bitsetab);
     EWAHCompressedBitmap bb = aa.or(ab);
     EWAHCompressedBitmap bbAnd = aa.and(ab);
+    try {
+      EWAHCompressedBitmap abnot = (EWAHCompressedBitmap)ab.clone();
+      abnot.not();
+      EWAHCompressedBitmap bbAnd2 = aa.andNot(abnot);
+      assertEquals(bbAnd2,bbAnd);
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
     BitSet bitsetbb = (BitSet) bitsetaa.clone();
     bitsetbb.or(bitsetab);
     BitSet bitsetbbAnd = (BitSet) bitsetaa.clone();

@@ -13,7 +13,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  * @author Daniel Lemire and David McIntosh
  */
-public class IteratingBufferedRunningLengthWord32 {
+public final class IteratingBufferedRunningLengthWord32 {
   /**
    * Instantiates a new iterating buffered running length word.
    *
@@ -129,7 +129,7 @@ public class IteratingBufferedRunningLengthWord32 {
   public void discharge(BitmapStorage32 container) {
     // fix the offset
     this.brlw.literalwordoffset = this.literalWordStartPosition - this.iterator.literalWords();
-    EWAHCompressedBitmap32.discharge(this.brlw, this.iterator, container);
+    discharge(this.brlw, this.iterator, container);
   }
 
   /**
@@ -196,7 +196,33 @@ public class IteratingBufferedRunningLengthWord32 {
     container.addStreamOfNegatedLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
   }
   
-  
+
+  /**
+   * For internal use.
+   * 
+   * @param initialWord
+   *          the initial word
+   * @param iterator
+   *          the iterator
+   * @param container
+   *          the container
+   */
+  protected static void discharge(
+    final BufferedRunningLengthWord32 initialWord,
+    final EWAHIterator32 iterator, final BitmapStorage32 container) {
+    BufferedRunningLengthWord32 runningLengthWord = initialWord;
+    for (;;) {
+      final int runningLength = runningLengthWord.getRunningLength();
+      container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(),
+        runningLength);
+      container.addStreamOfLiteralWords(iterator.buffer(), iterator.literalWords()
+        + runningLengthWord.literalwordoffset,
+        runningLengthWord.getNumberOfLiteralWords());
+      if (!iterator.hasNext())
+        break;
+      runningLengthWord = new BufferedRunningLengthWord32(iterator.next());
+    }
+  }
   private BufferedRunningLengthWord32 brlw;
   private int[] buffer;
   private int literalWordStartPosition;

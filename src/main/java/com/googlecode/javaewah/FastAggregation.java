@@ -21,7 +21,7 @@ public class FastAggregation {
     PriorityQueue<T> pq = new PriorityQueue<T>(
       bitmaps.length, new Comparator<T>() {   
         public int compare(T a, T b) {
-          return a.sizeInBits() - b.sizeInBits();
+          return a.sizeInBytes() - b.sizeInBytes();
         }
       });
     for (T x : bitmaps)
@@ -39,11 +39,12 @@ public class FastAggregation {
     PriorityQueue<T> pq = new PriorityQueue<T>(
       bitmaps.length, new Comparator<T>() {
         public int compare(T a, T b) {
-          return a.sizeInBits() - b.sizeInBits();
+          return a.sizeInBytes() - b.sizeInBytes();
         }
       });
-    for (T x : bitmaps)
+    for (T x : bitmaps) {
       pq.add(x);
+    }
     while (pq.size() > 1) {
       T x1 = pq.poll();
       T x2 = pq.poll();
@@ -58,7 +59,7 @@ public class FastAggregation {
       bitmaps.length, new Comparator<T>() {
      
         public int compare(T a, T b) {
-          return a.sizeInBits() - b.sizeInBits();
+          return a.sizeInBytes() - b.sizeInBytes();
         }
       });
     for (T x : bitmaps)

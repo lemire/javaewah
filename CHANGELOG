@@ -1,3 +1,7 @@
+version 0.6.2 (October 19, 2012)
+ - Cleaned up "andNot" and "xor" so that the implementation is simpler
+ - Minor refactoring
+
 version 0.6.1 (October 18, 2012)
  - Optimized the logical and operation and rewrote the logical or operation
  - Sometimes we used the term "literal" and sometimes "dirty". We now use only the term "literal".

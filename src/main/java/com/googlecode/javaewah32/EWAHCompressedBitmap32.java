@@ -304,8 +304,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   private void and(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
-    IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
-    IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
+    final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
+    final IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
     while ((rlwi.size()>0) && (rlwj.size()>0)) {
       while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
         final boolean i_is_prey = rlwi.getRunningLength() < rlwj
@@ -334,7 +334,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         rlwj.discardFirstWords(nbre_literal);
       }
     }
-    boolean i_remains = rlwi.size()>0;
+    final boolean i_remains = rlwi.size()>0;
     final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
     remaining.dischargeAsEmpty(container);
     container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
@@ -389,101 +389,51 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   private void andNot(final EWAHCompressedBitmap32 a,
     final BitmapStorage32 container) {
-    final EWAHIterator32 i = a.getEWAHIterator();
-    final EWAHIterator32 j = getEWAHIterator();
-    if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.setSizeInBits(sizeInBits());
-    }
-    // at this point, this is safe:
-    BufferedRunningLengthWord32 rlwi = new BufferedRunningLengthWord32(i.next());
-    rlwi.setRunningBit(!rlwi.getRunningBit());
-    BufferedRunningLengthWord32 rlwj = new BufferedRunningLengthWord32(j.next());
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord32 prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord32 predator = i_is_prey ? rlwj : rlwi;
-
-      if (prey.getRunningBit() == false) {
-        container.addStreamOfEmptyWords(false, prey.RunningLength);
-        predator.discardFirstWords(prey.RunningLength);
-        prey.RunningLength = 0;
-      } else {
-        // we have a stream of 1x11
-        final int predatorrl = predator.getRunningLength();
-        final int preyrl = prey.getRunningLength();
-        final int tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container
-          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final int dw_predator = predator.literalwordoffset
-          + (i_is_prey ? j.literalWords() : i.literalWords());
-        if (i_is_prey)
-          container.addStreamOfLiteralWords(j.buffer(), dw_predator, preyrl
-            - tobediscarded);
-        else
-          container.addStreamOfNegatedLiteralWords(i.buffer(), dw_predator,
-            preyrl - tobediscarded);
-        predator.discardFirstWords(preyrl);
-        prey.RunningLength = 0;
-      }
-      final int predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
-        if (predator.getRunningBit() == false) {
-          final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_literal_prey) ? nbre_literal_prey
-            : predatorrl;
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          container.addStreamOfEmptyWords(false, tobediscarded);
+    final EWAHIterator32 i = getEWAHIterator();
+    final EWAHIterator32 j = a.getEWAHIterator();
+    final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
+    final IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
+    while ((rlwi.size()>0) && (rlwj.size()>0)) {
+      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
+          .getRunningLength();
+        final IteratingBufferedRunningLengthWord32 prey = i_is_prey ? rlwi : rlwj;
+        final IteratingBufferedRunningLengthWord32 predator = i_is_prey ? rlwj
+          : rlwi;
+        if (  ((predator.getRunningBit() == true) && (i_is_prey))
+          || ((predator.getRunningBit() == false) && (!i_is_prey))){
+          container.addStreamOfEmptyWords(false, predator.getRunningLength());
+          prey.discardFirstWords(predator.getRunningLength());
+          predator.discardFirstWords(predator.getRunningLength());
+        } else if (i_is_prey) {
+          int index = prey.discharge(container, predator.getRunningLength()); 
+          container.addStreamOfEmptyWords(false, predator.getRunningLength()
+            - index);
+          predator.discardFirstWords(predator.getRunningLength());
         } else {
-          final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-          final int dw_prey = prey.literalwordoffset
-            + (i_is_prey ? i.literalWords() : j.literalWords());
-          final int tobediscarded = (predatorrl >= nbre_literal_prey) ? nbre_literal_prey
-            : predatorrl;
-          if (i_is_prey)
-            container.addStreamOfNegatedLiteralWords(i.buffer(), dw_prey,
-              tobediscarded);
-          else
-            container.addStreamOfLiteralWords(j.buffer(), dw_prey, tobediscarded);
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
+          int index = prey.dischargeNegated(container, predator.getRunningLength()); 
+          container.addStreamOfEmptyWords(true, predator.getRunningLength()
+            - index);
+          predator.discardFirstWords(predator.getRunningLength());          
         }
       }
-      // all that is left to do now is to AND the literal words
-      final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-      if (nbre_literal_prey > 0) {
-        for (int k = 0; k < nbre_literal_prey; ++k) {
-          if (i_is_prey)
-            container.add((~i.buffer()[prey.literalwordoffset + i.literalWords()
-              + k])
-              & j.buffer()[predator.literalwordoffset + j.literalWords() + k]);
-          else
-            container.add((~i.buffer()[predator.literalwordoffset
-              + i.literalWords() + k])
-              & j.buffer()[prey.literalwordoffset + j.literalWords() + k]);
-        }
-        predator.discardFirstWords(nbre_literal_prey);
-      }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-        rlwi.setRunningBit(!rlwi.getRunningBit());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
+      final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
+        rlwj.getNumberOfLiteralWords());
+      if (nbre_literal > 0) {
+        for (int k = 0; k < nbre_literal; ++k)
+          container.add(rlwi.getLiteralWordAt(k) & (~rlwj.getLiteralWordAt(k)));
+        rlwi.discardFirstWords(nbre_literal);
+        rlwj.discardFirstWords(nbre_literal);
       }
     }
-    if (rlwi != null)
-      dischargeAsEmpty(rlwi, i, container);
-    if (rlwj != null)
-      discharge(rlwj, j, container);
+    final boolean i_remains = rlwi.size()>0;
+    final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
+    if(i_remains)
+      remaining.discharge(container);
+    else
+      remaining.dischargeAsEmpty(container);
     container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+
   }
 
   /**
@@ -779,7 +729,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 
   /**
    * Negate (bitwise) the current bitmap. To get a negated copy, do
-   * ((EWAHCompressedBitmap) mybitmap.clone()).not();
+   * EWAHCompressedBitmap x= ((EWAHCompressedBitmap) mybitmap.clone()); x.not();
    * 
    * The running time is proportional to the compressed size (as reported by
    * sizeInBytes()).
@@ -871,8 +821,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   private void or(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
-    IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
-    IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
+    final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
+    final IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
     while ((rlwi.size()>0) && (rlwj.size()>0)) {
       while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
         final boolean i_is_prey = rlwi.getRunningLength() < rlwj
@@ -902,7 +852,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         rlwj.discardFirstWords(nbre_literal);
       }
     }
-    boolean i_remains = rlwi.size()>0;
+    final boolean i_remains = rlwi.size()>0;
     final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
     remaining.discharge(container);
     container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
@@ -1251,100 +1201,39 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
-    if (!(i.hasNext() && j.hasNext())) {// this never happens...
-      container.setSizeInBits(sizeInBits());
-    }
-    // at this point, this is safe:
-    BufferedRunningLengthWord32 rlwi = new BufferedRunningLengthWord32(i.next());
-    BufferedRunningLengthWord32 rlwj = new BufferedRunningLengthWord32(j.next());
-    while (true) {
-      final boolean i_is_prey = rlwi.size() < rlwj.size();
-      final BufferedRunningLengthWord32 prey = i_is_prey ? rlwi : rlwj;
-      final BufferedRunningLengthWord32 predator = i_is_prey ? rlwj : rlwi;
-      if (prey.getRunningBit() == false) {
-        final int predatorrl = predator.getRunningLength();
-        final int preyrl = prey.getRunningLength();
-        final int tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container
-          .addStreamOfEmptyWords(predator.getRunningBit(), tobediscarded);
-        final int dw_predator = predator.literalwordoffset
-          + (i_is_prey ? j.literalWords() : i.literalWords());
-        container.addStreamOfLiteralWords(i_is_prey ? j.buffer() : i.buffer(),
-          dw_predator, preyrl - tobediscarded);
-        predator.discardFirstWords(preyrl);
-        prey.discardFirstWords(preyrl);
-      } else {
-        // we have a stream of 1x11
-        final int predatorrl = predator.getRunningLength();
-        final int preyrl = prey.getRunningLength();
-        final int tobediscarded = (predatorrl >= preyrl) ? preyrl : predatorrl;
-        container.addStreamOfEmptyWords(!predator.getRunningBit(),
-          tobediscarded);
-        final int dw_predator = predator.literalwordoffset
-          + (i_is_prey ? j.literalWords() : i.literalWords());
-        final int[] buf = i_is_prey ? j.buffer() : i.buffer();
-        for (int k = 0; k < preyrl - tobediscarded; ++k)
-          container.add(~buf[k + dw_predator]);
-        predator.discardFirstWords(preyrl);
-        prey.discardFirstWords(preyrl);
-      }
-      final int predatorrl = predator.getRunningLength();
-      if (predatorrl > 0) {
+    final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
+    final IteratingBufferedRunningLengthWord32 rlwj = new IteratingBufferedRunningLengthWord32(j);
+    while ((rlwi.size()>0) && (rlwj.size()>0)) {
+      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
+          .getRunningLength();
+        final IteratingBufferedRunningLengthWord32 prey = i_is_prey ? rlwi : rlwj;
+        final IteratingBufferedRunningLengthWord32 predator = i_is_prey ? rlwj
+          : rlwi;
         if (predator.getRunningBit() == false) {
-          final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_literal_prey) ? nbre_literal_prey
-            : predatorrl;
-          final int dw_prey = prey.literalwordoffset
-            + (i_is_prey ? i.literalWords() : j.literalWords());
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          container.addStreamOfLiteralWords(i_is_prey ? i.buffer() : j.buffer(),
-            dw_prey, tobediscarded);
+          int index = prey.discharge(container, predator.getRunningLength()); 
+          container.addStreamOfEmptyWords(false, predator.getRunningLength()
+            - index);
+          predator.discardFirstWords(predator.getRunningLength());
         } else {
-          final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-          final int tobediscarded = (predatorrl >= nbre_literal_prey) ? nbre_literal_prey
-            : predatorrl;
-          final int dw_prey = prey.literalwordoffset
-            + (i_is_prey ? i.literalWords() : j.literalWords());
-          predator.discardFirstWords(tobediscarded);
-          prey.discardFirstWords(tobediscarded);
-          final int[] buf = i_is_prey ? i.buffer() : j.buffer();
-          for (int k = 0; k < tobediscarded; ++k)
-            container.add(~buf[k + dw_prey]);
+          int index = prey.dischargeNegated(container, predator.getRunningLength()); 
+          container.addStreamOfEmptyWords(true, predator.getRunningLength()
+            - index);
+          predator.discardFirstWords(predator.getRunningLength());
         }
       }
-      // all that is left to do now is to AND the literal words
-      final int nbre_literal_prey = prey.getNumberOfLiteralWords();
-      if (nbre_literal_prey > 0) {
-        for (int k = 0; k < nbre_literal_prey; ++k) {
-          if (i_is_prey)
-            container.add(i.buffer()[prey.literalwordoffset + i.literalWords() + k]
-              ^ j.buffer()[predator.literalwordoffset + j.literalWords() + k]);
-          else
-            container.add(i.buffer()[predator.literalwordoffset + i.literalWords()
-              + k]
-              ^ j.buffer()[prey.literalwordoffset + j.literalWords() + k]);
-        }
-        predator.discardFirstWords(nbre_literal_prey);
+      final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
+        rlwj.getNumberOfLiteralWords());
+      if (nbre_literal > 0) {
+        for (int k = 0; k < nbre_literal; ++k)
+          container.add(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
+        rlwi.discardFirstWords(nbre_literal);
+        rlwj.discardFirstWords(nbre_literal);
       }
-      if (i_is_prey) {
-        if (!i.hasNext()) {
-          rlwi = null;
-          break;
-        }
-        rlwi.reset(i.next());
-      } else {
-        if (!j.hasNext()) {
-          rlwj = null;
-          break;
-        }
-        rlwj.reset(j.next());
-      }
-    }
-    if (rlwi != null)
-      discharge(rlwi, i, container);
-    if (rlwj != null)
-      discharge(rlwj, j, container);
+    }      
+    final boolean i_remains = rlwi.size()>0;
+    final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
+    remaining.discharge(container);
     container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
   }
 
@@ -1545,56 +1434,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     return a;
   }
 
-  /**
-   * For internal use.
-   * 
-   * @param initialWord
-   *          the initial word
-   * @param iterator
-   *          the iterator
-   * @param container
-   *          the container
-   */
-  protected static void discharge(
-    final BufferedRunningLengthWord32 initialWord,
-    final EWAHIterator32 iterator, final BitmapStorage32 container) {
-    BufferedRunningLengthWord32 runningLengthWord = initialWord;
-    for (;;) {
-      final int runningLength = runningLengthWord.getRunningLength();
-      container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(),
-        runningLength);
-      container.addStreamOfLiteralWords(iterator.buffer(), iterator.literalWords()
-        + runningLengthWord.literalwordoffset,
-        runningLengthWord.getNumberOfLiteralWords());
-      if (!iterator.hasNext())
-        break;
-      runningLengthWord = new BufferedRunningLengthWord32(iterator.next());
-    }
-  }
 
-  /**
-   * For internal use.
-   * 
-   * @param initialWord
-   *          the initial word
-   * @param iterator
-   *          the iterator
-   * @param container
-   *          the container
-   */
-  private static void dischargeAsEmpty(
-    final BufferedRunningLengthWord32 initialWord,
-    final EWAHIterator32 iterator, final BitmapStorage32 container) {
-    BufferedRunningLengthWord32 runningLengthWord = initialWord;
-    for (;;) {
-      final int runningLength = runningLengthWord.getRunningLength();
-      container.addStreamOfEmptyWords(false,
-        runningLength + runningLengthWord.getNumberOfLiteralWords());
-      if (!iterator.hasNext())
-        break;
-      runningLengthWord = new BufferedRunningLengthWord32(iterator.next());
-    }
-  }
+
 
   /**
    * For internal use. This simply adds a stream of words made of zeroes so that
