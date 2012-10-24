@@ -25,6 +25,15 @@ public final class IteratingBufferedRunningLengthWord {
   }
   
   /**
+   * Instantiates a new iterating buffered running length word.
+   *
+   * @param iterator iterator
+   */  
+  public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
+    this(EWAHIterator.getEWAHIterator(bitmap));
+  }
+  
+  /**
    * Discard first words, iterating to the next running length word if needed.
    *
    * @param x the x

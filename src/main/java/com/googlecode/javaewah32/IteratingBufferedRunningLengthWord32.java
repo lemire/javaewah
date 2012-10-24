@@ -25,6 +25,17 @@ public final class IteratingBufferedRunningLengthWord32 {
     this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
     this.buffer = this.iterator.buffer();
   }
+  
+
+  /**
+   * Instantiates a new iterating buffered running length word.
+   *
+   * @param iterator iterator
+   */  
+  public IteratingBufferedRunningLengthWord32(final EWAHCompressedBitmap32 bitmap) {
+    this(EWAHIterator32.getEWAHIterator(bitmap));
+  }
+  
 
   /**
    * Discard first words, iterating to the next running length word if needed.

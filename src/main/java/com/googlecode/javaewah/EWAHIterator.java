@@ -29,6 +29,17 @@ public final class EWAHIterator {
   }
   
   /**
+   * Allow expert developers to instantiate an EWAHIterator.
+   * 
+   * @param bitmap
+   * @return an iterator
+   */
+  public static EWAHIterator getEWAHIterator(EWAHCompressedBitmap bitmap) {
+    return bitmap.getEWAHIterator();
+  }
+
+  
+  /**
    * Access to the array of words
    *
    * @return the long[]

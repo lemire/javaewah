@@ -584,7 +584,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @return the EWAHIterator
    */
-  private EWAHIterator32 getEWAHIterator() {
+  protected EWAHIterator32 getEWAHIterator() {
     return new EWAHIterator32(this.buffer, this.actualsizeinwords);
   }
 
