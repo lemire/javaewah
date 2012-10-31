@@ -42,13 +42,13 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
   }
 
   /**
-   * If the boolean value is true, then it throws a NonEmptyException exception,
+   * If the boolean value is true and number>0, then it throws a NonEmptyException exception,
    * otherwise, nothing happens.
    * 
    * @see com.googlecode.javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, long)
    */
   public void addStreamOfEmptyWords(boolean v, long number) {
-    if (v)
+    if (v && (number>0))
       throw new NonEmptyException();
     return;
   }
