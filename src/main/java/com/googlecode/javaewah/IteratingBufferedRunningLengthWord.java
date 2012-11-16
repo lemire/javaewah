@@ -39,9 +39,8 @@ public final class IteratingBufferedRunningLengthWord {
    * @param x the x
    */
   public void discardFirstWords(long x) {
-    
     while (x > 0) {
-      if (this.brlw.RunningLength >= x) {
+      if (this.brlw.RunningLength > x) {
         this.brlw.RunningLength -= x;
         return;
       }
@@ -52,7 +51,7 @@ public final class IteratingBufferedRunningLengthWord {
       this.literalWordStartPosition += toDiscard;
       this.brlw.NumberOfLiteralWords -= toDiscard;
       x -= toDiscard;
-      if (x > 0 || this.brlw.size() == 0) {
+      if ((x > 0) || (this.brlw.size() == 0)) {
         if (!this.iterator.hasNext()) {
           break;
         }

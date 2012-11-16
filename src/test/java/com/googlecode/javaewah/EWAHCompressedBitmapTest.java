@@ -799,6 +799,23 @@ public class EWAHCompressedBitmapTest {
     }
     return answer;
   }
+  /**
+   * Test inspired by Bilal Tayara
+   */
+  @Test
+  public void TayaraTest() {
+    System.out.println("Tayara test");
+    for(int offset = 64; offset<(1<<30);offset*=2){
+      EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+      EWAHCompressedBitmap b = new EWAHCompressedBitmap();
+      for(int k = 0; k< 64; ++k)  {
+        a.set(offset+k);
+        b.set(offset+k);
+      }
+      if(!a.and(b).equals(a)) throw new RuntimeException("bug");
+      if(!a.or(b).equals(a)) throw new RuntimeException("bug");
+    }
+  }
 
   /**
    * a non-deterministic test proposed by Marc Polizzi.

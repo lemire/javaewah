@@ -1,3 +1,9 @@
+version 0.6.4 (November 16, 2012)
+ - Fixed a bug in IteratingBufferedRunningLengthWord.discardFirstWords
+ that might cause "and" to return the empty set when there is actually 
+ a result (issue #18 reported by  Bilal Tayara)
+ - added a unit test so that this sort of bug will be caught in the future
+
 version 0.6.3 (October 31, 2012)
  - Fixed a design issue in NonEmptyVirtualStorage32 and NonEmptyVirtualStorage
  that might cause "equals" to give the wrong answer.

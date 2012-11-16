@@ -45,7 +45,7 @@ public final class IteratingBufferedRunningLengthWord32 {
   public void discardFirstWords(int x) {
     
     while (x > 0) {
-      if (this.brlw.RunningLength >= x) {
+      if (this.brlw.RunningLength > x) {
         this.brlw.RunningLength -= x;
         return;
       }
@@ -56,7 +56,7 @@ public final class IteratingBufferedRunningLengthWord32 {
       this.literalWordStartPosition += toDiscard;
       this.brlw.NumberOfLiteralWords -= toDiscard;
       x -= toDiscard;
-      if (x > 0 || this.brlw.size() == 0) {
+      if ((x > 0) || (this.brlw.size() == 0)) {
         if (!this.iterator.hasNext()) {
           break;
         }
