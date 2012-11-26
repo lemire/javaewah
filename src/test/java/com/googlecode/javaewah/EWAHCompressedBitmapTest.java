@@ -71,10 +71,7 @@ public class EWAHCompressedBitmapTest {
           ++intersection;
        }
     }
-    //System.out.println("");
-    System.out.println("Expected instersection cardinality " + intersection);
     EWAHCompressedBitmap and2 = a.and(b);      
-    System.out.println("and cardinality " + and2.cardinality());
     if(!and2.equals(inter)) throw new RuntimeException("intersections don't match");
     if(intersection != and2.cardinality()) throw new RuntimeException("cardinalities don't match");
   }
