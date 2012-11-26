@@ -1,3 +1,9 @@
+version 0.6.5 (November 26, 2012)
+ - Fixed a bug in IteratingBufferedRunningLengthWord.discharge
+ that might cause "and" to return spurious values in some cases (issue #19 reported by  Gregory Ssi-Yan-Kai)
+ - added a unit test so that this sort of bug will be caught in the future
+
+
 version 0.6.4 (November 16, 2012)
  - Fixed a bug in IteratingBufferedRunningLengthWord.discardFirstWords
  that might cause "and" to return the empty set when there is actually 

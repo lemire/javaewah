@@ -326,7 +326,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
           prey.discardFirstWords(predator.getRunningLength());
           predator.discardFirstWords(predator.getRunningLength());
         } else {
-          long index = prey.discharge(container, predator.getRunningLength()); 
+          final long index = prey.discharge(container, predator.getRunningLength()); 
           container.addStreamOfEmptyWords(false, predator.getRunningLength()
             - index);
           predator.discardFirstWords(predator.getRunningLength());

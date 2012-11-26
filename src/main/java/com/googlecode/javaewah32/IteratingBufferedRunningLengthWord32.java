@@ -80,14 +80,13 @@ public final class IteratingBufferedRunningLengthWord32 {
         pl = max - index;
       }
       container.addStreamOfEmptyWords(getRunningBit(), pl);
-      discardFirstWords(pl);
       index += pl;
       int pd = getNumberOfLiteralWords();
       if (pd + index > max) {
         pd = max - index;
       }
       writeLiteralWords(pd, container);
-      discardFirstWords(pd);
+      discardFirstWords(pl+pd);
       index += pd;
     }
     return index;
