@@ -1038,7 +1038,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       final int leftover = size % wordinbits;
       this.addStreamOfEmptyWords(defaultvalue, (size / wordinbits)
         - this.sizeinbits / wordinbits);
-      final int newdata = (1 << leftover) + ((1 << leftover) - 1);
+      final int newdata =  ((1 << leftover) - 1);
       this.addLiteralWord(newdata);
     }
     this.sizeinbits = size;

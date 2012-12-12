@@ -419,6 +419,33 @@ public class EWAHCompressedBitmap32Test {
       }
     }
   }
+  
+
+  @Test
+  public void testsetSizeInBits() {
+	  System.out.println("testing setSizeInBits");
+	  for(int k = 0; k < 4096; ++k) {
+		  EWAHCompressedBitmap32 ewah = new EWAHCompressedBitmap32();
+		  ewah.setSizeInBits(k);
+		  Assert.assertEquals(ewah.sizeinbits,k);
+		  Assert.assertEquals(ewah.cardinality(),0);
+		  EWAHCompressedBitmap32 ewah2 = new EWAHCompressedBitmap32();
+		  ewah2.setSizeInBits(k, false);
+		  Assert.assertEquals(ewah2.sizeinbits,k);
+		  Assert.assertEquals(ewah2.cardinality(),0);
+		  EWAHCompressedBitmap32 ewah3 = new EWAHCompressedBitmap32();
+		  for(int i = 0; i < k ; ++i) {
+			  ewah3.set(i);
+		  }
+		  Assert.assertEquals(ewah3.sizeinbits,k);
+		  Assert.assertEquals(ewah3.cardinality(),k);
+		  EWAHCompressedBitmap32 ewah4 = new EWAHCompressedBitmap32();
+		  ewah4.setSizeInBits(k, true);
+		  Assert.assertEquals(ewah4.sizeinbits,k);
+		  Assert.assertEquals(ewah4.cardinality(),k);
+	  }
+  }
+
 
   /**
    * Test massive or.

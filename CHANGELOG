@@ -1,3 +1,7 @@
+version 0.6.6 (December 12, 2012)
+ - Fixed an off-by-one bug in setSizeInBits(final int size, final boolean defaultvalue). 
+ - Added corresponding unit test.
+
 version 0.6.5 (November 26, 2012)
  - Fixed a bug in IteratingBufferedRunningLengthWord.discharge
  that might cause "and" to return spurious values in some cases (issue #19 reported by  Gregory Ssi-Yan-Kai)
