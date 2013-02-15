@@ -993,7 +993,21 @@ public class EWAHCompressedBitmapTest {
     Assert.assertEquals(bitsToSet.length, ewah.cardinality());
   }
 
-
+  @Test
+  public void testSizeInBits1() {
+      EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+      bitmap.setSizeInBits(1, false);
+      bitmap.not();
+      Assert.assertEquals(1, bitmap.cardinality());
+  }
+  
+  @Test
+  public void testSizeInBits2() {
+      EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+      bitmap.setSizeInBits(1, true);
+      bitmap.not();
+      Assert.assertEquals(0, bitmap.cardinality());
+  }
   private static void assertAndEquals(EWAHCompressedBitmap...bitmaps)
   {
     EWAHCompressedBitmap expected = bitmaps[0];

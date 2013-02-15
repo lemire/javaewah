@@ -753,18 +753,26 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
     if (!i.hasNext())
       return;
+ 
     while (true) {
-      final RunningLengthWord rlw1 = i.next();
+    	final RunningLengthWord rlw1 = i.next();
       rlw1.setRunningBit(!rlw1.getRunningBit());
       for (int j = 0; j < rlw1.getNumberOfLiteralWords(); ++j) {
         i.buffer()[i.literalWords() + j] = ~i.buffer()[i.literalWords() + j];
       }
+
       if (!i.hasNext()) {// must potentially adjust the last literal word
-        if (rlw1.getNumberOfLiteralWords() == 0)
+          final int usedbitsinlast = this.sizeinbits % wordinbits;
+          if (usedbitsinlast == 0)
+            return;
+
+    	if (rlw1.getNumberOfLiteralWords() == 0) {
+    		if((rlw1.getRunningLength()>0) && (rlw1.getRunningBit())) {
+    			rlw1.setRunningLength(rlw1.getRunningLength()-1);
+    			this.addLiteralWord((~0l) >>> (wordinbits - usedbitsinlast));
+    		}
           return;
-        final int usedbitsinlast = this.sizeinbits % wordinbits;
-        if (usedbitsinlast == 0)
-          return;
+    	}
         i.buffer()[i.literalWords() + rlw1.getNumberOfLiteralWords() - 1] &= ((~0l) >>> (wordinbits - usedbitsinlast));
         return;
       }
@@ -1007,7 +1015,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @return true if the update was possible
    */
   public boolean setSizeInBits(final int size, final boolean defaultvalue) {
-    if (size < this.sizeinbits)
+	 if (size < this.sizeinbits)
       return false;
     // next loop could be optimized further
     if (defaultvalue)

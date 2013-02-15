@@ -1013,6 +1013,23 @@ public class EWAHCompressedBitmap32Test {
     System.out.println(" ... checking cardinality");
     Assert.assertEquals(bitsToSet.length, ewah.cardinality());
   }
+  
+
+  @Test
+  public void testSizeInBits1() {
+      EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
+      bitmap.setSizeInBits(1, false);
+      bitmap.not();
+      Assert.assertEquals(1, bitmap.cardinality());
+  }
+  
+  @Test
+  public void testSizeInBits2() {
+      EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
+      bitmap.setSizeInBits(1, true);
+      bitmap.not();
+      Assert.assertEquals(0, bitmap.cardinality());
+  }
 
   private static void assertAndEquals(EWAHCompressedBitmap32... bitmaps) {
     EWAHCompressedBitmap32 expected = bitmaps[0];

@@ -747,14 +747,21 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         i.buffer()[i.literalWords() + j] = ~i.buffer()[i.literalWords() + j];
       }
       if (!i.hasNext()) {// must potentially adjust the last literal word
-        if (rlw1.getNumberOfLiteralWords() == 0)
+          final int usedbitsinlast = this.sizeinbits % wordinbits;
+          if (usedbitsinlast == 0)
+            return;
+
+    	if (rlw1.getNumberOfLiteralWords() == 0) {
+    		if((rlw1.getRunningLength()>0) && (rlw1.getRunningBit())) {
+    			rlw1.setRunningLength(rlw1.getRunningLength()-1);
+    			this.addLiteralWord((~0) >>> (wordinbits - usedbitsinlast));
+    		}
           return;
-        final int usedbitsinlast = this.sizeinbits % wordinbits;
-        if (usedbitsinlast == 0)
-          return;
+    	}
         i.buffer()[i.literalWords() + rlw1.getNumberOfLiteralWords() - 1] &= ((~0) >>> (wordinbits - usedbitsinlast));
         return;
       }
+
     }
   }
 
