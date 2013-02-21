@@ -1022,6 +1022,25 @@ public class EWAHCompressedBitmap32Test {
       bitmap.not();
       Assert.assertEquals(1, bitmap.cardinality());
   }
+
+  @Test
+  public void testHasNextSafe() {
+      EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
+      bitmap.set(0);
+      IntIterator it = bitmap.intIterator();
+      Assert.assertTrue(it.hasNext());
+      Assert.assertEquals(0, it.next());
+  }
+  
+
+  @Test
+  public void testHasNextSafe2() {
+      EWAHCompressedBitmap32 bitmap = new EWAHCompressedBitmap32();
+      bitmap.set(0);
+      IntIterator it = bitmap.intIterator();
+      Assert.assertEquals(0, it.next());
+  }
+
   
   @Test
   public void testSizeInBits2() {

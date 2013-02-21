@@ -1,3 +1,13 @@
+version 0.6.8 (February 21, 2013)
+ - Fixed an issue with hasNext in iterator (issue 22). 
+ - Added corresponding unit test.
+
+
+version 0.6.7 (February 15, 2013)
+ - Fixed an issue with setSizeInBits (issue 21). 
+ - Added corresponding unit test.
+
+
 version 0.6.6 (December 12, 2012)
  - Fixed an off-by-one bug in setSizeInBits(final int size, final boolean defaultvalue). 
  - Added corresponding unit test.
