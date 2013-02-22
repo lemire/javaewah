@@ -21,7 +21,6 @@ final class IntIteratorImpl32 implements IntIterator {
 
 	private final EWAHIterator32 ewahIter;
 	private final int[] ewahBuffer;
-
 	private int position;
 	private int runningLength;
 	private int word;
