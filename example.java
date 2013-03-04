@@ -25,8 +25,8 @@ public class example {
     System.out.println("memory usage: " + andbitmap.sizeInBytes() + " bytes");
     // xor
     EWAHCompressedBitmap xorbitmap = ewahBitmap1.xor(ewahBitmap2);
-    System.out.println("bitmap 1 XOR bitmap 2:"+toSetBitString(andbitmap));
-    System.out.println("memory usage: " + andbitmap.sizeInBytes() + " bytes");
+    System.out.println("bitmap 1 XOR bitmap 2:"+toSetBitString(xorbitmap));
+    System.out.println("memory usage: " + xorbitmap.sizeInBytes() + " bytes");
     // fast aggregation over many bitmaps
     EWAHCompressedBitmap ewahBitmap3 = EWAHCompressedBitmap.bitmapOf(55,5,1<<30);
     EWAHCompressedBitmap ewahBitmap4 = EWAHCompressedBitmap.bitmapOf(4,66,1<<30);
