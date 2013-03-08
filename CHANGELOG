@@ -1,3 +1,7 @@
+version 0.6.7 (March 8, 2013)
+ - Using maven-bundle-plugin (for JGIT, as per Alexander Riss's request)
+ - Minor: Fixed a typo in example.java
+
 version 0.6.8 (February 21, 2013)
  - Fixed an issue with hasNext in iterator (issue 22). 
  - Added corresponding unit test.
