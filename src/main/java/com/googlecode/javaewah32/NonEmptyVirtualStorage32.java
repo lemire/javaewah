@@ -15,7 +15,7 @@ package com.googlecode.javaewah32;
  *
  */
 public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
-  class NonEmptyException extends RuntimeException {
+  static class NonEmptyException extends RuntimeException {
     private static final long serialVersionUID = 1L;    
   }
   /**
