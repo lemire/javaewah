@@ -1,7 +1,7 @@
 package com.googlecode.javaewah;
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho and and Google Inc.
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
  * Licensed under APL 2.0.
  */
 

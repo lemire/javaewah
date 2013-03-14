@@ -1,5 +1,12 @@
 package com.googlecode.javaewah.benchmark;
 
+
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
+ * Licensed under APL 2.0.
+ */
+
+
 /**
  * This class will generate uniformly distributed lists of random integers.
  * 

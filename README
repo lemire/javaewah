@@ -1,10 +1,13 @@
 JavaEWAH
-(c) 2009-2012
+(c) 2009-2013
 Daniel Lemire (http://lemire.me/en/), 
 Cliff Moon (https://github.com/cliffmoon), 
 David McIntosh (https://github.com/mctofu),
 Robert Becho (https://github.com/RBecho),
-and Colby Ranger (https://github.com/crangeratgoogle)
+Colby Ranger (https://github.com/crangeratgoogle)
+and Veronika Zenz (https://github.com/veronikazenz)
+
+
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
 
@@ -38,6 +41,13 @@ Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap i
  http://arxiv.org/abs/0901.3751
  
  (The PDF file is freely available on the arXiv site.)
+
+== Benchmark ==
+
+For a simple comparison between this library and other libraries such as
+WAH, ConciseSet, BitSet and other options, please see
+
+https://github.com/lemire/simplebitmapbenchmark
  
 == Unit testing ==
 
@@ -66,7 +76,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
     <dependency>
 	<groupId>com.googlecode.javaewah</groupId>
 	<artifactId>JavaEWAH</artifactId>
-	<version>0.6.9</version>
+	<version>0.6.10</version>
     </dependency>
 </dependencies>
 

@@ -1,7 +1,7 @@
 package com.googlecode.javaewah;
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
  * Licensed under APL 2.0.
  */
 /**
@@ -10,7 +10,7 @@ package com.googlecode.javaewah;
  * set bit.
  * 
  * @since 0.4.2
- * @author Daniel Lemire
+ * @author Daniel Lemire and Veronika Zenz
  * 
  */
 public class NonEmptyVirtualStorage implements BitmapStorage {

@@ -1,8 +1,16 @@
 package com.googlecode.javaewah.benchmark;
 
+
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
+ * Licensed under APL 2.0.
+ */
+
+
 import java.util.Iterator;
 import java.util.Random;
 import java.util.TreeSet;
+
 
 /**
  * This class will generate "clustered" lists of random integers. That is, the

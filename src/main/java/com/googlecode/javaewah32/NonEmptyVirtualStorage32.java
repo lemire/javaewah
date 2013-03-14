@@ -3,7 +3,7 @@ package com.googlecode.javaewah32;
 
 
 /*
- * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
  * Licensed under APL 2.0.
  */
 /**
@@ -12,7 +12,7 @@ package com.googlecode.javaewah32;
  * there will be at least on set bit.
  * 
  * @since 0.5.0
- * @author Daniel Lemire
+ * @author Daniel Lemire and Veronika Zenz
  *
  */
 public class NonEmptyVirtualStorage32 implements BitmapStorage32 {

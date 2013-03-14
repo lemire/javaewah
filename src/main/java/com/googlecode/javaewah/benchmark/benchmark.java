@@ -1,14 +1,24 @@
 package com.googlecode.javaewah.benchmark;
 
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
+ * Licensed under APL 2.0.
+ */
+
+
 import java.text.DecimalFormat;
 import java.util.List;
-
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 
-
-public class benchmark {
+/**
+ * This class is used to benchmark the performance 
+ * EWAH.
+ * 
+ * @author Daniel Lemire
+ */
+public class Benchmark {
 
   public static void main(String args[]) {
     test(100, 16, 1);
