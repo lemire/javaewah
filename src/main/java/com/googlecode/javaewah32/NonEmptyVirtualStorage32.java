@@ -1,6 +1,7 @@
 package com.googlecode.javaewah32;
 
 
+
 /*
  * Copyright 2009-2012, Daniel Lemire, Cliff Moon, David McIntosh and Robert Becho
  * Licensed under APL 2.0.
@@ -15,15 +16,31 @@ package com.googlecode.javaewah32;
  *
  */
 public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
-  class NonEmptyException extends RuntimeException {
-    private static final long serialVersionUID = 1L;    
+  static class NonEmptyException extends RuntimeException {
+    private static final long serialVersionUID = 1L;  
+    
+    /**
+     * Do not fill in the stack trace for this exception
+     * for performance reasons.
+     *
+     * @return this instance
+     * @see java.lang.Throwable#fillInStackTrace()
+     */
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
   }
+  
+  private static final NonEmptyException nonEmptyException = new NonEmptyException();
+  
+  
   /**
    * If the word to be added is non-zero, a NonEmptyException exception is thrown.
    * @see com.googlecode.javaewah.BitmapStorage#add(int)
    */
   public void add(int newdata) {
-    if(newdata!=0) throw new NonEmptyException(); 
+    if(newdata!=0) throw nonEmptyException; 
   }
 
   /**
@@ -33,7 +50,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    */
   public void addStreamOfLiteralWords(int[] data, int start, int number) {
     if (number > 0){
-      throw new NonEmptyException();
+      throw nonEmptyException;
     }
   }
 
@@ -44,7 +61,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * @see com.googlecode.javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, int)
    */
   public void addStreamOfEmptyWords(boolean v, int number) {
-    if(v && (number>0)) throw new NonEmptyException(); 
+    if(v && (number>0)) throw nonEmptyException; 
   }
 
   /**
@@ -54,7 +71,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    */
   public void addStreamOfNegatedLiteralWords(int[] data, int start, int number) {
     if (number > 0){
-      throw new NonEmptyException();
+      throw nonEmptyException;
     }
   }
 

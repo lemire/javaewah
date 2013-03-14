@@ -14,9 +14,23 @@ package com.googlecode.javaewah;
  * 
  */
 public class NonEmptyVirtualStorage implements BitmapStorage {
-  class NonEmptyException extends RuntimeException {
+  static class NonEmptyException extends RuntimeException {
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Do not fill in the stack trace for this exception
+     * for performance reasons.
+     *
+     * @return this instance
+     * @see java.lang.Throwable#fillInStackTrace()
+     */
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
   }
+  
+  private static final NonEmptyException nonEmptyException = new NonEmptyException();
 
   /**
    * If the word to be added is non-zero, a NonEmptyException exception is
@@ -26,7 +40,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    */
   public void add(long newdata) {
     if (newdata != 0)
-      throw new NonEmptyException();
+      throw nonEmptyException;
     return;
   }
 
@@ -37,7 +51,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    */
   public void addStreamOfLiteralWords(long[] data, int start, int number) {
       if(number>0){
-          throw new NonEmptyException();
+          throw nonEmptyException;
       }
   }
 
@@ -49,7 +63,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    */
   public void addStreamOfEmptyWords(boolean v, long number) {
     if (v && (number>0))
-      throw new NonEmptyException();
+      throw nonEmptyException;
     return;
   }
 
@@ -61,7 +75,7 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    */
   public void addStreamOfNegatedLiteralWords(long[] data, int start, int number) {
       if(number>0){
-          throw new NonEmptyException();
+          throw nonEmptyException;
       }
   }
 
