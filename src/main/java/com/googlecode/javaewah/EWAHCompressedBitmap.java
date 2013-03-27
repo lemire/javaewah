@@ -1293,12 +1293,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       long minSize = Long.MAX_VALUE;
       int numEmptyRl = 0;
 
-      if (rlws[0].size() == 0) {
-        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
-        break;
-      }
-
+      
       for (IteratingBufferedRunningLengthWord rlw : rlws) {
+    	  
         long size = rlw.size();
         minSize = Math.min(minSize, size);
 
@@ -1318,6 +1315,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
       }
 
+      if (minSize == 0) {
+        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
+        break;
+      }
       if (maxZeroRl > 0) {
         container.addStreamOfEmptyWords(false, maxZeroRl);
         for (IteratingBufferedRunningLengthWord rlw : rlws) {

@@ -1,3 +1,7 @@
+version 0.6.10 
+ - replaced private methods by renamed public methods to enhance extensibility
+ - fixed bug in and-aggregation (Gabriel Magniez)
+
 version 0.6.9 (March 8, 2013)
  - Using maven-bundle-plugin (for JGIT, as per Alexander Riss's request)
  - Minor: Fixed a typo in example.java

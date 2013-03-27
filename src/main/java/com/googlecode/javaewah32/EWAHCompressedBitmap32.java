@@ -1310,11 +1310,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       int minSize = Integer.MAX_VALUE;
       int numEmptyRl = 0;
 
-      if (rlws[0].size() == 0) {
-        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
-        break;
-      }
-
       for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
         int size = rlw.size();
         minSize = Math.min(minSize, size);
@@ -1333,6 +1328,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             numEmptyRl++;
           }
         }
+      }
+
+      if (rlws[0].size() == 0) {
+        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
+        break;
       }
 
       if (maxZeroRl > 0) {

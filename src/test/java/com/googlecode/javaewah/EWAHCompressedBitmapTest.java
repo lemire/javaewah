@@ -1019,7 +1019,20 @@ public class EWAHCompressedBitmapTest {
       Assert.assertEquals(0, it.next());
   }
 
-  
+
+  @Test
+  public  void testInfiniteLoop() {
+	    System.out.println("Testing for an infinite loop");
+		EWAHCompressedBitmap b1 = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b2 = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b3 = new EWAHCompressedBitmap();
+		b3.setSizeInBits(5); 
+		b1.set(2);
+		b2.set(4);
+		EWAHCompressedBitmap.and(b1, b2, b3);
+		EWAHCompressedBitmap.or(b1, b2, b3);
+  }
+
   @Test
   public void testSizeInBits2() {
       EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
@@ -1059,8 +1072,6 @@ public class EWAHCompressedBitmapTest {
   private static Integer extracted(final Iterator<Integer> bits) {
     return bits.next();
   }
-
-
   private static void testSetSizeInBits(int size, int nextBit) {
     EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
     bitmap.setSizeInBits(size,false);
