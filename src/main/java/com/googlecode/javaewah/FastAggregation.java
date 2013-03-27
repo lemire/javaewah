@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
  *
  */
 public class FastAggregation {
-  
+
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public static <T extends LogicalElement> T and(T...bitmaps) {
     // for "and" a priority queue is not needed, but

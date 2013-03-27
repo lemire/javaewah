@@ -293,7 +293,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
         : a.actualsizeinwords);
-    and(a, container);
+    andToContainer(a, container);
     return container;
   }
    /**
@@ -309,7 +309,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void and(final EWAHCompressedBitmap a, final BitmapStorage container) {
+  public void andToContainer(final EWAHCompressedBitmap a, final BitmapStorage container) {
     final EWAHIterator i = a.getEWAHIterator();
     final EWAHIterator j = getEWAHIterator();
     final IteratingBufferedRunningLengthWord rlwi = new IteratingBufferedRunningLengthWord(i);
@@ -360,7 +360,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public int andCardinality(final EWAHCompressedBitmap a) {
     final BitCounter counter = new BitCounter();
-    and(a, counter);
+    andToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -380,7 +380,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
         : a.actualsizeinwords);
-    andNot(a, container);
+    andNotToContainer(a, container);
     return container;
   }
 
@@ -397,7 +397,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  private void andNot(final EWAHCompressedBitmap a,
+  public void andNotToContainer(final EWAHCompressedBitmap a,
     final BitmapStorage container) {
     final EWAHIterator i = getEWAHIterator();
     final EWAHIterator j = a.getEWAHIterator();
@@ -457,7 +457,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public int andNotCardinality(final EWAHCompressedBitmap a) {
     final BitCounter counter = new BitCounter();
-    andNot(a, counter);
+    andNotToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -536,7 +536,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public boolean equals(Object o) {
     if (o instanceof EWAHCompressedBitmap) {
       try {
-        this.xor((EWAHCompressedBitmap) o, new NonEmptyVirtualStorage());
+        this.xorToContainer((EWAHCompressedBitmap) o, new NonEmptyVirtualStorage());
         return true;
       } catch (NonEmptyVirtualStorage.NonEmptyException e) {
         return false;
@@ -596,7 +596,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * 
    * @return the EWAHIterator
    */
-  protected EWAHIterator getEWAHIterator() {
+  public EWAHIterator getEWAHIterator() {
     return new EWAHIterator(this.buffer, this.actualsizeinwords);
   }
 
@@ -675,7 +675,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public boolean intersects(final EWAHCompressedBitmap a) {
     NonEmptyVirtualStorage nevs = new NonEmptyVirtualStorage();
     try {
-      this.and(a, nevs);
+      this.andToContainer(a, nevs);
     } catch (NonEmptyVirtualStorage.NonEmptyException nee) {
       return true;
     }
@@ -793,7 +793,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public EWAHCompressedBitmap or(final EWAHCompressedBitmap a) {
     final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
-    or(a, container);
+    orToContainer(a, container);
     return container;
   }
 
@@ -807,7 +807,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void or(final EWAHCompressedBitmap a, final BitmapStorage container) {
+  public void orToContainer(final EWAHCompressedBitmap a, final BitmapStorage container) {
     final EWAHIterator i = a.getEWAHIterator();
     final EWAHIterator j = getEWAHIterator();
     final IteratingBufferedRunningLengthWord rlwi = new IteratingBufferedRunningLengthWord(i);
@@ -859,7 +859,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public int orCardinality(final EWAHCompressedBitmap a) {
     final BitCounter counter = new BitCounter();
-    or(a, counter);
+    orToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -1169,7 +1169,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   public EWAHCompressedBitmap xor(final EWAHCompressedBitmap a) {
     final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
-    xor(a, container);
+    xorToContainer(a, container);
     return container;
   }
 
@@ -1186,7 +1186,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void xor(final EWAHCompressedBitmap a, final BitmapStorage container) {
+  public void xorToContainer(final EWAHCompressedBitmap a, final BitmapStorage container) {
     final EWAHIterator i = a.getEWAHIterator();
     final EWAHIterator j = getEWAHIterator();
     final IteratingBufferedRunningLengthWord rlwi = new IteratingBufferedRunningLengthWord(i);
@@ -1237,7 +1237,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public int xorCardinality(final EWAHCompressedBitmap a) {
     final BitCounter counter = new BitCounter();
-    xor(a, counter);
+    xorToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -1251,11 +1251,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    *          bitmaps to AND
    * @since 0.4.3
    */
-  private static void and(final BitmapStorage container,
+  public static void andWithContainer(final BitmapStorage container,
     final EWAHCompressedBitmap... bitmaps) {
     if (bitmaps.length == 2) {
       // should be more efficient
-      bitmaps[0].and(bitmaps[1], container);
+      bitmaps[0].andToContainer(bitmaps[1], container);
       return;
     }
 
@@ -1387,7 +1387,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
     }
     container.reserve((int) (largestSize * 1.5));
-    and(container, bitmaps);
+    andWithContainer(container, bitmaps);
     return container;
   }
 
@@ -1403,7 +1403,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public static int andCardinality(final EWAHCompressedBitmap... bitmaps) {
     final BitCounter counter = new BitCounter();
-    and(counter, bitmaps);
+    andWithContainer(counter, bitmaps);
     return counter.getCount();
   }
   
@@ -1454,11 +1454,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * 
    * @since 0.4.0
    */
-  private static void or(final BitmapStorage container,
+  public static void orWithContainer(final BitmapStorage container,
     final EWAHCompressedBitmap... bitmaps) {
     if (bitmaps.length == 2) {
       // should be more efficient
-      bitmaps[0].or(bitmaps[1], container);
+      bitmaps[0].orToContainer(bitmaps[1], container);
       return;
     }
 
@@ -1600,7 +1600,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
       largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
     }
     container.reserve((int) (largestSize * 1.5));
-    or(container, bitmaps);
+    orWithContainer(container, bitmaps);
     return container;
   }
 
@@ -1616,7 +1616,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public static int orCardinality(final EWAHCompressedBitmap... bitmaps) {
     final BitCounter counter = new BitCounter();
-    or(counter, bitmaps);
+    orWithContainer(counter, bitmaps);
     return counter.getCount();
   }
 

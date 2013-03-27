@@ -272,7 +272,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
         : a.actualsizeinwords);
-    and(a, container);
+    andToContainer(a, container);
     return container;
   }
 
@@ -301,7 +301,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void and(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
+  public void andToContainer(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
     final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
@@ -352,7 +352,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public int andCardinality(final EWAHCompressedBitmap32 a) {
     final BitCounter32 counter = new BitCounter32();
-    and(a, counter);
+    andToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -372,7 +372,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
         : a.actualsizeinwords);
-    andNot(a, container);
+    andNotToContainer(a, container);
     return container;
   }
 
@@ -387,7 +387,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  private void andNot(final EWAHCompressedBitmap32 a,
+  public void andNotToContainer(final EWAHCompressedBitmap32 a,
     final BitmapStorage32 container) {
     final EWAHIterator32 i = getEWAHIterator();
     final EWAHIterator32 j = a.getEWAHIterator();
@@ -447,7 +447,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public int andNotCardinality(final EWAHCompressedBitmap32 a) {
     final BitCounter32 counter = new BitCounter32();
-    andNot(a, counter);
+    andNotToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -526,7 +526,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   public boolean equals(Object o) {
     if (o instanceof EWAHCompressedBitmap32) {
       try {
-        this.xor((EWAHCompressedBitmap32) o, new NonEmptyVirtualStorage32());
+        this.xorToContainer((EWAHCompressedBitmap32) o, new NonEmptyVirtualStorage32());
         return true;
       } catch (NonEmptyVirtualStorage32.NonEmptyException e) {
         return false;
@@ -584,7 +584,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @return the EWAHIterator
    */
-  protected EWAHIterator32 getEWAHIterator() {
+  public EWAHIterator32 getEWAHIterator() {
     return new EWAHIterator32(this.buffer, this.actualsizeinwords);
   }
 
@@ -661,7 +661,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   public boolean intersects(final EWAHCompressedBitmap32 a) {
     NonEmptyVirtualStorage32 nevs = new NonEmptyVirtualStorage32();
     try {
-      this.and(a, nevs);
+      this.andToContainer(a, nevs);
     } catch (NonEmptyVirtualStorage32.NonEmptyException nee) {
       return true;
     }
@@ -812,7 +812,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   public EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
-    or(a, container);
+    orToContainer(a, container);
     return container;
   }
 
@@ -825,7 +825,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void or(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
+  public void orToContainer(final EWAHCompressedBitmap32 a, final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
     final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(i);
@@ -875,7 +875,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public int orCardinality(final EWAHCompressedBitmap32 a) {
     final BitCounter32 counter = new BitCounter32();
-    or(a, counter);
+    orToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -1188,7 +1188,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   public EWAHCompressedBitmap32 xor(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
-    xor(a, container);
+    xorToContainer(a, container);
     return container;
   }
 
@@ -1204,7 +1204,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param container
    *          where we store the result
    */
-  private void xor(final EWAHCompressedBitmap32 a,
+  public void xorToContainer(final EWAHCompressedBitmap32 a,
     final BitmapStorage32 container) {
     final EWAHIterator32 i = a.getEWAHIterator();
     final EWAHIterator32 j = getEWAHIterator();
@@ -1255,7 +1255,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public int xorCardinality(final EWAHCompressedBitmap32 a) {
     final BitCounter32 counter = new BitCounter32();
-    xor(a, counter);
+    xorToContainer(a, counter);
     return counter.getCount();
   }
 
@@ -1268,11 +1268,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param bitmaps
    *          bitmaps to AND
    */
-  private static void and(final BitmapStorage32 container,
+  public static void andWithContainer(final BitmapStorage32 container,
     final EWAHCompressedBitmap32... bitmaps) {
     if (bitmaps.length == 2) {
       // should be more efficient
-      bitmaps[0].and(bitmaps[1], container);
+      bitmaps[0].andToContainer(bitmaps[1], container);
       return;
     }
 
@@ -1404,7 +1404,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
     }
     container.reserve((int) (largestSize * 1.5));
-    and(container, bitmaps);
+    andWithContainer(container, bitmaps);
     return container;
   }
 
@@ -1419,7 +1419,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public static int andCardinality(final EWAHCompressedBitmap32... bitmaps) {
     final BitCounter32 counter = new BitCounter32();
-    and(counter, bitmaps);
+    andWithContainer(counter, bitmaps);
     return counter.getCount();
   }
   
@@ -1468,11 +1468,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * For internal use. Computes the bitwise or of the provided bitmaps and
    * stores the result in the container.
    */
-  private static void or(final BitmapStorage32 container,
+  public static void orWithContainer(final BitmapStorage32 container,
     final EWAHCompressedBitmap32... bitmaps) {
     if (bitmaps.length == 2) {
       // should be more efficient
-      bitmaps[0].or(bitmaps[1], container);
+      bitmaps[0].orToContainer(bitmaps[1], container);
       return;
     }
 
@@ -1614,7 +1614,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
     }
     container.reserve((int) (largestSize * 1.5));
-    or(container, bitmaps);
+    orWithContainer(container, bitmaps);
     return container;
   }
 
@@ -1629,7 +1629,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public static int orCardinality(final EWAHCompressedBitmap32... bitmaps) {
     final BitCounter32 counter = new BitCounter32();
-    or(counter, bitmaps);
+    orWithContainer(counter, bitmaps);
     return counter.getCount();
   }
 
