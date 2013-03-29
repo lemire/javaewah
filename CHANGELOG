@@ -1,4 +1,7 @@
-version 0.6.10 
+version 0.6.11 (March 29, 2013)
+ - fixed issue 26: Inconsistent iterators after using "setSizeInBits"	
+
+version 0.6.10 (March 14, 2013) 
  - replaced private methods by renamed public methods to enhance extensibility
  - fixed bug in and-aggregation (Gabriel Magniez)
 

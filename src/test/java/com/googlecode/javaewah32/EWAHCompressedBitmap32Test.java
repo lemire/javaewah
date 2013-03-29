@@ -13,7 +13,36 @@ import java.io.*;
 import junit.framework.Assert;
 
 public class EWAHCompressedBitmap32Test {
-
+	   @Test
+	   public void testDebugSetSizeInBitsTest() {      
+		  System.out.println("testing DebugSetSizeInBits");
+		  EWAHCompressedBitmap32 b = new EWAHCompressedBitmap32();
+	      
+	      b.set(4);
+	      
+	      b.setSizeInBits(6, true);
+	      
+	      List<Integer> positions = b.getPositions();
+	      
+	      Assert.assertEquals(2, positions.size());
+	      Assert.assertEquals(Integer.valueOf(4), positions.get(0));
+	      Assert.assertEquals(Integer.valueOf(5), positions.get(1));
+	      
+	      Iterator<Integer> iterator = b.iterator();
+	      Assert.assertTrue(iterator.hasNext());
+	      Assert.assertEquals(Integer.valueOf(4), iterator.next());
+	      Assert.assertTrue(iterator.hasNext());
+	      Assert.assertEquals(Integer.valueOf(5), iterator.next());
+	      Assert.assertFalse(iterator.hasNext());
+	      
+	      IntIterator intIterator = b.intIterator();
+	      Assert.assertTrue(intIterator.hasNext());
+	      Assert.assertEquals(4, intIterator.next());
+	      Assert.assertTrue(intIterator.hasNext());
+	      Assert.assertEquals(5, intIterator.next());
+	      Assert.assertFalse(intIterator.hasNext());
+	      
+	   }
   /**
    * Created: 2/4/11 6:03 PM By: Arnon Moscona.
    */
