@@ -895,6 +895,28 @@ public class EWAHCompressedBitmapTest {
       if(!a.or(b).equals(a)) throw new RuntimeException("bug");
     }
   }
+  
+  @Test
+	public void TestCloneEwahCompressedBitArray()
+			throws CloneNotSupportedException {
+		System.out.println("testing EWAH clone");
+		EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+		a.set(410018);
+		a.set(410019);
+		a.set(410020);
+		a.set(410021);
+		a.set(410022);
+		a.set(410023);
+
+		EWAHCompressedBitmap b;
+
+		b = (EWAHCompressedBitmap) a.clone();
+
+		a.setSizeInBits(487123, false);
+		b.setSizeInBits(487123, false);
+
+		Assert.assertTrue(a.equals(b));
+	}
 
   /**
    * a non-deterministic test proposed by Marc Polizzi.
