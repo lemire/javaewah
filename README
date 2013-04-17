@@ -82,3 +82,11 @@ You can also specify the dependency in the Maven "pom.xml" file:
 
 Naturally, you should replace "version" by the version
 you desire.
+
+
+
+== Clojure ==
+
+Joel Boehland wrote Clojure wrappers:
+
+https://github.com/jolby/clojure-ewah-bitmap
