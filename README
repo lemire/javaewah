@@ -10,7 +10,7 @@ and Veronika Zenz (https://github.com/veronikazenz)
 
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
-
+(GPL 2.0 derivatives are allowed.)
 
 This is a word-aligned compressed variant of
 the Java Bitset class. We provide both a 64-bit 

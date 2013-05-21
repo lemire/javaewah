@@ -184,22 +184,21 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public void addStreamOfLiteralWords(final long[] data, final int start,
     final int number) {
-    if (number == 0)
-      return;
-    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
-      - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
-      - NumberOfLiteralWords;
-    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final int leftovernumber = number - whatwecanadd;
-    push_back(data, start, whatwecanadd);
-    this.sizeinbits += whatwecanadd * wordinbits;
-    if (leftovernumber > 0) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfLiteralWords(data, start + whatwecanadd, leftovernumber);
-    }
-    return;
+	 int leftovernumber = number;
+	 while(leftovernumber > 0) {
+		    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+		    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
+		      - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
+		      - NumberOfLiteralWords;
+		    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
+		    leftovernumber -=  whatwecanadd;
+		    push_back(data, start, whatwecanadd);
+		    this.sizeinbits += whatwecanadd * wordinbits;
+		    if (leftovernumber > 0) {
+		      push_back(0);
+		      this.rlw.position = this.actualsizeinwords - 1;
+		    }
+	 }
   }
 
   /**
@@ -256,25 +255,26 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @param number
    *          the number of literal words to add
    */
-  public void addStreamOfNegatedLiteralWords(final long[] data, final int start,
-    final int number) {
-    if (number == 0)
-      return;
-    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
-      - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
-      - NumberOfLiteralWords;
-    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final int leftovernumber = number - whatwecanadd;
-    negative_push_back(data, start, whatwecanadd);
-    this.sizeinbits += whatwecanadd * wordinbits;
-    if (leftovernumber > 0) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfLiteralWords(data, start + whatwecanadd, leftovernumber);
-    }
-    return;
-  }
+	public void addStreamOfNegatedLiteralWords(final long[] data,
+			final int start, final int number) {
+		int leftovernumber = number;
+		while (leftovernumber > 0) {
+			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+			final int whatwecanadd = number < RunningLengthWord.largestliteralcount
+					- NumberOfLiteralWords ? number
+					: RunningLengthWord.largestliteralcount
+							- NumberOfLiteralWords;
+			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
+					+ whatwecanadd);
+			leftovernumber -= whatwecanadd;
+			negative_push_back(data, start, whatwecanadd);
+			this.sizeinbits += whatwecanadd * wordinbits;
+			if (leftovernumber > 0) {
+				push_back(0);
+				this.rlw.position = this.actualsizeinwords - 1;
+			}
+		}
+	}
 
   /**
    * Returns a new compressed bitmap containing the bitwise AND values of the

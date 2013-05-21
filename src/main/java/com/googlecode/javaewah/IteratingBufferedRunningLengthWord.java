@@ -56,7 +56,7 @@ public final class IteratingBufferedRunningLengthWord {
           break;
         }
         this.brlw.reset(this.iterator.next());
-        this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
+        this.literalWordStartPosition = this.iterator.literalWords(); //  + this.brlw.literalwordoffset ==0
       }
     }
   }

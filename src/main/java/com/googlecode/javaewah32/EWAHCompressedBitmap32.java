@@ -165,22 +165,24 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public void addStreamOfLiteralWords(final int[] data, final int start,
     final int number) {
-    if (number == 0)
-      return;
-    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-      - NumberOfLiteralWords ? number : RunningLengthWord32.largestliteralcount
-      - NumberOfLiteralWords;
-    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final int leftovernumber = number - whatwecanadd;
-    push_back(data, start, whatwecanadd);
-    this.sizeinbits += whatwecanadd * wordinbits;
-    if (leftovernumber > 0) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfLiteralWords(data, start + whatwecanadd, leftovernumber);
-    }
-  }
+		int leftovernumber = number;
+		while (leftovernumber > 0) {
+			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? number
+					: RunningLengthWord32.largestliteralcount
+							- NumberOfLiteralWords;
+			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
+					+ whatwecanadd);
+			leftovernumber -= whatwecanadd;
+			push_back(data, start, whatwecanadd);
+			this.sizeinbits += whatwecanadd * wordinbits;
+			if (leftovernumber > 0) {
+				push_back(0);
+				this.rlw.position = this.actualsizeinwords - 1;
+			} 
+		}
+	}
 
   /**
    * For experts: You want to add many zeroes or ones? This is the method you
@@ -238,23 +240,25 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the number of literal words to add
    */
   public void addStreamOfNegatedLiteralWords(final int[] data, final int start,
-    final int number) {
-    if (number == 0)
-      return;
-    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-    final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-      - NumberOfLiteralWords ? number : RunningLengthWord32.largestliteralcount
-      - NumberOfLiteralWords;
-    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
-    final int leftovernumber = number - whatwecanadd;
-    negative_push_back(data, start, whatwecanadd);
-    this.sizeinbits += whatwecanadd * wordinbits;
-    if (leftovernumber > 0) {
-      push_back(0);
-      this.rlw.position = this.actualsizeinwords - 1;
-      addStreamOfLiteralWords(data, start + whatwecanadd, leftovernumber);
-    }
-  }
+ final int number) {
+		int leftovernumber = number;
+		while (leftovernumber > 0) {
+			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
+			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? number
+					: RunningLengthWord32.largestliteralcount
+							- NumberOfLiteralWords;
+			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
+					+ whatwecanadd);
+			leftovernumber -= whatwecanadd;
+			negative_push_back(data, start, whatwecanadd);
+			this.sizeinbits += whatwecanadd * wordinbits;
+			if (leftovernumber > 0) {
+				push_back(0);
+				this.rlw.position = this.actualsizeinwords - 1;
+			} 
+		}
+	}
 
   /**
    * Returns a new compressed bitmap containing the bitwise AND values of the
