@@ -1,3 +1,7 @@
+version 0.6.12 (May 21st 2013)
+ - Fixed bug with addStreamOfNegatedDirtyWords (Vicent Marti)
+ - Removed some unnecessary recursion
+
 version 0.6.11 (March 29, 2013)
  - fixed issue 26: Inconsistent iterators after using "setSizeInBits"	
 

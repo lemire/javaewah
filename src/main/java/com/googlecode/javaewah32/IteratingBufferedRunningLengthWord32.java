@@ -208,7 +208,8 @@ public final class IteratingBufferedRunningLengthWord32 {
   
 
   /**
-   * For internal use.
+   * For internal use. (One could use the non-static dischard method instead,
+   * but we expect them to be slower.)
    * 
    * @param initialWord
    *          the initial word
