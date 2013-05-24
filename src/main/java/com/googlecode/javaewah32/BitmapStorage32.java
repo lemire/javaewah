@@ -21,7 +21,6 @@ public interface BitmapStorage32 {
    * of 8*8 bits.
    *
    * @param newdata the word
-   * @return the number of words added to the buffer
    */  
   public void add(final int newdata);
   
@@ -31,7 +30,6 @@ public interface BitmapStorage32 {
    * @param data the literal words
    * @param start the starting point in the array
    * @param number the number of literal words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   public void addStreamOfLiteralWords(final int[] data, final int start,
       final int number);
@@ -42,7 +40,6 @@ public interface BitmapStorage32 {
    *
    * @param v zeros or ones
    * @param number how many to words add
-   * @return the number of words added to the buffer
    */
   public void addStreamOfEmptyWords(final boolean v, final int number);
 
@@ -52,7 +49,6 @@ public interface BitmapStorage32 {
    * @param data the literal words
    * @param start the starting point in the array
    * @param number the number of literal words to add
-   * @return how many (compressed) words were added to the bitmap
    */
   public void addStreamOfNegatedLiteralWords( int[] data, final int start,
   final int number);

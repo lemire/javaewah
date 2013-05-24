@@ -51,9 +51,7 @@ public final class BitCounter implements BitmapStorage {
    *          zeros or ones
    * @param number
    *          how many to words add
-   * @return the number of words added to the buffer
    */
-  // @Override : causes problems with Java 1.5
   public void addStreamOfEmptyWords(boolean v, long number) {
     if (v) {
       this.oneBits += number * EWAHCompressedBitmap.wordinbits;

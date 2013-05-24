@@ -20,10 +20,12 @@ import com.googlecode.javaewah.IntIterator;
  */
 public class Benchmark {
 
+  @SuppressWarnings("javadoc")
   public static void main(String args[]) {
     test(100, 16, 1);
   }
 
+  @SuppressWarnings("javadoc")
   public static void test(int N, int nbr, int repeat) {
     DecimalFormat df = new DecimalFormat("0.###");
     ClusteredDataGenerator cdg = new ClusteredDataGenerator();

@@ -37,7 +37,6 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   
   /**
    * If the word to be added is non-zero, a NonEmptyException exception is thrown.
-   * @see com.googlecode.javaewah.BitmapStorage#add(int)
    */
   public void add(int newdata) {
     if(newdata!=0) throw nonEmptyException; 
@@ -46,7 +45,6 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   /**
    * throws a NonEmptyException exception when number > 0
    * 
-   * @see com.googlecode.javaewah.BitmapStorage#addStreamOfLiteralWords(int[], int, int)
    */
   public void addStreamOfLiteralWords(int[] data, int start, int number) {
     if (number > 0){
@@ -58,7 +56,6 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * If the boolean value is true and number>0, then it throws a NonEmptyException exception,
    * otherwise, nothing happens.
    * 
-   * @see com.googlecode.javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, int)
    */
   public void addStreamOfEmptyWords(boolean v, int number) {
     if(v && (number>0)) throw nonEmptyException; 
@@ -67,7 +64,6 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   /**
    * throws a NonEmptyException exception when number > 0
    * 
-   * @see com.googlecode.javaewah.BitmapStorage#addStreamOfNegatedLiteralWords(int[], int, int)
    */
   public void addStreamOfNegatedLiteralWords(int[] data, int start, int number) {
     if (number > 0){

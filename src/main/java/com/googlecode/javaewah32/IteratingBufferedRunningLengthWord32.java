@@ -29,8 +29,8 @@ public final class IteratingBufferedRunningLengthWord32 {
 
   /**
    * Instantiates a new iterating buffered running length word.
+   * @param bitmap over which we want to iterate 
    *
-   * @param iterator iterator
    */  
   public IteratingBufferedRunningLengthWord32(final EWAHCompressedBitmap32 bitmap) {
     this(EWAHIterator32.getEWAHIterator(bitmap));

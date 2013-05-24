@@ -387,9 +387,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
    * 
-   * @param a
-   *          the other bitmap
-   * @return the EWAH compressed bitmap
+   * @param a the other bitmap
+   * @param container where we store the result
    */
   public void andNotToContainer(final EWAHCompressedBitmap32 a,
     final BitmapStorage32 container) {
@@ -769,39 +768,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
   }
 
-  public int oldaddStreamOfEmptyWords(final boolean v, final int number) {
-    if (number == 0)
-      return 0;
-    final boolean noliteralword = (this.rlw.getNumberOfLiteralWords() == 0);
-    final int runlen = this.rlw.getRunningLength();
-    if ((noliteralword) && (runlen == 0)) {
-      this.rlw.setRunningBit(v);
-    }
-    int wordsadded = 0;
-    if ((noliteralword) && (this.rlw.getRunningBit() == v)
-      && (runlen < RunningLengthWord32.largestrunninglengthcount)) {
-      int whatwecanadd = number < RunningLengthWord32.largestrunninglengthcount
-        - runlen ? number : RunningLengthWord32.largestrunninglengthcount
-        - runlen;
-      this.rlw.setRunningLength(runlen + whatwecanadd);
-      this.sizeinbits += whatwecanadd * wordinbits;
-      if (number - whatwecanadd > 0)
-        addStreamOfEmptyWords(v, number - whatwecanadd);
-    } else {
-      push_back(0);
-      ++wordsadded;
-      this.rlw.position = this.actualsizeinwords - 1;
-      final int whatwecanadd = number < RunningLengthWord32.largestrunninglengthcount ? number
-        : RunningLengthWord32.largestrunninglengthcount;
-      this.rlw.setRunningBit(v);
-      this.rlw.setRunningLength(whatwecanadd);
-      this.sizeinbits += whatwecanadd * wordinbits;
-      if (number - whatwecanadd > 0)
-        addStreamOfEmptyWords(v, number - whatwecanadd);
-    }
-    return wordsadded;
-  }
-
+ 
   /**
    * Returns a new compressed bitmap containing the bitwise OR values of the
    * current bitmap with some other bitmap.
@@ -1465,6 +1432,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /**
    * For internal use. Computes the bitwise or of the provided bitmaps and
    * stores the result in the container.
+   * @param container where store the result
+   * @param bitmaps to be aggregated
    */
   public static void orWithContainer(final BitmapStorage32 container,
     final EWAHCompressedBitmap32... bitmaps) {

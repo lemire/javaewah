@@ -393,9 +393,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * reported by sizeInBytes()).
    * 
    * @since 0.4.0
-   * @param a
-   *          the other bitmap
-   * @return the EWAH compressed bitmap
+   * @param a  the other bitmap
+   * @param container where to store the result 
    */
   public void andNotToContainer(final EWAHCompressedBitmap a,
     final BitmapStorage container) {
@@ -554,7 +553,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    *          the boolean value
    * @param number
    *          the number (must be greater than 0)
-   * @return nothing
    */
   private void fastaddStreamOfEmptyWords(final boolean v, long number) {
     if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
@@ -1451,6 +1449,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * stores the result in the container.
    * 
    * @since 0.4.0
+   * @param container where store the result
+   * @param bitmaps to be aggregated
    */
   public static void orWithContainer(final BitmapStorage container,
     final EWAHCompressedBitmap... bitmaps) {

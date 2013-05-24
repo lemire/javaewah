@@ -6,19 +6,20 @@ package com.googlecode.javaewah;
  * be concerned by this class.
  * 
  * @author Daniel Lemire
+ * @param <T> the type of element (e.g., a bitmap class)
  *
  */
 public interface LogicalElement<T> {
   /**
    * Compute the bitwise logical and
-   * @param another element
+   * @param le element
    * @return the result of the operation
    */
   public T and(T le);
   
   /**
    * Compute the bitwise logical and not
-   * @param another element
+   * @param le element
    * @return the result of the operation
    */
   public T andNot(T le);
@@ -27,10 +28,12 @@ public interface LogicalElement<T> {
    * Compute the bitwise logical not (in place)
    */
   public void not();
-  @SuppressWarnings("rawtypes")
+
+
+  @SuppressWarnings({ "rawtypes", "javadoc" })
   /**
    * Compute the bitwise logical or
-   * @param another element
+   * @param le another element
    * @return the result of the operation
    */
   public LogicalElement or(T le);
@@ -38,7 +41,6 @@ public interface LogicalElement<T> {
   /**
    * How many logical bits does this element represent?
    * 
-   * @param another element
    * @return the number of bits represented by this element
    */
   public int sizeInBits();
@@ -52,7 +54,7 @@ public interface LogicalElement<T> {
   
   /**
    * Compute the bitwise logical Xor
-   * @param another element
+   * @param le element
    * @return the results of the operation
    */
   public T xor(T le);

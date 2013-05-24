@@ -20,6 +20,9 @@ import java.util.Random;
  * @author Daniel Lemire
  */
 public class UniformDataGenerator {
+        /**
+         * construct generator of random arrays.
+         */
         public UniformDataGenerator(){
         }
     /**

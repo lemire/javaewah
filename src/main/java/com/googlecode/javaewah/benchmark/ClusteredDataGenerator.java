@@ -19,6 +19,9 @@ class ClusteredDataGenerator {
 
   /**
    * generates randomly N distinct integers from 0 to Max.
+   * @param N number of integers
+   * @param Max maximum integer value 
+   * @return  a randomly generated array
    */
   public int[] generateClustered(int N, int Max) {
     int[] array = new int[N];
