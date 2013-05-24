@@ -186,7 +186,7 @@ public final class IteratingBufferedRunningLengthWord {
   /**
    * write the first N literal words to the target bitmap.  Does not discard the words or perform iteration.
    * @param numWords number of words to be written
-   * @param container
+   * @param container where we write
    */
   public void writeLiteralWords(int numWords, BitmapStorage container) {
     container.addStreamOfLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
@@ -195,7 +195,7 @@ public final class IteratingBufferedRunningLengthWord {
   /**
    * write the first N literal words (negated) to the target bitmap.  Does not discard the words or perform iteration.
    * @param numWords number of words to be written
-   * @param container
+   * @param container where we write
    */
   public void writeNegatedLiteralWords(int numWords, BitmapStorage container) {
     container.addStreamOfNegatedLiteralWords(this.buffer, this.literalWordStartPosition, numWords);

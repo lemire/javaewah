@@ -31,7 +31,7 @@ public final class EWAHIterator32 {
   /**
    * Allow expert developers to instantiate an EWAHIterator.
    * 
-   * @param bitmap
+   * @param bitmap we want to iterate over
    * @return an iterator
    */
   public static EWAHIterator32 getEWAHIterator(EWAHCompressedBitmap32 bitmap) {
