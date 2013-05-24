@@ -43,7 +43,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   }
 
   /**
-   * throws a NonEmptyException exception when number > 0
+   * throws a NonEmptyException exception when number is greater than 0
    * 
    */
   public void addStreamOfLiteralWords(int[] data, int start, int number) {
@@ -53,7 +53,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   }
 
   /**
-   * If the boolean value is true and number>0, then it throws a NonEmptyException exception,
+   * If the boolean value is true and number is greater than 0, then it throws a NonEmptyException exception,
    * otherwise, nothing happens.
    * 
    */
@@ -62,7 +62,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   }
 
   /**
-   * throws a NonEmptyException exception when number > 0
+   * throws a NonEmptyException exception when number is greater than 0
    * 
    */
   public void addStreamOfNegatedLiteralWords(int[] data, int start, int number) {

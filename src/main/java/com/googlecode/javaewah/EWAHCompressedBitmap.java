@@ -41,7 +41,7 @@ import java.io.*;
  * 
  *      <ul>
  *      <li>Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves
- *      word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages
+ *      word-aligned bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages
  *      3-28, 2010. http://arxiv.org/abs/0901.3751</li>
  *      </ul>
  * 
@@ -955,7 +955,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * 
    * @param i
    *          the index
-   * @return true if the value was set (always true when i>= sizeInBits()).
+   * @return true if the value was set (always true when i greater or equal to sizeInBits()).
    * @throws IndexOutOfBoundsException
    *           if i is negative or greater than Integer.MAX_VALUE - 64
    */
