@@ -40,7 +40,7 @@ public final class BufferedRunningLengthWord32 {
   /**
    * Discard first words.
    *
-   * @param x the x
+   * @param x the number of words to be discarded
    */
   public void discardFirstWords(int x) {
     if (this.RunningLength >= x) {

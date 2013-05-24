@@ -36,7 +36,7 @@ public final class IteratingBufferedRunningLengthWord {
   /**
    * Discard first words, iterating to the next running length word if needed.
    *
-   * @param x the x
+   * @param x the number of words to be discarded
    */
   public void discardFirstWords(long x) {
     while (x > 0) {
