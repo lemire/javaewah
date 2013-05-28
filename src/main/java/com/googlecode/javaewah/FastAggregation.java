@@ -1,5 +1,6 @@
 package com.googlecode.javaewah;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -12,6 +13,138 @@ import java.util.PriorityQueue;
  * 
  */
 public class FastAggregation {
+	
+	
+	public static void inplaceor(long[] bitmap, EWAHIterator i) {
+		int pos = 0;
+		while(i.hasNext() ) {
+		    RunningLengthWord localrlw = i.next();
+			int L = (int) localrlw.getRunningLength();
+			if(localrlw.getRunningBit()) {
+				for(;L>0;--L) {
+					bitmap[pos++] = ~0l;
+				}
+			} else pos += L;
+			int LR = localrlw.getNumberOfLiteralWords();
+			for(int k = 0; k < LR; ++k)
+				bitmap[pos++] 
+						|=  i.buffer()[i.literalWords() + k];
+		
+		}
+		
+	}
+
+	public static int inplaceor(long[] bitmap,
+			IteratingBufferedRunningLengthWord i) {
+		int pos = 0;
+		long s;
+		while ((s = i.size()) > 0) {
+			if (pos + s < bitmap.length) {
+				int L = (int) i.getRunningLength();
+				
+
+				if (i.getRunningBit()) {
+					for (; L > 0; --L) {
+
+						bitmap[pos++] = ~0l;
+					}
+				} else
+					pos += L;
+				int LR = i.getNumberOfLiteralWords();
+				for (int k = 0; k < LR; ++k)
+					bitmap[pos++] |= i.getLiteralWordAt(k);
+				//i.discardFirstWords(s);
+				if (!i.next()) {
+					return pos;
+				}
+			} else {
+				int howmany = bitmap.length - pos;
+				int L = (int) i.getRunningLength();
+				if (pos + L > bitmap.length) {
+					if (i.getRunningBit()) {
+						for (; pos < bitmap.length; --L) {
+							bitmap[pos++] = ~0l;
+						}
+					}
+					i.discardFirstWords(howmany);
+					return pos;
+				}
+				if (i.getRunningBit()) {
+					for (; L > 0; --L) {
+						bitmap[pos++] = ~0l;
+					}
+				} else {
+					pos += L;
+				}
+				for (int k = 0; pos < bitmap.length; ++k)
+					bitmap[pos++] |= i.getLiteralWordAt(k);
+				i.discardFirstWords(howmany);
+				return pos;
+			}
+		}
+		return pos;
+	}
+	
+	public static EWAHCompressedBitmap experimentalor(final EWAHCompressedBitmap... bitmaps) {
+		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+		experimentalorWithContainer(answer, bitmaps);
+		return answer;
+	}
+	public static void experimentalorWithContainer(final BitmapStorage container,
+		    final EWAHCompressedBitmap... bitmaps) {
+		int range = 0;
+		for (EWAHCompressedBitmap bitmap : bitmaps) {
+			if(bitmap.sizeinbits > range) range = bitmap.sizeinbits;
+		}
+		
+		long[] hardbitmap = new long[(range+63)/64];
+		for (EWAHCompressedBitmap bitmap : bitmaps) {
+			inplaceor(hardbitmap,bitmap.getEWAHIterator());
+		}
+		for(int k = 0; k < hardbitmap.length; ++k)
+			container.add(hardbitmap[k]);
+	    container.setSizeInBits(range);
+	  }	
+	public static EWAHCompressedBitmap bufferedor(final EWAHCompressedBitmap... bitmaps) {
+		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+		bufferedorWithContainer(answer, bitmaps);
+		return answer;
+	}
+	public static void bufferedorWithContainer(final BitmapStorage container,
+		    final EWAHCompressedBitmap... bitmaps) {
+		int range = 0;
+		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
+		  Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+		      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+		        return b.sizeinbits  -  a.sizeinbits;
+		      }
+		    });
+		
+		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = 
+				new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
+		for (EWAHCompressedBitmap bitmap : sbitmaps) {
+			if(bitmap.sizeinbits > range) range = bitmap.sizeinbits;
+			al.add(new IteratingBufferedRunningLengthWord(bitmap));
+		}
+		final int MAXBUFSIZE = 65536;
+		long[] hardbitmap = new long[MAXBUFSIZE];
+		int maxr = al.size();
+		while (maxr > 0) {
+			long effective = 0; 
+			for (int k = 0; k < maxr; ++k) {
+				if (al.get(k).size() > 0) {
+					int eff = inplaceor(hardbitmap, al.get(k));
+					if(eff > effective) effective = eff;
+				}
+				else
+					maxr = k;
+			}
+			for (int k = 0; k < effective; ++k)
+				container.add(hardbitmap[k]);
+
+		}
+		container.setSizeInBits(range);
+	  }	
 
 	/**
 	 * @param bitmaps

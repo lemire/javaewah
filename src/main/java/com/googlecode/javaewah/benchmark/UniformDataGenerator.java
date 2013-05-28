@@ -29,7 +29,7 @@ public class UniformDataGenerator {
     * generates randomly N distinct integers from 0 to Max.
     */
     int[] generateUniform(int N, int Max) {
-        if (N > Max)
+    	if (N > Max)
             throw new RuntimeException("not possible");
         int[] ans = new int[N];
         if (N == Max) {

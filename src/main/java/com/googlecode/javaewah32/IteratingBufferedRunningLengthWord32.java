@@ -119,6 +119,20 @@ public final class IteratingBufferedRunningLengthWord32 {
     return index;
   }
 
+  /**
+   * Move to the next RunningLengthWord
+   * @return whether the move was possible
+   */
+  public boolean next() {
+	  if (!this.iterator.hasNext()) {
+		  this.brlw.NumberOfLiteralWords = 0;
+		  this.brlw.RunningLength = 0;
+	      return false;
+	  }  
+	  this.brlw.reset(this.iterator.next());
+      this.literalWordStartPosition = this.iterator.literalWords(); //  + this.brlw.literalwordoffset ==0
+      return true;
+  }
 
   /**
    * Write out the remain words, transforming them to zeroes.
