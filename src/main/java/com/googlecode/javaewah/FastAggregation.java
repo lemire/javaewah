@@ -3,6 +3,7 @@ package com.googlecode.javaewah;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
@@ -166,30 +167,34 @@ public class FastAggregation {
 		container.setSizeInBits(range);
 	}
 
-	public static IteratingRLW bufferedor(final IteratingRLW... al) {
+	public static IteratingRLW bufferedor(IteratingRLW... al) {
 		final int MAXBUFSIZE = 65536;
 		final long[] hardbitmap = new long[MAXBUFSIZE];
+		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+		for(IteratingRLW i : al) ll.add(i);
+		
 		
 		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			int maxr = al.length;
 			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
 
 			@Override
 			public boolean hasNext() {
-				return maxr > 0;
+				return !ll.isEmpty();
 			}
 
 			@Override
 			public EWAHIterator next() {
 				buffer.clear();
 				long effective = 0;
-				for (int k = 0; k < maxr; ++k) {
-					if (al[k].size() > 0) {
-						int eff = inplaceor(hardbitmap, al[k]);
+				Iterator<IteratingRLW> i = ll.iterator();
+				while(i.hasNext()) {
+					IteratingRLW rlw = i.next();
+					if (rlw.size() > 0) {
+						int eff = inplaceor(hardbitmap, rlw);
 						if (eff > effective)
 							effective = eff;
 					} else
-						maxr = k;
+						i.remove();
 				}
 				for (int k = 0; k < effective; ++k)
 					buffer.add(hardbitmap[k]);
