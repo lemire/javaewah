@@ -11,7 +11,7 @@ package com.googlecode.javaewah;
  * @since 0.4.0
  * @author David McIntosh
  */
-public final class IteratingBufferedRunningLengthWord {
+public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
   /**
    * Instantiates a new iterating buffered running length word.
    *

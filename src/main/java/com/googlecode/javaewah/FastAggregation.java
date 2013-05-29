@@ -2,6 +2,7 @@ package com.googlecode.javaewah;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 
 /**
@@ -34,7 +35,7 @@ public class FastAggregation {
 	}
 
 	public static int inplaceor(long[] bitmap,
-			IteratingBufferedRunningLengthWord i) {
+			IteratingRLW i) {
 		int pos = 0;
 		long s;
 		while ((s = i.size()) > 0) {
@@ -165,6 +166,46 @@ public class FastAggregation {
 		container.setSizeInBits(range);
 	}
 
+	public static IteratingRLW bufferedor(final IteratingRLW... al) {
+		final int MAXBUFSIZE = 65536;
+		final long[] hardbitmap = new long[MAXBUFSIZE];
+		
+		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
+			int maxr = al.length;
+			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+
+			@Override
+			public boolean hasNext() {
+				return maxr > 0;
+			}
+
+			@Override
+			public EWAHIterator next() {
+				buffer.clear();
+				long effective = 0;
+				for (int k = 0; k < maxr; ++k) {
+					if (al[k].size() > 0) {
+						int eff = inplaceor(hardbitmap, al[k]);
+						if (eff > effective)
+							effective = eff;
+					} else
+						maxr = k;
+				}
+				for (int k = 0; k < effective; ++k)
+					buffer.add(hardbitmap[k]);
+				Arrays.fill(hardbitmap, 0);
+				return buffer.getEWAHIterator();
+			}
+
+			@Override
+			public void remove() {
+				throw new RuntimeException("unsupported");
+				
+			}
+			
+		};
+		return new BufferedIterator(i);
+	}
 	/**
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
