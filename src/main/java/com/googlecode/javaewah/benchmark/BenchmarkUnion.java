@@ -29,14 +29,14 @@ public class BenchmarkUnion {
 				//System.out.println("# generating random data... ok.");
 				// building
 				EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
-				int size = 0;
+//				int size = 0;
 					for (int k = 0; k < N; ++k) {
 						ewah[k] = new EWAHCompressedBitmap();
 						for (int x = 0; x < data[k].length; ++x) {
 							ewah[k].set(data[k][x]);
 						}
 						data[k] = null;
-						size += ewah[k].sizeInBytes();
+	//					size += ewah[k].sizeInBytes();
 					}
 				// sanity check
 				if(true){

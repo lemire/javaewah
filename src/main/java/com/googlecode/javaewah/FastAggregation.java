@@ -166,51 +166,6 @@ public class FastAggregation {
 		}
 		container.setSizeInBits(range);
 	}
-
-	public static IteratingRLW bufferedor(IteratingRLW... al) {
-		final int MAXBUFSIZE = 65536;
-		final long[] hardbitmap = new long[MAXBUFSIZE];
-		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
-		for(IteratingRLW i : al) ll.add(i);
-		
-		
-		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
-
-			@Override
-			public boolean hasNext() {
-				return !ll.isEmpty();
-			}
-
-			@Override
-			public EWAHIterator next() {
-				buffer.clear();
-				long effective = 0;
-				Iterator<IteratingRLW> i = ll.iterator();
-				while(i.hasNext()) {
-					IteratingRLW rlw = i.next();
-					if (rlw.size() > 0) {
-						int eff = inplaceor(hardbitmap, rlw);
-						if (eff > effective)
-							effective = eff;
-					} else
-						i.remove();
-				}
-				for (int k = 0; k < effective; ++k)
-					buffer.add(hardbitmap[k]);
-				Arrays.fill(hardbitmap, 0);
-				return buffer.getEWAHIterator();
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("unsupported");
-				
-			}
-			
-		};
-		return new BufferedIterator(i);
-	}
 	/**
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
