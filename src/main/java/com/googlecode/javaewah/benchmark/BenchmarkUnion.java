@@ -41,21 +41,20 @@ public class BenchmarkUnion {
 					}
 
 				// sanity check
-				if(false){
+				if(true){
 					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
 							.or(ewah);
 					EWAHCompressedBitmap ewahorb = 	FastAggregation.experimentalor(ewah);
 					if(!ewahor.equals(ewahorb)) throw new RuntimeException("bug FastAggregation.experimentalor");
 
-					EWAHCompressedBitmap ewahor2 = FastAggregation
-							.bufferedor(ewah);
-					EWAHCompressedBitmap xorewahor2 = ewahor.xor(ewahor2);
-					
-					if(!ewahor.equals(ewahor2)) throw new RuntimeException("bug FastAggregation.bufferedor "+xorewahor2);
 					EWAHCompressedBitmap ewahor3 = FastAggregation
 							.or(ewah);
 					if(!ewahor.equals(ewahor3)) throw new RuntimeException("bug FastAggregation.or");
 					System.out.println("# sanity check ok");
+					EWAHCompressedBitmap ewahor2 = FastAggregation
+							.bufferedor(ewah);
+					if(!ewahor.equals(ewahor2)) throw new RuntimeException("bug FastAggregation.bufferedor ");
+
 				}
 				
 				// logical or

@@ -40,20 +40,13 @@ public class FastAggregation {
 		long s;
 		while ((s = i.size()) > 0) {
 			if (pos + s < bitmap.length) {
-				int L = (int) i.getRunningLength();
-				
-
-				if (i.getRunningBit()) {
-					for (; L > 0; --L) {
-
-						bitmap[pos++] = ~0l;
-					}
-				} else
-					pos += L;
-				int LR = i.getNumberOfLiteralWords();
+				final int L = (int) i.getRunningLength();
+				if (i.getRunningBit()) 
+					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
+				pos += L;
+				final int LR = i.getNumberOfLiteralWords();
 				for (int k = 0; k < LR; ++k)
 					bitmap[pos++] |= i.getLiteralWordAt(k);
-				//i.discardFirstWords(s);
 				if (!i.next()) {
 					return pos;
 				}
@@ -62,20 +55,14 @@ public class FastAggregation {
 				int L = (int) i.getRunningLength();
 				if (pos + L > bitmap.length) {
 					if (i.getRunningBit()) {
-						for (; pos < bitmap.length; --L) {
-							bitmap[pos++] = ~0l;
-						}
+						java.util.Arrays.fill(bitmap, pos, howmany, ~0l);
 					}
 					i.discardFirstWords(howmany);
-					return pos;
+					return bitmap.length;
 				}
-				if (i.getRunningBit()) {
-					for (; L > 0; --L) {
-						bitmap[pos++] = ~0l;
-					}
-				} else {
-					pos += L;
-				}
+				if (i.getRunningBit()) 
+					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
+				pos += L;
 				for (int k = 0; pos < bitmap.length; ++k)
 					bitmap[pos++] |= i.getLiteralWordAt(k);
 				i.discardFirstWords(howmany);
@@ -141,6 +128,7 @@ public class FastAggregation {
 			}
 			for (int k = 0; k < effective; ++k)
 				container.add(hardbitmap[k]);
+			Arrays.fill(hardbitmap, 0);
 
 		}
 		container.setSizeInBits(range);
