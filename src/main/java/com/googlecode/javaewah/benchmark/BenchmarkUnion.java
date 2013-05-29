@@ -1,8 +1,7 @@
 package com.googlecode.javaewah.benchmark;
 
 import java.text.DecimalFormat;
-import com.googlecode.javaewah.EWAHCompressedBitmap;
-import com.googlecode.javaewah.FastAggregation;
+import com.googlecode.javaewah.*;
 
 public class BenchmarkUnion {
 
@@ -145,9 +144,30 @@ public class BenchmarkUnion {
 				aft = System.currentTimeMillis();
 
 				line += "\t" + df.format((aft - bef) / 1000.0);
+				// fast logical or
+				bef = System.currentTimeMillis();
+				for (int r = 0; r < repeat; ++r)
+					for (int k = 0; k < N; ++k) {
+						IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+						for (int j = 0; j < k + 1; ++j) {
+							ewahcp[j] = new IteratingBufferedRunningLengthWord(ewah[j]);
+						}
+						IteratingRLW ewahor = FastAggregation
+								.bufferedor(ewahcp);
+						int wordcounter = 0;
+						do {
+							wordcounter += ewahor.size();
+							
+						} while(ewahor.next());
+						bogus += wordcounter;
+					}
+				aft = System.currentTimeMillis();
 
+				line += "\t" + df.format((aft - bef) / 1000.0);
+
+				
 				System.out
-						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor smartor");
+						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor smartor iterator-bufferedor");
 
 				System.out.println(line);
 			}

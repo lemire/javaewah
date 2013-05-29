@@ -216,7 +216,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
   }
   
   /**
-   * For internal use. (One could use the non-static dischard method instead,
+   * For internal use. (One could use the non-static discharge method instead,
    * but we expect them to be slower.)
    * 
    * @param initialWord
