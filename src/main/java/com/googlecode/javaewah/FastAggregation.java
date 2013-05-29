@@ -13,25 +13,24 @@ import java.util.PriorityQueue;
  * 
  */
 public class FastAggregation {
-	
-	
+
 	public static void inplaceor(long[] bitmap, EWAHIterator i) {
 		int pos = 0;
-		while(i.hasNext() ) {
-		    RunningLengthWord localrlw = i.next();
+		while (i.hasNext()) {
+			RunningLengthWord localrlw = i.next();
 			int L = (int) localrlw.getRunningLength();
-			if(localrlw.getRunningBit()) {
-				for(;L>0;--L) {
+			if (localrlw.getRunningBit()) {
+				for (; L > 0; --L) {
 					bitmap[pos++] = ~0l;
 				}
-			} else pos += L;
+			} else
+				pos += L;
 			int LR = localrlw.getNumberOfLiteralWords();
-			for(int k = 0; k < LR; ++k)
-				bitmap[pos++] 
-						|=  i.buffer()[i.literalWords() + k];
-		
+			for (int k = 0; k < LR; ++k)
+				bitmap[pos++] |= i.buffer()[i.literalWords() + k];
+
 		}
-		
+
 	}
 
 	public static int inplaceor(long[] bitmap,
@@ -41,7 +40,7 @@ public class FastAggregation {
 		while ((s = i.size()) > 0) {
 			if (pos + s < bitmap.length) {
 				final int L = (int) i.getRunningLength();
-				if (i.getRunningBit()) 
+				if (i.getRunningBit())
 					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
 				pos += L;
 				final int LR = i.getNumberOfLiteralWords();
@@ -60,7 +59,7 @@ public class FastAggregation {
 					i.discardFirstWords(howmany);
 					return bitmap.length;
 				}
-				if (i.getRunningBit()) 
+				if (i.getRunningBit())
 					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
 				pos += L;
 				for (int k = 0; pos < bitmap.length; ++k)
@@ -71,59 +70,91 @@ public class FastAggregation {
 		}
 		return pos;
 	}
-	
-	public static EWAHCompressedBitmap experimentalor(final EWAHCompressedBitmap... bitmaps) {
+
+	public static EWAHCompressedBitmap experimentalor(
+			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
 		experimentalorWithContainer(answer, bitmaps);
 		return answer;
 	}
-	public static void experimentalorWithContainer(final BitmapStorage container,
-		    final EWAHCompressedBitmap... bitmaps) {
+
+	public static void experimentalorWithContainer(
+			final BitmapStorage container,
+			final EWAHCompressedBitmap... bitmaps) {
 		int range = 0;
 		for (EWAHCompressedBitmap bitmap : bitmaps) {
-			if(bitmap.sizeinbits > range) range = bitmap.sizeinbits;
+			if (bitmap.sizeinbits > range)
+				range = bitmap.sizeinbits;
 		}
-		
-		long[] hardbitmap = new long[(range+63)/64];
+
+		long[] hardbitmap = new long[(range + 63) / 64];
 		for (EWAHCompressedBitmap bitmap : bitmaps) {
-			inplaceor(hardbitmap,bitmap.getEWAHIterator());
+			inplaceor(hardbitmap, bitmap.getEWAHIterator());
 		}
-		for(int k = 0; k < hardbitmap.length; ++k)
+		for (int k = 0; k < hardbitmap.length; ++k)
 			container.add(hardbitmap[k]);
-	    container.setSizeInBits(range);
-	  }	
-	public static EWAHCompressedBitmap bufferedor(final EWAHCompressedBitmap... bitmaps) {
+		container.setSizeInBits(range);
+	}
+
+	public static EWAHCompressedBitmap smartor(
+			final EWAHCompressedBitmap... bitmaps) {
+		if (bitmaps.length == 0)
+			return new EWAHCompressedBitmap();
+		if (bitmaps.length == 1)
+			return bitmaps[0];
+		int size = 0;
+		int sinbits = 0;
+		for (EWAHCompressedBitmap b : bitmaps) {
+			size += b.sizeInBytes();
+			if (sinbits < b.sizeInBits())
+				sinbits = b.sizeInBits();
+		}
+		EWAHCompressedBitmap answer;
+		if (size * 8 > sinbits) {
+			answer = new EWAHCompressedBitmap();
+			bufferedorWithContainer(answer, bitmaps);
+		} else {
+			answer = bitmaps[0];
+			for (int k = 1; k < bitmaps.length; ++k)
+				answer.or(bitmaps[0]);
+		}
+		return answer;
+	}
+
+	public static EWAHCompressedBitmap bufferedor(
+			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
 		bufferedorWithContainer(answer, bitmaps);
 		return answer;
 	}
+
 	public static void bufferedorWithContainer(final BitmapStorage container,
-		    final EWAHCompressedBitmap... bitmaps) {
+			final EWAHCompressedBitmap... bitmaps) {
 		int range = 0;
 		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
-		  Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
-		      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-		        return b.sizeinbits  -  a.sizeinbits;
-		      }
-		    });
-		
-		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = 
-				new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
+		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+				return b.sizeinbits - a.sizeinbits;
+			}
+		});
+
+		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
 		for (EWAHCompressedBitmap bitmap : sbitmaps) {
-			if(bitmap.sizeinbits > range) range = bitmap.sizeinbits;
+			if (bitmap.sizeinbits > range)
+				range = bitmap.sizeinbits;
 			al.add(new IteratingBufferedRunningLengthWord(bitmap));
 		}
 		final int MAXBUFSIZE = 65536;
 		long[] hardbitmap = new long[MAXBUFSIZE];
 		int maxr = al.size();
 		while (maxr > 0) {
-			long effective = 0; 
+			long effective = 0;
 			for (int k = 0; k < maxr; ++k) {
 				if (al.get(k).size() > 0) {
 					int eff = inplaceor(hardbitmap, al.get(k));
-					if(eff > effective) effective = eff;
-				}
-				else
+					if (eff > effective)
+						effective = eff;
+				} else
 					maxr = k;
 			}
 			for (int k = 0; k < effective; ++k)
@@ -132,7 +163,7 @@ public class FastAggregation {
 
 		}
 		container.setSizeInBits(range);
-	  }	
+	}
 
 	/**
 	 * @param bitmaps
