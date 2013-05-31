@@ -58,7 +58,8 @@ public class IteratorAggregationTest {
 	}
 	
 	@Test
-	public void testOr() {	
+	public void testOr() {
+		System.out.println("[iterators] testOr");	
 		Iterator<EWAHCompressedBitmap[]> i = getCollections(); 
 		while(i.hasNext() ) {
 			EWAHCompressedBitmap[] x = i.next();
