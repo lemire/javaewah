@@ -982,7 +982,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   }
 
   /**
-   * set the size in bits
+   * Set the size in bits. This does not change the compressed bitmap.
    * 
    */
   public void setSizeInBits(final int size) {
@@ -991,7 +991,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 
   /**
    * Change the reported size in bits of the *uncompressed* bitmap represented
-   * by this compressed bitmap. It is not possible to reduce the sizeInBits, but
+   * by this compressed bitmap. It may change the underlying compressed bitmap.
+   * It is not possible to reduce the sizeInBits, but
    * it can be extended. The new bits are set to false or true depending on the
    * value of defaultvalue.
    * 

@@ -12,12 +12,17 @@ package com.googlecode.javaewah.benchmark;
  * 
  * @author Daniel Lemire
  */
-class ClusteredDataGenerator {
+public class ClusteredDataGenerator {
 
   public ClusteredDataGenerator() {
+	  unidg = new UniformDataGenerator();
   }
 
-  /**
+  public ClusteredDataGenerator(int seed) {
+	  unidg = new UniformDataGenerator(seed);
+}
+
+/**
    * generates randomly N distinct integers from 0 to Max.
    * @param N number of integers
    * @param Max maximum integer value 
@@ -65,7 +70,7 @@ class ClusteredDataGenerator {
       System.out.println(example[k]);
   }
 
-  UniformDataGenerator unidg = new UniformDataGenerator();
+  UniformDataGenerator unidg;
 
 }
 

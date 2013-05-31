@@ -2,8 +2,6 @@ package com.googlecode.javaewah;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
@@ -73,30 +71,6 @@ public class FastAggregation {
 		return pos;
 	}
 
-	public static EWAHCompressedBitmap experimentalor(
-			final EWAHCompressedBitmap... bitmaps) {
-		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		experimentalorWithContainer(answer, bitmaps);
-		return answer;
-	}
-
-	public static void experimentalorWithContainer(
-			final BitmapStorage container,
-			final EWAHCompressedBitmap... bitmaps) {
-		int range = 0;
-		for (EWAHCompressedBitmap bitmap : bitmaps) {
-			if (bitmap.sizeinbits > range)
-				range = bitmap.sizeinbits;
-		}
-
-		long[] hardbitmap = new long[(range + 63) / 64];
-		for (EWAHCompressedBitmap bitmap : bitmaps) {
-			inplaceor(hardbitmap, bitmap.getEWAHIterator());
-		}
-		for (int k = 0; k < hardbitmap.length; ++k)
-			container.add(hardbitmap[k]);
-		container.setSizeInBits(range);
-	}
 
 	public static EWAHCompressedBitmap smartor(
 			final EWAHCompressedBitmap... bitmaps) {
@@ -153,7 +127,7 @@ public class FastAggregation {
 			long effective = 0;
 			for (int k = 0; k < maxr; ++k) {
 				if (al.get(k).size() > 0) {
-					int eff = inplaceor(hardbitmap, al.get(k));
+					int eff = IteratorAggregation.inplaceor(hardbitmap, al.get(k));
 					if (eff > effective)
 						effective = eff;
 				} else

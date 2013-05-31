@@ -42,8 +42,6 @@ public class BenchmarkUnion {
 				if(true){
 					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
 							.or(ewah);
-					EWAHCompressedBitmap ewahorb = 	FastAggregation.experimentalor(ewah);
-					if(!ewahor.equals(ewahorb)) throw new RuntimeException("bug FastAggregation.experimentalor");
 
 					EWAHCompressedBitmap ewahor3 = FastAggregation
 							.or(ewah);
@@ -98,20 +96,6 @@ public class BenchmarkUnion {
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
-				// fast logical or
-				bef = System.currentTimeMillis();
-				for (int r = 0; r < repeat; ++r)
-					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
-						for (int j = 0; j < k + 1; ++j) {
-							ewahcp[j] = ewah[j];
-						}
-						EWAHCompressedBitmap ewahor = FastAggregation
-								.experimentalor(ewahcp);
-						bogus += ewahor.sizeInBits();
-					}
-				aft = System.currentTimeMillis();
-
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
 				// fast logical or
@@ -152,7 +136,7 @@ public class BenchmarkUnion {
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord(ewah[j]);
 						}
-						IteratingRLW ewahor = FastAggregation
+						IteratingRLW ewahor = IteratorAggregation
 								.bufferedor(ewahcp);
 						int wordcounter = 0;
 						do {
