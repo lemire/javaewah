@@ -14,63 +14,6 @@ import java.util.PriorityQueue;
  */
 public class FastAggregation {
 
-	public static void inplaceor(long[] bitmap, EWAHIterator i) {
-		int pos = 0;
-		while (i.hasNext()) {
-			RunningLengthWord localrlw = i.next();
-			int L = (int) localrlw.getRunningLength();
-			if (localrlw.getRunningBit()) {
-				for (; L > 0; --L) {
-					bitmap[pos++] = ~0l;
-				}
-			} else
-				pos += L;
-			int LR = localrlw.getNumberOfLiteralWords();
-			for (int k = 0; k < LR; ++k)
-				bitmap[pos++] |= i.buffer()[i.literalWords() + k];
-
-		}
-
-	}
-
-	public static int inplaceor(long[] bitmap,
-			IteratingRLW i) {
-		int pos = 0;
-		long s;
-		while ((s = i.size()) > 0) {
-			if (pos + s < bitmap.length) {
-				final int L = (int) i.getRunningLength();
-				if (i.getRunningBit())
-					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
-				pos += L;
-				final int LR = i.getNumberOfLiteralWords();
-				for (int k = 0; k < LR; ++k)
-					bitmap[pos++] |= i.getLiteralWordAt(k);
-				if (!i.next()) {
-					return pos;
-				}
-			} else {
-				int howmany = bitmap.length - pos;
-				int L = (int) i.getRunningLength();
-				if (pos + L > bitmap.length) {
-					if (i.getRunningBit()) {
-						java.util.Arrays.fill(bitmap, pos, howmany, ~0l);
-					}
-					i.discardFirstWords(howmany);
-					return bitmap.length;
-				}
-				if (i.getRunningBit())
-					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
-				pos += L;
-				for (int k = 0; pos < bitmap.length; ++k)
-					bitmap[pos++] |= i.getLiteralWordAt(k);
-				i.discardFirstWords(howmany);
-				return pos;
-			}
-		}
-		return pos;
-	}
-
 
 	public static EWAHCompressedBitmap smartor(
 			final EWAHCompressedBitmap... bitmaps) {
@@ -211,5 +154,64 @@ public class FastAggregation {
 			pq.add((T) x1.xor(x2));
 		}
 		return pq.poll();
+	}/*
+	private static void inplaceor(long[] bitmap, EWAHIterator i) {
+		int pos = 0;
+		while (i.hasNext()) {
+			RunningLengthWord localrlw = i.next();
+			int L = (int) localrlw.getRunningLength();
+			if (localrlw.getRunningBit()) {
+				for (; L > 0; --L) {
+					bitmap[pos++] = ~0l;
+				}
+			} else
+				pos += L;
+			int LR = localrlw.getNumberOfLiteralWords();
+			for (int k = 0; k < LR; ++k)
+				bitmap[pos++] |= i.buffer()[i.literalWords() + k];
+
+		}
+
 	}
+*/
+	/*
+	private static int inplaceor(long[] bitmap,
+			IteratingRLW i) {
+		int pos = 0;
+		long s;
+		while ((s = i.size()) > 0) {
+			if (pos + s < bitmap.length) {
+				final int L = (int) i.getRunningLength();
+				if (i.getRunningBit())
+					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
+				pos += L;
+				final int LR = i.getNumberOfLiteralWords();
+				for (int k = 0; k < LR; ++k)
+					bitmap[pos++] |= i.getLiteralWordAt(k);
+				if (!i.next()) {
+					return pos;
+				}
+			} else {
+				int howmany = bitmap.length - pos;
+				int L = (int) i.getRunningLength();
+				if (pos + L > bitmap.length) {
+					if (i.getRunningBit()) {
+						java.util.Arrays.fill(bitmap, pos, howmany, ~0l);
+					}
+					i.discardFirstWords(howmany);
+					return bitmap.length;
+				}
+				if (i.getRunningBit())
+					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
+				pos += L;
+				for (int k = 0; pos < bitmap.length; ++k)
+					bitmap[pos++] |= i.getLiteralWordAt(k);
+				i.discardFirstWords(howmany);
+				return pos;
+			}
+		}
+		return pos;
+	}
+
+*/
 }

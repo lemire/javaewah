@@ -37,7 +37,26 @@ public class IteratorUtil {
 				break;
 		}
 	}
-
+	public static long materialize(IteratingRLW i, BitmapStorage c, long Max) {
+		final long origMax = Max;
+		while (true) {
+			if (i.getRunningLength() > 0) {
+				long L = i.getRunningLength();
+				if(L > Max) L = Max;
+				c.addStreamOfEmptyWords(i.getRunningBit(), L);
+				Max -= L;
+			}
+			long L = i.getNumberOfLiteralWords();
+			for (int k = 0; k < L; ++k)
+				c.add(i.getLiteralWordAt(k));
+			if(Max>0)  {
+				if (!i.next())
+					break;
+			}
+				else break;
+		}
+		return origMax - Max;
+	}
 	public static EWAHCompressedBitmap materialize(IteratingRLW i) {
 		EWAHCompressedBitmap ewah = new EWAHCompressedBitmap();
 		materialize(i, ewah);

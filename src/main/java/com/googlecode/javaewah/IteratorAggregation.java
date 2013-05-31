@@ -5,15 +5,57 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class IteratorAggregation {
-/*
+	public static IteratingRLW not(final IteratingRLW x) {
+		return new IteratingRLW() {
+
+			@Override
+			public boolean next() {
+				return x.next();
+			}
+
+			@Override
+			public long getLiteralWordAt(int index) {
+				return ~x.getLiteralWordAt(index);
+			}
+
+			@Override
+			public int getNumberOfLiteralWords() {
+				return x.getNumberOfLiteralWords();
+			}
+
+			@Override
+			public boolean getRunningBit() {
+				return ! x.getRunningBit();
+			}
+
+			@Override
+			public long size() {
+				return x.size();
+			}
+
+			@Override
+			public long getRunningLength() {
+				return x.getRunningLength();
+			}
+
+			@Override
+			public void discardFirstWords(long y) {
+				x.discardFirstWords(y);
+			}
+			
+		};
+	}
+
+	
 	public static IteratingRLW and(IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
 			return al[0];
 		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
-		for (IteratingRLW i : al)
+		for (IteratingRLW i : al) 
 			ll.add(i);
+		final int MAXBUFSIZE = 65536;
 
 		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
 			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
@@ -26,7 +68,28 @@ public class IteratorAggregation {
 			@Override
 			public EWAHIterator next() {
 				buffer.clear();
-
+				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
+						ll.get(0), ll.get(1));
+				if (ll.size() > 2) {
+					Iterator<IteratingRLW> i = ll.iterator();
+					i.next();
+					i.next();
+					while (i.hasNext()) {
+						EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
+						IteratorAggregation.andToContainer(tmpbuffer,
+								MAXBUFSIZE, buffer.getIteratingRLW(), i.next());
+						buffer = tmpbuffer;
+						
+					}
+				}
+				Iterator<IteratingRLW> i = ll.iterator();
+				while(i.hasNext()) {
+					if(i.next().size() == 0) {
+						ll.clear();
+						break;
+					}
+				}
+				return buffer.getEWAHIterator();
 			}
 
 			@Override
@@ -35,8 +98,9 @@ public class IteratorAggregation {
 
 			}
 		};
+		return new BufferedIterator(i);
 	}
-
+/*
 	public static IteratingRLW xor(IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
@@ -165,7 +229,69 @@ public class IteratorAggregation {
 		}
 
 	}
+	 /**
+	   * Write out up to max words, returns how many were written
+	   * @param container target for writes
+	   * @param i source of data
+	   * @param max maximal number of writes
+	   * @return how many written
+	   */
 
+	public static int discharge(final BitmapStorage container, IteratingRLW i, long max) {
+		int counter = 0;
+		while (i.size() > 0 && counter < max) {
+			if (i.getRunningLength() > 0) {
+				long L = i.getRunningLength();
+				if(L + counter > max) L = max - counter;
+				container.addStreamOfEmptyWords(i.getRunningBit(),
+						L);
+				counter += L;
+			}
+			long L = i.getNumberOfLiteralWords();
+			if(L + counter > max) L = max - counter;	
+			for (int k = 0; k < L; ++k) {
+				container.add(i.getLiteralWordAt(k));
+			}
+			counter += L;
+		}
+		return counter;
+	}
+	
+	private static void andToContainer(final BitmapStorage container,
+			int desiredrlwcount, final IteratingRLW rlwi, IteratingRLW rlwj) {
+		int counter = 0;
+		while ((rlwi.size()>0) && (rlwj.size()>0) && (counter++ < desiredrlwcount) ) {
+		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+		        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
+		          .getRunningLength();
+		        final IteratingRLW prey = i_is_prey ? rlwi : rlwj;
+		        final IteratingRLW predator = i_is_prey ? rlwj
+		          : rlwi;
+		        if (predator.getRunningBit() == false) {
+		          container.addStreamOfEmptyWords(false, predator.getRunningLength());
+		          prey.discardFirstWords(predator.getRunningLength());
+		          predator.discardFirstWords(predator.getRunningLength());
+		        } else {
+		          final long index = discharge(container, prey, predator.getRunningLength()); 
+		          container.addStreamOfEmptyWords(false, predator.getRunningLength()
+		            - index);
+		          predator.discardFirstWords(predator.getRunningLength());
+		        }
+		      }
+		      final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
+		        rlwj.getNumberOfLiteralWords());
+		      if (nbre_literal > 0) {
+		        for (int k = 0; k < nbre_literal; ++k)
+		          container.add(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
+		        rlwi.discardFirstWords(nbre_literal);
+		        rlwj.discardFirstWords(nbre_literal);
+		      }
+		    }      
+//		    final boolean i_remains = rlwi.size()>0;
+	//	    final IteratingRLW remaining = i_remains ? rlwi : rlwj;
+	}
+
+	
 	/**
 	 * Will try to fill in the container with roughly desiredrlwcount
 	 * running length words, though the exact count may vary.

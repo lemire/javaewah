@@ -598,6 +598,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     return new EWAHIterator(this.buffer, this.actualsizeinwords);
   }
 
+  public IteratingRLW getIteratingRLW() {
+	  return new IteratingBufferedRunningLengthWord(this);
+  }
   /**
    * get the locations of the true values as one vector. (may use more memory
    * than iterator())
