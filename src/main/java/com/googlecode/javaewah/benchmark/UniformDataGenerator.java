@@ -24,7 +24,10 @@ public class UniformDataGenerator {
 		rand = new Random();
 	}
 
-	public UniformDataGenerator(int seed) {
+	/**
+	 * @param seed
+	 */
+	public UniformDataGenerator(final int seed) {
 		rand = new Random(seed);
 	}
 

@@ -2,6 +2,10 @@ package com.googlecode.javaewah;
 
 import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
 
+/**
+ * @author lemire
+ *
+ */
 public class IntIteratorOverIteratingRLW implements IntIterator {
 	IteratingRLW parent;
 	private int position;
@@ -12,13 +16,19 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 	private int literalPosition;
 	private boolean hasnext;
 
-	public IntIteratorOverIteratingRLW(IteratingRLW p) {
+	/**
+	 * @param p
+	 */
+	public IntIteratorOverIteratingRLW(final IteratingRLW p) {
 		parent = p;
 		position = 0;
 
 	}
 
-	public final boolean moveToNext() {
+	/**
+	 * @return whether we could find another set bit
+	 */
+	private final boolean moveToNext() {
 		while (!runningHasNext() && !literalHasNext()) {
 			if (!eatRunningLengthWord())
 				return false;

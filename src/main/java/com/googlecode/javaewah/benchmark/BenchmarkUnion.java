@@ -3,6 +3,10 @@ package com.googlecode.javaewah.benchmark;
 import java.text.DecimalFormat;
 import com.googlecode.javaewah.*;
 
+/**
+ * @author lemire
+ *
+ */
 public class BenchmarkUnion {
 
 	@SuppressWarnings("javadoc")

@@ -2,6 +2,10 @@ package com.googlecode.javaewah;
 
 import java.util.Iterator;
 
+/**
+ * @author lemire
+ *
+ */
 public class BufferedIterator implements IteratingRLW  {
 	  /**
 	   * Instantiates a new iterating buffered running length word.

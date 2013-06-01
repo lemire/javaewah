@@ -14,11 +14,17 @@ package com.googlecode.javaewah.benchmark;
  */
 public class ClusteredDataGenerator {
 
-  public ClusteredDataGenerator() {
+  /**
+ * 
+ */
+public ClusteredDataGenerator() {
 	  unidg = new UniformDataGenerator();
   }
 
-  public ClusteredDataGenerator(int seed) {
+  /**
+ * @param seed
+ */
+public ClusteredDataGenerator(final int seed) {
 	  unidg = new UniformDataGenerator(seed);
 }
 
@@ -64,7 +70,10 @@ public class ClusteredDataGenerator {
       array[k + offset] = Min + v[k];
   }
 
-  public static void main(String[] args) {
+  /**
+ * @param args
+ */
+public static void main(final String[] args) {
     int[] example = (new ClusteredDataGenerator()).generateClustered(20, 1000);
     for (int k = 0; k < example.length; ++k)
       System.out.println(example[k]);

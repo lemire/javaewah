@@ -15,6 +15,11 @@ import java.util.PriorityQueue;
 public class FastAggregation {
 
 
+	/**
+	 * Uses an adaptive technique to compute the logical OR.
+	 * @param bitmaps to be aggregated
+	 * @return the aggregated bitmap
+	 */
 	public static EWAHCompressedBitmap smartor(
 			final EWAHCompressedBitmap... bitmaps) {
 		if (bitmaps.length == 0)
@@ -40,6 +45,11 @@ public class FastAggregation {
 		return answer;
 	}
 
+	/**
+	 * Compute the or aggregate using a temporary uncompressed bitmap.
+	 * @param bitmaps
+	 * @return the or aggregate.
+	 */
 	public static EWAHCompressedBitmap bufferedor(
 			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
@@ -47,6 +57,10 @@ public class FastAggregation {
 		return answer;
 	}
 
+	/**
+	 * @param container
+	 * @param bitmaps
+	 */
 	public static void bufferedorWithContainer(final BitmapStorage container,
 			final EWAHCompressedBitmap... bitmaps) {
 		int range = 0;

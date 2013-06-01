@@ -5,8 +5,16 @@ import java.util.Iterator;
 import org.junit.Test;
 import com.googlecode.javaewah.benchmark.ClusteredDataGenerator;
 
+/**
+ * @author lemire
+ *
+ */
 public class IteratorAggregationTest {
 
+	/**
+	 * @param N
+	 * @return an iterator over sets of bitmaps
+	 */
 	public static Iterator<EWAHCompressedBitmap[]> getCollections(final int N) {
 		final int nbr = 3;
 		final ClusteredDataGenerator cdg = new ClusteredDataGenerator(123);
@@ -45,6 +53,9 @@ public class IteratorAggregationTest {
 
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void testAnd() {
 		for (int N = 1; N < 10; ++N) {
@@ -63,6 +74,9 @@ public class IteratorAggregationTest {
 
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void testOr() {
 		for (int N = 1; N < 10; ++N) {
@@ -85,6 +99,9 @@ public class IteratorAggregationTest {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	@Test
 	public void testXor() {
 		System.out.println("testXor ");

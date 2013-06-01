@@ -1,11 +1,18 @@
 package com.googlecode.javaewah;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * @author lemire
+ *
+ */
 public class IteratorAggregation {
+	/**
+	 * @param x
+	 * @return negated version of the iterator
+	 */
 	public static IteratingRLW not(final IteratingRLW x) {
 		return new IteratingRLW() {
 
@@ -48,7 +55,11 @@ public class IteratorAggregation {
 	}
 
 	
-	public static IteratingRLW and(IteratingRLW... al) {
+	/**
+	 * @param al
+	 * @return and aggregate
+	 */
+	public static IteratingRLW and(final IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -102,6 +113,11 @@ public class IteratorAggregation {
 		return new BufferedIterator(i);
 	}
 
+	/**
+	 * @param x1
+	 * @param x2
+	 * @return xor aggregate
+	 */
 	public static IteratingRLW xor(final IteratingRLW x1, final IteratingRLW x2) {
 
 		final int MAXBUFSIZE = 65536;
@@ -173,7 +189,11 @@ public class IteratorAggregation {
 		return new BufferedIterator(i);
 	}*/
 
-	public static IteratingRLW or(IteratingRLW... al) {
+	/**
+	 * @param al
+	 * @return or aggregate
+	 */
+	public static IteratingRLW or(final IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)

@@ -1,9 +1,17 @@
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import java.io.*;
 
+/**
+ * @author lemire
+ *
+ */
 public class example {
 	  
-  public static void main(String[] args) throws java.io.IOException {
+  /**
+ * @param args
+ * @throws IOException
+ */
+public static void main(final String[] args) throws java.io.IOException {
     EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0,2,64,1<<30);
     EWAHCompressedBitmap ewahBitmap2 = EWAHCompressedBitmap.bitmapOf(1,3,64,1<<30);
     System.out.println("bitmap 1: "+ewahBitmap1);

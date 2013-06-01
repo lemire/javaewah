@@ -10,7 +10,6 @@ import java.util.List;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
-import com.googlecode.javaewah.IteratingBufferedRunningLengthWord;
 import com.googlecode.javaewah.IteratingRLW;
 import com.googlecode.javaewah.IteratorAggregation;
 import com.googlecode.javaewah.IteratorUtil;
