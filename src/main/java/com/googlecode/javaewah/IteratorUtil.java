@@ -37,6 +37,25 @@ public class IteratorUtil {
 				break;
 		}
 	}
+
+	public static int cardinality(IteratingRLW i) {
+		int answer = 0;
+		while (true) {
+			if(i.getRunningBit()) answer += i.getRunningLength() * EWAHCompressedBitmap.wordinbits;
+			for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
+				answer += Long.bitCount(i.getLiteralWordAt(k));
+			if(!i.next()) break;
+		}
+		return answer;
+	}
+	
+	public static IteratingRLW[] toIterators(EWAHCompressedBitmap... x) {
+		IteratingRLW[] X = new IteratingRLW[x.length];
+		for (int k = 0; k < X.length; ++k) {
+			X[k] = new IteratingBufferedRunningLengthWord(x[k]);
+		}
+		return X;
+	}
 	public static long materialize(IteratingRLW i, BitmapStorage c, long Max) {
 		final long origMax = Max;
 		while (true) {

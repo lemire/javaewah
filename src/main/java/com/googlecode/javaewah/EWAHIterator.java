@@ -9,7 +9,7 @@ package com.googlecode.javaewah;
 /**
  * The class EWAHIterator represents a special type of
  * efficient iterator iterating over (uncompressed) words of bits.
- *
+ * It is not meant for end users.
  * @author Daniel Lemire
  * @since 0.1.0
  *
@@ -17,7 +17,7 @@ package com.googlecode.javaewah;
 public final class EWAHIterator {
   
   /**
-   * Instantiates a new eWAH iterator.
+   * Instantiates a new EWAH iterator.
    *
    * @param a the array of words
    * @param sizeinwords the number of words that are significant in the array of words
