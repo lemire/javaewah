@@ -481,13 +481,7 @@ public class IteratorAggregation {
 			    }
 			  }
 */
-	/**
-	 * Will try to fill in the container with roughly desiredrlwcount
-	 * running length words, though the exact count may vary.
-	 * @param container
-	 * @param desiredrlwcount
-	 * @param bitmaps
-	 */
+
 	/*private static void orToContainer(final BitmapStorage container,
 			int desiredrlwcount, final LinkedList<IteratingRLW> rlws) {
 		while (desiredrlwcount-- > 0) {
