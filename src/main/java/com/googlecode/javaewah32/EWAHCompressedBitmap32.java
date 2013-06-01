@@ -859,7 +859,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   private void push_back(final int data) {
     if (this.actualsizeinwords == this.buffer.length) {
       final int oldbuffer[] = this.buffer;
-      this.buffer = new int[oldbuffer.length * 2];
+      if(oldbuffer.length < 32768)
+    	  this.buffer = new int[oldbuffer.length * 2];
+      else 
+    	  this.buffer = new int[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }
@@ -879,7 +882,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   private void push_back(final int[] data, final int start, final int number) {
     while (this.actualsizeinwords + number >= this.buffer.length) {
       final int oldbuffer[] = this.buffer;
-      this.buffer = new int[oldbuffer.length * 2];
+      if(oldbuffer.length < 32768)
+    	  this.buffer = new int[oldbuffer.length * 2];
+      else 
+    	  this.buffer = new int[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }

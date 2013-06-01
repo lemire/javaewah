@@ -1,6 +1,7 @@
 package com.googlecode.javaewah;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -55,7 +56,7 @@ public class IteratorAggregation {
 		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al) 
 			ll.add(i);
-		final int MAXBUFSIZE = 65536;
+		final int MAXBUFSIZE = 65536 * al.length;//512KB per bitmap
 
 		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
 			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
@@ -77,7 +78,7 @@ public class IteratorAggregation {
 					while (i.hasNext()) {
 						EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
 						IteratorAggregation.andToContainer(tmpbuffer,
-								MAXBUFSIZE, buffer.getIteratingRLW(), i.next());
+								 buffer.getIteratingRLW(), i.next());
 						buffer = tmpbuffer;
 						
 					}
@@ -130,7 +131,7 @@ public class IteratorAggregation {
 
 	}
 
-	
+	/*
 	public static IteratingRLW or(IteratingRLW... al) {
 		final int MAXBUFSIZE = 65536;
 
@@ -170,9 +171,9 @@ public class IteratorAggregation {
 			}
 		};
 		return new BufferedIterator(i);
-	}
+	}*/
 
-	public static IteratingRLW bufferedor(IteratingRLW... al) {
+	public static IteratingRLW or(IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -222,7 +223,45 @@ public class IteratorAggregation {
 		return new BufferedIterator(i);
 	}
 
-	public static void discharge(final BitmapStorage container, IteratingRLW i) {
+/*	public static IteratingRLW and2(IteratingRLW... al) {
+		if (al.length == 0)
+			throw new IllegalArgumentException("Need at least one iterator");
+		if (al.length == 1)
+			return al[0];
+		final int MAXBUFSIZE = 65536;
+
+		if (al.length == 0)
+			throw new IllegalArgumentException("Need at least one iterator");
+		if (al.length == 1)
+			return al[0];
+		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+		for (IteratingRLW i : al)
+			ll.add(i);
+
+		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
+			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+
+			@Override
+			public boolean hasNext() {
+				return !ll.isEmpty();
+			}
+
+			@Override
+			public EWAHIterator next() {
+				buffer.clear();
+				andToContainer(buffer,MAXBUFSIZE, ll);
+				return buffer.getEWAHIterator();
+			}
+
+			@Override
+			public void remove() {
+				throw new RuntimeException("unsupported");
+			}
+		};
+		return new BufferedIterator(i);
+	}
+*/
+	/*private static void discharge(final BitmapStorage container, IteratingRLW i) {
 		while (i.size() > 0) {
 			if (i.getRunningLength() > 0) {
 				container.addStreamOfEmptyWords(i.getRunningBit(),
@@ -232,9 +271,9 @@ public class IteratorAggregation {
 				container.add(i.getLiteralWordAt(k));
 			}
 		}
-	}
+	}*/
 
-	public static void dischargeNegated(final BitmapStorage container, IteratingRLW i) {
+	/*private static void dischargeNegated(final BitmapStorage container, IteratingRLW i) {
 		while (i.size() > 0) {
 			if (i.getRunningLength() > 0) {
 				container.addStreamOfEmptyWords(!(i.getRunningBit()),
@@ -244,7 +283,7 @@ public class IteratorAggregation {
 				container.add(~i.getLiteralWordAt(k));
 			}
 		}
-	}
+	}*/
 	/**
 	   * Write out up to max words, returns how many were written
 	   * @param container target for writes
@@ -253,7 +292,7 @@ public class IteratorAggregation {
 	   * @return how many written
 	   */
 
-	public static int discharge(final BitmapStorage container, IteratingRLW i, long max) {
+	private static int discharge(final BitmapStorage container, IteratingRLW i, long max) {
 		int counter = 0;
 		while (i.size() > 0 && counter < max) {
 			if (i.getRunningLength() > 0) {
@@ -272,7 +311,7 @@ public class IteratorAggregation {
 		}
 		return counter;
 	}
-	public static int dischargeNegated(final BitmapStorage container, IteratingRLW i, long max) {
+	private static int dischargeNegated(final BitmapStorage container, IteratingRLW i, long max) {
 		int counter = 0;
 		while (i.size() > 0 && counter < max) {
 			if (i.getRunningLength() > 0) {
@@ -295,6 +334,38 @@ public class IteratorAggregation {
 	private static void andToContainer(final BitmapStorage container,
 			int desiredrlwcount, final IteratingRLW rlwi, IteratingRLW rlwj) {
 		while ((rlwi.size()>0) && (rlwj.size()>0) && (desiredrlwcount-- >0) ) {
+		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
+		        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
+		          .getRunningLength();
+		        final IteratingRLW prey = i_is_prey ? rlwi : rlwj;
+		        final IteratingRLW predator = i_is_prey ? rlwj
+		          : rlwi;
+		        if (predator.getRunningBit() == false) {
+		          container.addStreamOfEmptyWords(false, predator.getRunningLength());
+		          prey.discardFirstWords(predator.getRunningLength());
+		          predator.discardFirstWords(predator.getRunningLength());
+		        } else {
+		          final long index = discharge(container, prey, predator.getRunningLength()); 
+		          container.addStreamOfEmptyWords(false, predator.getRunningLength()
+		            - index);
+		          predator.discardFirstWords(predator.getRunningLength());
+		        }
+		      }
+		      final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
+		        rlwj.getNumberOfLiteralWords());
+		      if (nbre_literal > 0) {
+				desiredrlwcount -= nbre_literal;
+		        for (int k = 0; k < nbre_literal; ++k)
+		          container.add(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
+		        rlwi.discardFirstWords(nbre_literal);
+		        rlwj.discardFirstWords(nbre_literal);
+		      }
+		    }      
+	}
+
+	private static void andToContainer(final BitmapStorage container,
+			 final IteratingRLW rlwi, IteratingRLW rlwj) {
+		while ((rlwi.size()>0) && (rlwj.size()>0) ) {
 		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
 		        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
 		          .getRunningLength();
@@ -348,6 +419,7 @@ public class IteratorAggregation {
 		        final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
 		          rlwj.getNumberOfLiteralWords());
 		        if (nbre_literal > 0) {
+		          desiredrlwcount -= nbre_literal;
 		          for (int k = 0; k < nbre_literal; ++k)
 		            container.add(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
 		          rlwi.discardFirstWords(nbre_literal);
@@ -355,9 +427,9 @@ public class IteratorAggregation {
 		        }
 		    }      
 	}
-	private static void orToContainer(final BitmapStorage container,
+/*	private static void orToContainer(final BitmapStorage container,
 			int desiredrlwcount, final IteratingRLW rlwi, IteratingRLW rlwj) {
-			    while ((rlwi.size()>0) && (rlwj.size()>0)) {
+			    while ((rlwi.size()>0) && (rlwj.size()>0) && desiredrlwcount-- > 0) {
 			      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
 			        final boolean i_is_prey = rlwi.getRunningLength() < rlwj
 			          .getRunningLength();
@@ -379,6 +451,7 @@ public class IteratorAggregation {
 			      final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),
 			        rlwj.getNumberOfLiteralWords());
 			      if (nbre_literal > 0) {
+			    	desiredrlwcount -= nbre_literal;
 			        for (int k = 0; k < nbre_literal; ++k) {
 			          container.add(rlwi.getLiteralWordAt(k) | rlwj.getLiteralWordAt(k));
 			        }
@@ -387,7 +460,7 @@ public class IteratorAggregation {
 			      }
 			    }
 			  }
-
+*/
 	/**
 	 * Will try to fill in the container with roughly desiredrlwcount
 	 * running length words, though the exact count may vary.
@@ -395,7 +468,7 @@ public class IteratorAggregation {
 	 * @param desiredrlwcount
 	 * @param bitmaps
 	 */
-	private static void orToContainer(final BitmapStorage container,
+	/*private static void orToContainer(final BitmapStorage container,
 			int desiredrlwcount, final LinkedList<IteratingRLW> rlws) {
 		while (desiredrlwcount-- > 0) {
 			long maxOneRl = 0;
@@ -465,6 +538,7 @@ public class IteratorAggregation {
 					long wordsToWrite = minNonEmptyRl > minSize ? minSize
 							: minNonEmptyRl;
 					if (emptyRl != null) {
+						desiredrlwcount -= wordsToWrite;
 						for (int k = 0; k < wordsToWrite; ++k)
 							container.add(emptyRl.getLiteralWordAt(k));
 					}
@@ -480,8 +554,10 @@ public class IteratorAggregation {
 									- (int) rlw.getRunningLength());
 						}
 					}
+					desiredrlwcount --;
 					container.add(word);
 					index++;
+					desiredrlwcount--;
 				}
 				for (IteratingRLW rlw : rlws) {
 
@@ -490,8 +566,103 @@ public class IteratorAggregation {
 			}
 		}
 	}
+*/
+/*	private static void andToContainer(final BitmapStorage container,
+	int desiredrlwcount, final LinkedList<IteratingRLW> rlws) {
 
-	static int inplaceor(long[] bitmap,
+			    while (true) {
+			      long maxZeroRl = 0;
+			      long minOneRl = Long.MAX_VALUE;
+			      long minSize = Long.MAX_VALUE;
+			      int numEmptyRl = 0;
+
+					Iterator<IteratingRLW> i = rlws.iterator();
+					while(i.hasNext()) {
+						IteratingRLW rlw = i.next();
+//			      for (IteratingBufferedRunningLengthWord rlw : rlws) {
+			    	  
+			        long size = rlw.size();
+			        minSize = Math.min(minSize, size);
+
+			        if (!rlw.getRunningBit()) {
+			          long rl = rlw.getRunningLength();
+			          maxZeroRl = Math.max(maxZeroRl, rl);
+			          minOneRl = 0;
+			          if (rl == 0 && size > 0) {
+			            numEmptyRl++;
+			          }
+			        } else {
+			          long rl = rlw.getRunningLength();
+			          minOneRl = Math.min(minOneRl, rl);
+			          if (rl == 0 && size > 0) {
+			            numEmptyRl++;
+			          }
+			        }
+			      }
+
+			      if (minSize == 0) {
+			    	  rlws.clear();
+//			        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
+			        break;
+			      }
+			      if (maxZeroRl > 0) {
+			        container.addStreamOfEmptyWords(false, maxZeroRl);
+			        for (IteratingRLW z : rlws) {
+			          z.discardFirstWords(maxZeroRl);
+			        }
+			      } else if (minOneRl > 0) {
+			        container.addStreamOfEmptyWords(true, minOneRl);
+			        for (IteratingRLW z : rlws) {
+				        z.discardFirstWords(minOneRl);
+			        }
+			      } else {
+			        int index = 0;
+
+			        if (numEmptyRl == 1) {
+			          // if one rlw has literal words to process and the rest have a run of
+			          // 1's we can write them out here
+			        	IteratingRLW emptyRl = null;
+			          long minNonEmptyRl = Long.MAX_VALUE;
+			          for (IteratingRLW rlw: rlws) {
+						    
+			         // for (IteratingBufferedRunningLengthWord rlw : rlws) {
+			            long rl = rlw.getRunningLength();
+			            if (rl == 0) {
+			              assert emptyRl == null;
+			              emptyRl = rlw;
+			            } else {
+			              minNonEmptyRl = Math.min(minNonEmptyRl, rl);
+			            }
+			          }
+			          long wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
+			          if (emptyRl != null) {
+//				            emptyRl.writeLiteralWords((int) wordsToWrite, container);
+				            for(int k = 0; k <(int) wordsToWrite;++k)
+				            	container.add(emptyRl.getLiteralWordAt(k));
+			        	  
+			          }
+			          index += wordsToWrite;
+			        }
+
+			        while (index < minSize) {
+			          long word = ~0l;
+			          for (IteratingRLW rlw : rlws) {
+			            if (rlw.getRunningLength() <= index) {
+			              word &= rlw.getLiteralWordAt(index - (int) rlw.getRunningLength());
+			            }
+			          }
+			          container.add(word);
+			          index++;
+			        }
+			        for (IteratingRLW rlw : rlws) {
+			        	
+			          rlw.discardFirstWords(minSize);
+			        }
+			      }
+			    }
+			  }
+*/
+	protected static int inplaceor(long[] bitmap,
 			IteratingRLW i) {
 		int pos = 0;
 		long s;
@@ -528,6 +699,5 @@ public class IteratorAggregation {
 		}
 		return pos;
 	}
-
 
 }

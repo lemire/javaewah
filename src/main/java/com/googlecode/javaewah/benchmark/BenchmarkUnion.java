@@ -137,12 +137,8 @@ public class BenchmarkUnion {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord(ewah[j]);
 						}
 						IteratingRLW ewahor = IteratorAggregation
-								.bufferedor(ewahcp);
-						int wordcounter = 0;
-						do {
-							wordcounter += ewahor.size();
-							
-						} while(ewahor.next());
+								.or(ewahcp);
+						int wordcounter = IteratorUtil.cardinality(ewahor);
 						bogus += wordcounter;
 					}
 				aft = System.currentTimeMillis();

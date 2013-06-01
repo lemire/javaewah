@@ -74,12 +74,12 @@ public class IteratorAggregationTest {
 				EWAHCompressedBitmap x1 = IteratorUtil
 						.materialize(IteratorAggregation.or(IteratorUtil
 								.toIterators(x)));
-				EWAHCompressedBitmap x2 = IteratorUtil
-						.materialize(IteratorAggregation
-								.bufferedor(IteratorUtil.toIterators(x)));
+				//EWAHCompressedBitmap x2 = IteratorUtil
+					//	.materialize(IteratorAggregation
+						//		.bufferedor(IteratorUtil.toIterators(x)));
 				assertTrue(x1.equals(tanswer));
-				assertTrue(x2.equals(tanswer));
-				assertTrue(x1.equals(x2));
+			//	assertTrue(x2.equals(tanswer));
+				//assertTrue(x1.equals(x2));
 			}
 			System.gc();
 		}
