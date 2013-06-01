@@ -88,8 +88,7 @@ public class IteratorAggregationTest {
 				assertTrue(x1.equals(x2));
 			}
 			System.gc();
-		}
-
+   	       }
 	}
 
 }
