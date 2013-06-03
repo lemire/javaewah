@@ -1521,7 +1521,7 @@ public IteratingRLW getIteratingRLW() {
 			else  {
 				EWAHCompressedBitmap x = bitmaps[0].or(bitmaps[1]);
 				for (int k = 2; k < bitmaps.length - 1; ++k)
-		              x.or(bitmaps[k]); 
+		              x = x.or(bitmaps[k]); 
 				x.orToContainer(bitmaps[bitmaps.length-1], container);
 			}
 		}
