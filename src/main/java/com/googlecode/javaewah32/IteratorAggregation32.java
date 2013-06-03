@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import com.googlecode.javaewah.BitmapStorage;
+import com.googlecode.javaewah.IteratingRLW;
+
 /**
  * @author lemire
  *
@@ -67,7 +70,7 @@ public class IteratorAggregation32 {
 		final LinkedList<IteratingRLW32> ll = new LinkedList<IteratingRLW32>();
 		for (IteratingRLW32 i : al) 
 			ll.add(i);
-		final int MAXBUFSIZE = 65536 * al.length;//512KB per bitmap
+		final int MAXBUFSIZE = 65536 * al.length ;//512KB per bitmap
 
 		Iterator<EWAHIterator32> i = new Iterator<EWAHIterator32>() {
 			EWAHCompressedBitmap32 buffer = new EWAHCompressedBitmap32();
@@ -86,12 +89,12 @@ public class IteratorAggregation32 {
 					Iterator<IteratingRLW32> i = ll.iterator();
 					i.next();
 					i.next();
+					EWAHCompressedBitmap32 tmpbuffer = new EWAHCompressedBitmap32();
 					while (i.hasNext()) {
-						EWAHCompressedBitmap32 tmpbuffer = new EWAHCompressedBitmap32();
 						IteratorAggregation32.andToContainer(tmpbuffer,
 								 buffer.getIteratingRLW(), i.next());
-						buffer = tmpbuffer;
-						
+						buffer.swap(tmpbuffer);
+						tmpbuffer.clear();
 					}
 				}
 				Iterator<IteratingRLW32> i = ll.iterator();
@@ -200,6 +203,24 @@ public class IteratorAggregation32 {
 		};
 		return new BufferedIterator32(i);
 	}
+	
+	/**
+	 * Write out the content of the iterator, but as if it were all zeros.
+	 * 
+	 * @param container
+	 *            where we write
+	 * @param i
+	 *            the iterator
+	 */
+	protected static void dischargeAsEmpty(final BitmapStorage32 container,
+			final IteratingRLW32 i) {
+		while (i.size() > 0) {
+			container.addStreamOfEmptyWords(false, i.size());
+			i.next();
+
+		}
+	}
+	
 	/**
 	   * Write out up to max words, returns how many were written
 	   * @param container target for writes
@@ -207,16 +228,15 @@ public class IteratorAggregation32 {
 	   * @param max maximal number of writes
 	   * @return how many written
 	   */
-
-	private static int discharge(final BitmapStorage32 container, IteratingRLW32 i, int max) {
+	protected static int discharge(final BitmapStorage32 container, IteratingRLW32 i, int max) {
 		int counter = 0;
 		while (i.size() > 0 && counter < max) {
-			if (i.getRunningLength() > 0) {
-				int L = i.getRunningLength();
-				if(L + counter > max) L = max - counter;
-				container.addStreamOfEmptyWords(i.getRunningBit(),
-						L);
-				counter += L;
+			int L1 = i.getRunningLength();
+			if (L1 > 0) {
+				if (L1 + counter > max)
+					L1 = max - counter;
+				container.addStreamOfEmptyWords(i.getRunningBit(), L1);
+				counter += L1;
 			}
 			int L = i.getNumberOfLiteralWords();
 			if(L + counter > max) L = max - counter;	
@@ -224,25 +244,35 @@ public class IteratorAggregation32 {
 				container.add(i.getLiteralWordAt(k));
 			}
 			counter += L;
+			i.discardFirstWords(L+L1);
 		}
 		return counter;
 	}
-	private static int dischargeNegated(final BitmapStorage32 container, IteratingRLW32 i, int max) {
+
+	/**
+	   * Write out up to max negated words, returns how many were written
+	   * @param container target for writes
+	   * @param i source of data
+	   * @param max maximal number of writes
+	   * @return how many written
+	   */
+	protected static int dischargeNegated(final BitmapStorage32 container, IteratingRLW32 i, int max) {
 		int counter = 0;
 		while (i.size() > 0 && counter < max) {
-			if (i.getRunningLength() > 0) {
-				int L = i.getRunningLength();
-				if(L + counter > max) L = max - counter;
-				container.addStreamOfEmptyWords(!i.getRunningBit(),
-						L);
-				counter += L;
+			int L1 = i.getRunningLength();
+			if (L1 > 0) {
+				if (L1 + counter > max)
+					L1 = max - counter;
+				container.addStreamOfEmptyWords(i.getRunningBit(), L1);
+				counter += L1;
 			}
 			int L = i.getNumberOfLiteralWords();
 			if(L + counter > max) L = max - counter;	
 			for (int k = 0; k < L; ++k) {
-				container.add(~i.getLiteralWordAt(k));
+				container.add(i.getLiteralWordAt(k));
 			}
 			counter += L;
+			i.discardFirstWords(L+L1);
 		}
 		return counter;
 	}

@@ -8,9 +8,6 @@ package com.googlecode.javaewah32;
 import java.util.*;
 import java.io.*;
 
-import com.googlecode.javaewah.BitmapStorage;
-import com.googlecode.javaewah.EWAHCompressedBitmap;
-import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
 
@@ -1168,7 +1165,29 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 		answer.append("}");
 		return answer.toString();
   }
+	/**
+	 * swap the content of the bitmap with another.
+	 * 
+	 * @param other
+	 *            bitmap to swap with
+	 */
+	public void swap(final EWAHCompressedBitmap32 other) {
+		int[] tmp = this.buffer;
+		this.buffer = other.buffer;
+		other.buffer = tmp;
 
+		RunningLengthWord32 tmp2 = this.rlw;
+		this.rlw = other.rlw;
+		other.rlw = tmp2;
+
+		int tmp3 = this.actualsizeinwords;
+		this.actualsizeinwords = other.actualsizeinwords;
+		other.actualsizeinwords = tmp3;
+
+		int tmp4 = this.sizeinbits;
+		this.sizeinbits = other.sizeinbits;
+		other.sizeinbits = tmp4;
+	}
   /**
    * Reduce the internal buffer to its minimal allowable size (given
    * by this.actualsizeinwords). This can free memory.
