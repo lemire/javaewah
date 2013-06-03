@@ -283,6 +283,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
    * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   * 
    * @since 0.4.3
    * @param a
    *          the other bitmap
@@ -370,6 +373,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
    * 
    * @param a
    *          the other bitmap
@@ -736,7 +742,12 @@ public IteratingRLW getIteratingRLW() {
     final int number) {
     while (this.actualsizeinwords + number >= this.buffer.length) {
       final long oldbuffer[] = this.buffer;
-      this.buffer = new long[oldbuffer.length * 2];
+      if((this.actualsizeinwords + number) < 32768)
+    	  this.buffer = new long[ (this.actualsizeinwords + number) * 2];
+      else if((this.actualsizeinwords + number) * 3 / 2 < this.actualsizeinwords + number) // overflow
+    	  this.buffer = new long[Integer.MAX_VALUE];
+      else 
+    	  this.buffer = new long[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }
@@ -790,6 +801,9 @@ public IteratingRLW getIteratingRLW() {
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
    * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   * 
    * @param a
    *          the other bitmap
    * @return the EWAH compressed bitmap
@@ -800,6 +814,8 @@ public IteratingRLW getIteratingRLW() {
     orToContainer(a, container);
     return container;
   }
+
+
 
   /**
    * Computes the bitwise or between the current bitmap and the bitmap "a".
@@ -877,7 +893,9 @@ public IteratingRLW getIteratingRLW() {
     if (this.actualsizeinwords == this.buffer.length) {
       final long oldbuffer[] = this.buffer;
       if(oldbuffer.length < 32768)
-    	  this.buffer = new long[oldbuffer.length * 2];
+    	  this.buffer = new long[ oldbuffer.length * 2];
+      else if(oldbuffer.length * 3 / 2 < oldbuffer.length) // overflow
+    	  this.buffer = new long[Integer.MAX_VALUE];
       else 
     	  this.buffer = new long[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
@@ -897,12 +915,14 @@ public IteratingRLW getIteratingRLW() {
    *          the number of words to add
    */
   private void push_back(final long[] data, final int start, final int number) {
-    while (this.actualsizeinwords + number >= this.buffer.length) {
+    if (this.actualsizeinwords + number >= this.buffer.length) {
       final long oldbuffer[] = this.buffer;
-      if(oldbuffer.length < 32768)
-    	  this.buffer = new long[oldbuffer.length * 2];
+      if(this.actualsizeinwords + number < 32768)
+    	  this.buffer = new long[(this.actualsizeinwords + number) * 2];
+      else if ((this.actualsizeinwords + number) * 3 / 2 < this.actualsizeinwords + number) // overflow
+    	  this.buffer = new long[Integer.MAX_VALUE];
       else 
-    	  this.buffer = new long[oldbuffer.length * 3 / 2];
+    	  this.buffer = new long[( this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }
@@ -1156,6 +1176,14 @@ public IteratingRLW getIteratingRLW() {
 		return answer.toString();
   }
 
+  /**
+   * Reduce the internal buffer to its minimal allowable size (given
+   * by this.actualsizeinwords). This can free memory.
+   */
+  public void trim() {
+	  this.buffer = Arrays.copyOf(this.buffer, this.actualsizeinwords);
+  }
+
   /*
    * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
    */
@@ -1169,6 +1197,9 @@ public IteratingRLW getIteratingRLW() {
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
    * 
    * @param a
    *          the other bitmap
@@ -1384,12 +1415,18 @@ public IteratingRLW getIteratingRLW() {
    * 
    * It may or may not be faster than doing the aggregation two-by-two (A.and(B).and(C)).
    * 
+   * If only one bitmap is provided, it is returned as is.
+   *
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   * 
    * @since 0.4.3
    * @param bitmaps
    *          bitmaps to AND together
    * @return result of the AND
    */
   public static EWAHCompressedBitmap and(final EWAHCompressedBitmap... bitmaps) {
+	if(bitmaps.length == 1) return bitmaps[0];
     final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
     int largestSize = 0;
     for (EWAHCompressedBitmap bitmap : bitmaps) {
@@ -1457,147 +1494,49 @@ public IteratingRLW getIteratingRLW() {
       + (currentLeftover != 0 ? -1 : 0));
   }
 
-  /**
-   * For internal use. Computes the bitwise or of the provided bitmaps and
-   * stores the result in the container.
-   * 
-   * @since 0.4.0
-   * @param container where store the result
-   * @param bitmaps to be aggregated
-   */
-  public static void orWithContainer(final BitmapStorage container,
-    final EWAHCompressedBitmap... bitmaps) {
-    if (bitmaps.length == 2) {
-      // should be more efficient
-      bitmaps[0].orToContainer(bitmaps[1], container);
-      return;
-    }
+  
+	/**
+	 * Uses an adaptive technique to compute the logical OR.
+	 * Mostly for internal use.
+	 * 
+	 * @param container where the aggregate is written.
+	 * @param bitmaps to be aggregated
+	 */
+	public static void orWithContainer(final BitmapStorage container,
+		    final EWAHCompressedBitmap... bitmaps) {
+		if (bitmaps.length < 2)
+			throw new IllegalArgumentException("You should provide at least two bitmaps, provided "+bitmaps.length);
+		int size = 0;
+		int sinbits = 0;
+		for (EWAHCompressedBitmap b : bitmaps) {
+			size += b.sizeInBytes();
+			if (sinbits < b.sizeInBits())
+				sinbits = b.sizeInBits();
+		}
+		if (size * 8 > sinbits) {
+			FastAggregation.bufferedorWithContainer(container, bitmaps);
+		} else {
+			if(bitmaps.length == 2)
+				bitmaps[0].orToContainer(bitmaps[1], container);
+			else  {
+				EWAHCompressedBitmap x = bitmaps[0].or(bitmaps[1]);
+				for (int k = 2; k < bitmaps.length - 1; ++k)
+		              x.or(bitmaps[k]); 
+				x.orToContainer(bitmaps[bitmaps.length-1], container);
+			}
+		}
+	}
 
-    // Sort the bitmaps in descending order by sizeinbits. We will exhaust the
-    // sorted bitmaps from right to left.
-    final EWAHCompressedBitmap[] sortedBitmaps = bitmaps.clone();
-    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap>() {
-      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-        return a.sizeinbits < b.sizeinbits ? 1
-          : a.sizeinbits == b.sizeinbits ? 0 : -1;
-      }
-    });
-
-    final IteratingBufferedRunningLengthWord[] rlws = new IteratingBufferedRunningLengthWord[bitmaps.length];
-    int maxAvailablePos = 0;
-    for (EWAHCompressedBitmap bitmap : sortedBitmaps) {
-      EWAHIterator iterator = bitmap.getEWAHIterator();
-      if (iterator.hasNext()) {
-        rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord(
-          iterator);
-      }
-    }
-
-    if (maxAvailablePos == 0) { // this never happens...
-      container.setSizeInBits(0);
-      return;
-    }
-
-    int maxSize = sortedBitmaps[0].sizeinbits;
-
-    while (true) {
-      long maxOneRl = 0;
-      long minZeroRl = Long.MAX_VALUE;
-      long minSize = Long.MAX_VALUE;
-      int numEmptyRl = 0;
-      for (int i = 0; i < maxAvailablePos; i++) {
-        IteratingBufferedRunningLengthWord rlw = rlws[i];
-        long size = rlw.size();
-        if (size == 0) {
-          maxAvailablePos = i;
-          break;
-        }
-        minSize = Math.min(minSize, size);
-
-        if (rlw.getRunningBit()) {
-          long rl = rlw.getRunningLength();
-          maxOneRl = Math.max(maxOneRl, rl);
-          minZeroRl = 0;
-          if (rl == 0 && size > 0) {
-            numEmptyRl++;
-          }
-        } else {
-          long rl = rlw.getRunningLength();
-          minZeroRl = Math.min(minZeroRl, rl);
-          if (rl == 0 && size > 0) {
-            numEmptyRl++;
-          }
-        }
-      }
-
-      if (maxAvailablePos == 0) {
-        break;
-      } else if (maxAvailablePos == 1) {
-        // only one bitmap is left so just write the rest of it out
-        rlws[0].discharge(container);
-        break;
-      }
-
-      if (maxOneRl > 0) {
-        container.addStreamOfEmptyWords(true, maxOneRl);
-        for (int i = 0; i < maxAvailablePos; i++) {
-          IteratingBufferedRunningLengthWord rlw = rlws[i];
-          rlw.discardFirstWords(maxOneRl);
-        }
-      } else if (minZeroRl > 0) {
-        container.addStreamOfEmptyWords(false, minZeroRl);
-        for (int i = 0; i < maxAvailablePos; i++) {
-          IteratingBufferedRunningLengthWord rlw = rlws[i];
-          rlw.discardFirstWords(minZeroRl);
-        }
-      } else {
-        int index = 0;
-
-        if (numEmptyRl == 1) {
-          // if one rlw has literal words to process and the rest have a run of
-          // 0's we can write them out here
-          IteratingBufferedRunningLengthWord emptyRl = null;
-          long minNonEmptyRl = Long.MAX_VALUE;
-          for (int i = 0; i < maxAvailablePos; i++) {
-            IteratingBufferedRunningLengthWord rlw = rlws[i];
-            long rl = rlw.getRunningLength();
-            if (rl == 0) {
-              assert emptyRl == null;
-              emptyRl = rlw;
-            } else {
-              minNonEmptyRl = Math.min(minNonEmptyRl, rl);
-            }
-          }
-          long wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
-          if (emptyRl != null)
-            emptyRl.writeLiteralWords((int) wordsToWrite, container);
-          index += wordsToWrite;
-        }
-
-        while (index < minSize) {
-          long word = 0;
-          for (int i = 0; i < maxAvailablePos; i++) {
-            IteratingBufferedRunningLengthWord rlw = rlws[i];
-            if (rlw.getRunningLength() <= index) {
-              word |= rlw.getLiteralWordAt(index - (int) rlw.getRunningLength());
-            }
-          }
-          container.add(word);
-          index++;
-        }
-        for (int i = 0; i < maxAvailablePos; i++) {
-          IteratingBufferedRunningLengthWord rlw = rlws[i];
-          rlw.discardFirstWords(minSize);
-        }
-      }
-    }
-    container.setSizeInBits(maxSize);
-  }
-
+  
   /**
    * Returns a new compressed bitmap containing the bitwise OR values of the
    * provided bitmaps. This is typically faster than doing the aggregation
    * two-by-two (A.or(B).or(C).or(D)).
+   * 
+   * If only one bitmap is provided, it is returned as is.
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
    * 
    * @since 0.4.0
    * @param bitmaps
@@ -1605,6 +1544,8 @@ public IteratingRLW getIteratingRLW() {
    * @return result of the OR
    */
   public static EWAHCompressedBitmap or(final EWAHCompressedBitmap... bitmaps) {
+	if(bitmaps.length == 1) 
+		  return bitmaps[0];
     final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
     int largestSize = 0;
     for (EWAHCompressedBitmap bitmap : bitmaps) {
@@ -1626,6 +1567,7 @@ public IteratingRLW getIteratingRLW() {
    * @return the cardinality
    */
   public static int orCardinality(final EWAHCompressedBitmap... bitmaps) {
+	if(bitmaps.length == 1) return bitmaps[0].cardinality();
     final BitCounter counter = new BitCounter();
     orWithContainer(counter, bitmaps);
     return counter.getCount();

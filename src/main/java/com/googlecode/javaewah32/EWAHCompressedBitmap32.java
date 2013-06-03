@@ -267,6 +267,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
    * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   * 
    * @param a
    *          the other bitmap
    * @return the EWAH compressed bitmap
@@ -366,6 +369,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
    * 
    * @param a
    *          the other bitmap
@@ -721,7 +727,12 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final int number) {
     while (this.actualsizeinwords + number >= this.buffer.length) {
       final int oldbuffer[] = this.buffer;
-      this.buffer = new int[oldbuffer.length * 2];
+      if(this.actualsizeinwords + number < 32768)
+    	  this.buffer = new int[(this.actualsizeinwords + number) * 2];
+      else if ((this.actualsizeinwords + number) * 3 / 2 < this.actualsizeinwords + number)
+    	  this.buffer = new int[Integer.MAX_VALUE];
+      else 
+    	  this.buffer = new int[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }
@@ -775,7 +786,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
-   * 
+   *
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   *
    * @param a
    *          the other bitmap
    * @return the EWAH compressed bitmap
@@ -861,6 +875,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
       final int oldbuffer[] = this.buffer;
       if(oldbuffer.length < 32768)
     	  this.buffer = new int[oldbuffer.length * 2];
+      else if (oldbuffer.length * 3 / 2 < oldbuffer.length)
+    	  this.buffer = new int[Integer.MAX_VALUE];
       else 
     	  this.buffer = new int[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
@@ -880,12 +896,14 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the number of words to add
    */
   private void push_back(final int[] data, final int start, final int number) {
-    while (this.actualsizeinwords + number >= this.buffer.length) {
+    if (this.actualsizeinwords + number >= this.buffer.length) {
       final int oldbuffer[] = this.buffer;
-      if(oldbuffer.length < 32768)
-    	  this.buffer = new int[oldbuffer.length * 2];
+      if(this.actualsizeinwords + number < 32768)
+    	  this.buffer = new int[(this.actualsizeinwords + number) * 2];
+      else if((this.actualsizeinwords + number) * 3 / 2 < this.actualsizeinwords + number) //overflow
+    	  this.buffer = new int[Integer.MAX_VALUE];
       else 
-    	  this.buffer = new int[oldbuffer.length * 3 / 2];
+    	  this.buffer = new int[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
       this.rlw.array = this.buffer;
     }
@@ -1141,6 +1159,14 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 		return answer.toString();
   }
 
+  /**
+   * Reduce the internal buffer to its minimal allowable size (given
+   * by this.actualsizeinwords). This can free memory.
+   */
+  public void trim() {
+	  this.buffer = Arrays.copyOf(this.buffer, this.actualsizeinwords);
+  }
+
   /*
    * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
    */
@@ -1154,6 +1180,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * The running time is proportional to the sum of the compressed sizes (as
    * reported by sizeInBytes()).
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
    * 
    * @param a
    *          the other bitmap
@@ -1364,12 +1393,18 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * It may or may not be faster than doing the aggregation two-by-two (A.and(B).and(C)). 
    * 
+   * If only one bitmap is provided, it is returned as is.
+   * 
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   * 
    * @param bitmaps
    *          bitmaps to AND together
    * @return result of the AND
    */
   public static EWAHCompressedBitmap32 and(
     final EWAHCompressedBitmap32... bitmaps) {
+	if(bitmaps.length == 1) return bitmaps[0];
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     int largestSize = 0;
     for (EWAHCompressedBitmap32 bitmap : bitmaps) {
@@ -1575,13 +1610,19 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * Returns a new compressed bitmap containing the bitwise OR values of the
    * provided bitmaps.  This is typically faster than doing the aggregation
    * two-by-two (A.or(B).or(C).or(D)).
-   * 
+   *
+   * If only one bitmap is provided, it is returned as is.
+   *
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   *
    * @param bitmaps
    *          bitmaps to OR together
    * @return result of the OR
    */
   public static EWAHCompressedBitmap32 or(
     final EWAHCompressedBitmap32... bitmaps) {
+    if(bitmaps.length == 1) return bitmaps[0];
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     int largestSize = 0;
     for (EWAHCompressedBitmap32 bitmap : bitmaps) {
@@ -1602,6 +1643,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @return the cardinality
    */
   public static int orCardinality(final EWAHCompressedBitmap32... bitmaps) {
+	if(bitmaps.length == 1) return bitmaps[0].cardinality();
     final BitCounter32 counter = new BitCounter32();
     orWithContainer(counter, bitmaps);
     return counter.getCount();

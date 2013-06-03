@@ -14,7 +14,7 @@ public class BenchmarkUnion {
 		test(10, 18, 1);
 	}
 
-	@SuppressWarnings("javadoc")
+	@SuppressWarnings({ "javadoc", "deprecation" })
 	public static void test(int N, int nbr, int repeat) {
 		long bogus = 0;
 
@@ -125,9 +125,9 @@ public class BenchmarkUnion {
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap ewahor = FastAggregation
-								.smartor(ewahcp);
-						bogus += ewahor.sizeInBits();
+						EWAHCompressedBitmap x = new EWAHCompressedBitmap();
+						FastAggregation.legacy_orWithContainer(x, ewahcp);
+						bogus += x.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
 
@@ -151,7 +151,7 @@ public class BenchmarkUnion {
 
 				
 				System.out
-						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor smartor iterator-bufferedor");
+						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor legacygroupedor iterator-bufferedor");
 
 				System.out.println(line);
 			}
