@@ -7,19 +7,20 @@ package com.googlecode.javaewah.benchmark;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import com.googlecode.javaewah.EWAHCompressedBitmap;
+import com.googlecode.javaewah32.EWAHCompressedBitmap32;
+import com.googlecode.javaewah32.FastAggregation32;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
-import com.googlecode.javaewah.IteratingRLW;
-import com.googlecode.javaewah.IteratorAggregation;
-import com.googlecode.javaewah.IteratorUtil;
+import com.googlecode.javaewah32.IteratingRLW32;
+import com.googlecode.javaewah32.IteratorAggregation32;
+import com.googlecode.javaewah32.IteratorUtil32;
 
 /**
  * This class is used to benchmark the performance EWAH.
  * 
  * @author Daniel Lemire
  */
-public class Benchmark {
+public class Benchmark32 {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
@@ -43,12 +44,12 @@ public class Benchmark {
 			System.out.println("# generating random data... ok.");
 			// building
 			bef = System.currentTimeMillis();
-			EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
+			EWAHCompressedBitmap32[] ewah = new EWAHCompressedBitmap32[N];
 			int size = 0;
 			for (int r = 0; r < repeat; ++r) {
 				size = 0;
 				for (int k = 0; k < N; ++k) {
-					ewah[k] = new EWAHCompressedBitmap();
+					ewah[k] = new EWAHCompressedBitmap32();
 					for (int x = 0; x < data[k].length; ++x) {
 						ewah[k].set(data[k][x]);
 					}
@@ -106,7 +107,7 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap ewahor = ewah[0];
+					EWAHCompressedBitmap32 ewahor = ewah[0];
 					for (int j = 1; j < k; ++j) {
 						ewahor = ewahor.or(ewah[j]);
 					}
@@ -117,11 +118,11 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+					EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j];
 					}
-					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
+					EWAHCompressedBitmap32 ewahor = EWAHCompressedBitmap32
 							.or(ewahcp);
 					bogus += ewahor.sizeInBits();
 				}
@@ -132,11 +133,11 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+					EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j];
 					}
-					EWAHCompressedBitmap ewahor = FastAggregation.or(ewahcp);
+					EWAHCompressedBitmap32 ewahor = FastAggregation.or(ewahcp);
 					bogus += ewahor.sizeInBits();
 				}
 			aft = System.currentTimeMillis();
@@ -145,12 +146,12 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+					IteratingRLW32[] ewahcp = new IteratingRLW32[k + 1];
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
-					int wordcounter = IteratorUtil.cardinality(ewahor);
+					IteratingRLW32 ewahor = IteratorAggregation32.or(ewahcp);
+					int wordcounter = IteratorUtil32.cardinality(ewahor);
 					bogus += wordcounter;
 				}
 			aft = System.currentTimeMillis();
@@ -161,7 +162,7 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap ewahand = ewah[0];
+					EWAHCompressedBitmap32 ewahand = ewah[0];
 					for (int j = 1; j < k; ++j) {
 						ewahand = ewahand.and(ewah[j]);
 					}
@@ -172,11 +173,11 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+					EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j];
 					}
-					EWAHCompressedBitmap ewahand = EWAHCompressedBitmap
+					EWAHCompressedBitmap32 ewahand = EWAHCompressedBitmap32
 							.and(ewahcp);
 					bogus += ewahand.sizeInBits();
 				}
@@ -188,12 +189,12 @@ public class Benchmark {
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
-					IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+					IteratingRLW32[] ewahcp = new IteratingRLW32[k + 1];
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW ewahand = IteratorAggregation.and(ewahcp);
-					int wordcounter = IteratorUtil.cardinality(ewahand);
+					IteratingRLW32 ewahand = IteratorAggregation32.and(ewahcp);
+					int wordcounter = IteratorUtil32.cardinality(ewahand);
 					bogus += wordcounter;
 				}
 			aft = System.currentTimeMillis();

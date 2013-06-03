@@ -1,4 +1,4 @@
-package com.googlecode.javaewah;
+package com.googlecode.javaewah32;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -12,7 +12,7 @@ import java.util.PriorityQueue;
  * @author Daniel Lemire
  * 
  */
-public class FastAggregation {
+public class FastAggregation32 {
 
 
 	/**
@@ -20,9 +20,9 @@ public class FastAggregation {
 	 * @param bitmaps the source bitmaps
 	 * @return the or aggregate.
 	 */
-	public static EWAHCompressedBitmap bufferedor(
-			final EWAHCompressedBitmap... bitmaps) {
-		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+	public static EWAHCompressedBitmap32 bufferedor(
+			final EWAHCompressedBitmap32... bitmaps) {
+		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
 		bufferedorWithContainer(answer, bitmaps);
 		return answer;
 	}
@@ -33,30 +33,30 @@ public class FastAggregation {
 	 * @param container where the aggregate is written
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedorWithContainer(final BitmapStorage container,
-			final EWAHCompressedBitmap... bitmaps) {
+	public static void bufferedorWithContainer(final BitmapStorage32 container,
+			final EWAHCompressedBitmap32... bitmaps) {
 		int range = 0;
-		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
-		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
-			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+		EWAHCompressedBitmap32[] sbitmaps = bitmaps.clone();
+		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap32>() {
+			public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 				return b.sizeinbits - a.sizeinbits;
 			}
 		});
 
-		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
-		for (EWAHCompressedBitmap bitmap : sbitmaps) {
+		java.util.ArrayList<IteratingBufferedRunningLengthWord32> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord32>();
+		for (EWAHCompressedBitmap32 bitmap : sbitmaps) {
 			if (bitmap.sizeinbits > range)
 				range = bitmap.sizeinbits;
-			al.add(new IteratingBufferedRunningLengthWord(bitmap));
+			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
 		}
 		final int MAXBUFSIZE = 65536;
-		long[] hardbitmap = new long[MAXBUFSIZE];
+		int[] hardbitmap = new int[MAXBUFSIZE];
 		int maxr = al.size();
 		while (maxr > 0) {
-			long effective = 0;
+			int effective = 0;
 			for (int k = 0; k < maxr; ++k) {
 				if (al.get(k).size() > 0) {
-					int eff = IteratorAggregation.inplaceor(hardbitmap, al.get(k));
+					int eff = IteratorAggregation32.inplaceor(hardbitmap, al.get(k));
 					if (eff > effective)
 						effective = eff;
 				} else
@@ -72,49 +72,24 @@ public class FastAggregation {
 
 	/**
 	 * Uses a priority queue to compute the or aggregate.
-	 * 
-	 * @param bitmaps
-	 *            bitmaps to be aggregated
-	 * @return the or aggregate
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends LogicalElement> T or(T... bitmaps) {
-		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
-				new Comparator<T>() {
-					public int compare(T a, T b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (T x : bitmaps) {
-			pq.add(x);
-		}
-		while (pq.size() > 1) {
-			T x1 = pq.poll();
-			T x2 = pq.poll();
-			pq.add((T) x1.or(x2));
-		}
-		return pq.poll();
-	}
-	/**
-	 * Uses a priority queue to compute the or aggregate.
 	 * @param container
 	 * @param bitmaps to be aggregated
 	 */
-	public static void orToContainer(final BitmapStorage container, 
-			final EWAHCompressedBitmap ... bitmaps) {
+	public static void orToContainer(final BitmapStorage32 container, 
+			final EWAHCompressedBitmap32 ... bitmaps) {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
-		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
-				new Comparator<EWAHCompressedBitmap>() {
-					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+		PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
+				new Comparator<EWAHCompressedBitmap32>() {
+					public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
 				});
-		for (EWAHCompressedBitmap x : bitmaps) {
+		for (EWAHCompressedBitmap32 x : bitmaps) {
 			pq.add(x);
 		}
 		while (pq.size() > 2) {
-			EWAHCompressedBitmap x1 = pq.poll();
-			EWAHCompressedBitmap x2 = pq.poll();
+			EWAHCompressedBitmap32 x1 = pq.poll();
+			EWAHCompressedBitmap32 x2 = pq.poll();
 			pq.add(x1.or(x2));
 		}
 		pq.poll().orToContainer(pq.poll(), container);
@@ -123,50 +98,24 @@ public class FastAggregation {
 	
 	/**
 	 * Uses a priority queue to compute the xor aggregate.
-	 * 
-	 * @param bitmaps
-	 *            bitmaps to be aggregated
-	 * @return the xor aggregate
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends LogicalElement> T xor(T... bitmaps) {
-		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
-				new Comparator<T>() {
-
-					public int compare(T a, T b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (T x : bitmaps)
-			pq.add(x);
-		while (pq.size() > 1) {
-			T x1 = pq.poll();
-			T x2 = pq.poll();
-			pq.add((T) x1.xor(x2));
-		}
-		return pq.poll();
-	}
-	
-	/**
-	 * Uses a priority queue to compute the xor aggregate.
 	 * @param container
 	 * @param bitmaps to be aggregated
 	 */
-	public static void xorToContainer(final BitmapStorage container, 
-			final EWAHCompressedBitmap ... bitmaps) {
+	public static void xorToContainer(final BitmapStorage32 container, 
+			final EWAHCompressedBitmap32 ... bitmaps) {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
-		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
-				new Comparator<EWAHCompressedBitmap>() {
-					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+		PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
+				new Comparator<EWAHCompressedBitmap32>() {
+					public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
 				});
-		for (EWAHCompressedBitmap x : bitmaps) {
+		for (EWAHCompressedBitmap32 x : bitmaps) {
 			pq.add(x);
 		}
 		while (pq.size() > 2) {
-			EWAHCompressedBitmap x1 = pq.poll();
-			EWAHCompressedBitmap x2 = pq.poll();
+			EWAHCompressedBitmap32 x1 = pq.poll();
+			EWAHCompressedBitmap32 x2 = pq.poll();
 			pq.add(x1.xor(x2));
 		}
 		pq.poll().xorToContainer(pq.poll(), container);
@@ -181,8 +130,8 @@ public class FastAggregation {
 	   * @param container where store the result
 	   * @param bitmaps to be aggregated
 	   */
-	  public static void legacy_orWithContainer(final BitmapStorage container,
-	    final EWAHCompressedBitmap... bitmaps) {
+	  public static void legacy_orWithContainer(final BitmapStorage32 container,
+	    final EWAHCompressedBitmap32... bitmaps) {
 	    if (bitmaps.length == 2) {
 	      // should be more efficient
 	      bitmaps[0].orToContainer(bitmaps[1], container);
@@ -191,20 +140,20 @@ public class FastAggregation {
 
 	    // Sort the bitmaps in descending order by sizeinbits. We will exhaust the
 	    // sorted bitmaps from right to left.
-	    final EWAHCompressedBitmap[] sortedBitmaps = bitmaps.clone();
-	    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap>() {
-	      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+	    final EWAHCompressedBitmap32[] sortedBitmaps = bitmaps.clone();
+	    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap32>() {
+	      public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 	        return a.sizeinbits < b.sizeinbits ? 1
 	          : a.sizeinbits == b.sizeinbits ? 0 : -1;
 	      }
 	    });
 
-	    final IteratingBufferedRunningLengthWord[] rlws = new IteratingBufferedRunningLengthWord[bitmaps.length];
+	    final IteratingBufferedRunningLengthWord32[] rlws = new IteratingBufferedRunningLengthWord32[bitmaps.length];
 	    int maxAvailablePos = 0;
-	    for (EWAHCompressedBitmap bitmap : sortedBitmaps) {
-	      EWAHIterator iterator = bitmap.getEWAHIterator();
+	    for (EWAHCompressedBitmap32 bitmap : sortedBitmaps) {
+	      EWAHIterator32 iterator = bitmap.getEWAHIterator();
 	      if (iterator.hasNext()) {
-	        rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord(
+	        rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord32(
 	          iterator);
 	      }
 	    }
@@ -217,13 +166,13 @@ public class FastAggregation {
 	    int maxSize = sortedBitmaps[0].sizeinbits;
 
 	    while (true) {
-	      long maxOneRl = 0;
-	      long minZeroRl = Long.MAX_VALUE;
-	      long minSize = Long.MAX_VALUE;
+	      int maxOneRl = 0;
+	      int minZeroRl = Integer.MAX_VALUE;
+	      int minSize = Integer.MAX_VALUE;
 	      int numEmptyRl = 0;
 	      for (int i = 0; i < maxAvailablePos; i++) {
-	        IteratingBufferedRunningLengthWord rlw = rlws[i];
-	        long size = rlw.size();
+	        IteratingBufferedRunningLengthWord32 rlw = rlws[i];
+	        int size = rlw.size();
 	        if (size == 0) {
 	          maxAvailablePos = i;
 	          break;
@@ -231,14 +180,14 @@ public class FastAggregation {
 	        minSize = Math.min(minSize, size);
 
 	        if (rlw.getRunningBit()) {
-	          long rl = rlw.getRunningLength();
+	          int rl = rlw.getRunningLength();
 	          maxOneRl = Math.max(maxOneRl, rl);
 	          minZeroRl = 0;
 	          if (rl == 0 && size > 0) {
 	            numEmptyRl++;
 	          }
 	        } else {
-	          long rl = rlw.getRunningLength();
+	          int rl = rlw.getRunningLength();
 	          minZeroRl = Math.min(minZeroRl, rl);
 	          if (rl == 0 && size > 0) {
 	            numEmptyRl++;
@@ -257,13 +206,13 @@ public class FastAggregation {
 	      if (maxOneRl > 0) {
 	        container.addStreamOfEmptyWords(true, maxOneRl);
 	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
+	          IteratingBufferedRunningLengthWord32 rlw = rlws[i];
 	          rlw.discardFirstWords(maxOneRl);
 	        }
 	      } else if (minZeroRl > 0) {
 	        container.addStreamOfEmptyWords(false, minZeroRl);
 	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
+	          IteratingBufferedRunningLengthWord32 rlw = rlws[i];
 	          rlw.discardFirstWords(minZeroRl);
 	        }
 	      } else {
@@ -272,11 +221,11 @@ public class FastAggregation {
 	        if (numEmptyRl == 1) {
 	          // if one rlw has literal words to process and the rest have a run of
 	          // 0's we can write them out here
-	          IteratingBufferedRunningLengthWord emptyRl = null;
-	          long minNonEmptyRl = Long.MAX_VALUE;
+	          IteratingBufferedRunningLengthWord32 emptyRl = null;
+	          int minNonEmptyRl = Integer.MAX_VALUE;
 	          for (int i = 0; i < maxAvailablePos; i++) {
-	            IteratingBufferedRunningLengthWord rlw = rlws[i];
-	            long rl = rlw.getRunningLength();
+	            IteratingBufferedRunningLengthWord32 rlw = rlws[i];
+	            int rl = rlw.getRunningLength();
 	            if (rl == 0) {
 	              assert emptyRl == null;
 	              emptyRl = rlw;
@@ -284,16 +233,16 @@ public class FastAggregation {
 	              minNonEmptyRl = Math.min(minNonEmptyRl, rl);
 	            }
 	          }
-	          long wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
+	          int wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
 	          if (emptyRl != null)
 	            emptyRl.writeLiteralWords((int) wordsToWrite, container);
 	          index += wordsToWrite;
 	        }
 
 	        while (index < minSize) {
-	          long word = 0;
+	          int word = 0;
 	          for (int i = 0; i < maxAvailablePos; i++) {
-	            IteratingBufferedRunningLengthWord rlw = rlws[i];
+	            IteratingBufferedRunningLengthWord32 rlw = rlws[i];
 	            if (rlw.getRunningLength() <= index) {
 	              word |= rlw.getLiteralWordAt(index - (int) rlw.getRunningLength());
 	            }
@@ -302,7 +251,7 @@ public class FastAggregation {
 	          index++;
 	        }
 	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
+	          IteratingBufferedRunningLengthWord32 rlw = rlws[i];
 	          rlw.discardFirstWords(minSize);
 	        }
 	      }

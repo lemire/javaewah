@@ -1,13 +1,15 @@
 package com.googlecode.javaewah.benchmark;
 
 import java.text.DecimalFormat;
-import com.googlecode.javaewah.*;
+
+import com.googlecode.javaewah.FastAggregation;
+import com.googlecode.javaewah32.*;
 
 /**
  * @author lemire
- * 
+ *
  */
-public class BenchmarkUnion {
+public class BenchmarkUnion32 {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
@@ -30,40 +32,37 @@ public class BenchmarkUnion {
 				for (int k = 0; k < N; ++k)
 					data[k] = cdg.generateClustered(1 << nbr, Max);
 				// building
-				EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
-				for (int k = 0; k < N; ++k) {
-					ewah[k] = new EWAHCompressedBitmap();
-					for (int x = 0; x < data[k].length; ++x) {
-						ewah[k].set(data[k][x]);
+				EWAHCompressedBitmap32[] ewah = new EWAHCompressedBitmap32[N];
+					for (int k = 0; k < N; ++k) {
+						ewah[k] = new EWAHCompressedBitmap32();
+						for (int x = 0; x < data[k].length; ++x) {
+							ewah[k].set(data[k][x]);
+						}
+						data[k] = null;
 					}
-					data[k] = null;
-				}
 				// sanity check
-				if (true) {
-					EWAHCompressedBitmap answer = ewah[0].or(ewah[1]);
-					for (int k = 2; k < ewah.length; ++k)
-						answer = answer.or(ewah[k]);
+				if(true){
+					EWAHCompressedBitmap32 answer = ewah[0].or(ewah[1]);
+					for(int k = 2; k < ewah.length; ++k) 
+                                            answer = answer.or(ewah[k]);
 
-					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap.or(ewah);
-					if (!answer.equals(ewahor))
-						throw new RuntimeException(
-								"bug EWAHCompressedBitmap.or");
-					EWAHCompressedBitmap ewahor3 = FastAggregation.or(ewah);
-					if (!ewahor.equals(ewahor3))
-						throw new RuntimeException("bug FastAggregation.or");
-					EWAHCompressedBitmap ewahor2 = FastAggregation
+					EWAHCompressedBitmap32 ewahor = EWAHCompressedBitmap32
+							.or(ewah);
+					if(!answer.equals(ewahor)) throw new RuntimeException("bug EWAHCompressedBitmap.or");
+					EWAHCompressedBitmap32 ewahor3 = FastAggregation
+							.or(ewah);
+					if(!ewahor.equals(ewahor3)) throw new RuntimeException("bug FastAggregation.or");
+					EWAHCompressedBitmap32 ewahor2 = FastAggregation32
 							.bufferedor(ewah);
-					if (!ewahor.equals(ewahor2))
-						throw new RuntimeException(
-								"bug FastAggregation.bufferedor ");
+					if(!ewahor.equals(ewahor2)) throw new RuntimeException("bug FastAggregation.bufferedor ");
 
 				}
-
+				
 				// logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap ewahor = ewah[0];
+						EWAHCompressedBitmap32 ewahor = ewah[0];
 						for (int j = 1; j < k; ++j) {
 							ewahor = ewahor.or(ewah[j]);
 						}
@@ -71,15 +70,16 @@ public class BenchmarkUnion {
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
+
 				// fast logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+						EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
+						EWAHCompressedBitmap32 ewahor = EWAHCompressedBitmap32
 								.or(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
@@ -90,11 +90,11 @@ public class BenchmarkUnion {
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+						EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap ewahor = FastAggregation
+						EWAHCompressedBitmap32 ewahor = FastAggregation
 								.or(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
@@ -107,11 +107,11 @@ public class BenchmarkUnion {
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+						EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap ewahor = FastAggregation
+						EWAHCompressedBitmap32 ewahor = FastAggregation32
 								.bufferedor(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
@@ -122,12 +122,12 @@ public class BenchmarkUnion {
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
+						EWAHCompressedBitmap32[] ewahcp = new EWAHCompressedBitmap32[k + 1];
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap x = new EWAHCompressedBitmap();
-						FastAggregation.legacy_orWithContainer(x, ewahcp);
+						EWAHCompressedBitmap32 x = new EWAHCompressedBitmap32();
+						FastAggregation32.legacy_orWithContainer(x, ewahcp);
 						bogus += x.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
@@ -137,19 +137,20 @@ public class BenchmarkUnion {
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
-						IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+						IteratingRLW32[] ewahcp = new IteratingRLW32[k + 1];
 						for (int j = 0; j < k + 1; ++j) {
-							ewahcp[j] = new IteratingBufferedRunningLengthWord(
-									ewah[j]);
+							ewahcp[j] = new IteratingBufferedRunningLengthWord32(ewah[j]);
 						}
-						IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
-						int wordcounter = IteratorUtil.cardinality(ewahor);
+						IteratingRLW32 ewahor = IteratorAggregation32
+								.or(ewahcp);
+						int wordcounter = IteratorUtil32.cardinality(ewahor);
 						bogus += wordcounter;
 					}
 				aft = System.currentTimeMillis();
 
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
+				
 				System.out
 						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor legacygroupedor iterator-bufferedor");
 

@@ -13,7 +13,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  * @author Daniel Lemire and David McIntosh
  */
-public final class IteratingBufferedRunningLengthWord32 {
+public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW32 {
   /**
    * Instantiates a new iterating buffered running length word.
    *
