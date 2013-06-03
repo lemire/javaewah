@@ -697,7 +697,7 @@ public class IteratorAggregation {
 				int L = (int) i.getRunningLength();
 				if (pos + L > bitmap.length) {
 					if (i.getRunningBit()) {
-						java.util.Arrays.fill(bitmap, pos, howmany, ~0l);
+                                            java.util.Arrays.fill(bitmap, pos, bitmap.length, ~0l); //java.util.Arrays.fill(bitmap, pos, howmany, ~0l);
 					}
 					i.discardFirstWords(howmany);
 					return bitmap.length;

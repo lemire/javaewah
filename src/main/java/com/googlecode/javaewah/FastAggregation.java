@@ -40,7 +40,7 @@ public class FastAggregation {
 		} else {
 			answer = bitmaps[0];
 			for (int k = 1; k < bitmaps.length; ++k)
-				answer.or(bitmaps[0]);
+                            answer.or(bitmaps[k]); // was: answer.or(bitmaps[0]);
 		}
 		return answer;
 	}
