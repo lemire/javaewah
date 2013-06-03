@@ -44,9 +44,13 @@ public class BenchmarkUnion {
 					}
 				// sanity check
 				if(true){
+					EWAHCompressedBitmap answer = ewah[0].or(ewah[1]);
+					for(int k = 2; k < ewah.length; ++k) 
+                                            answer = answer.or(ewah[k]);
+
 					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
 							.or(ewah);
-
+					if(!answer.equals(ewahor)) throw new RuntimeException("bug EWAHCompressedBitmap.or");
 					EWAHCompressedBitmap ewahor3 = FastAggregation
 							.or(ewah);
 					if(!ewahor.equals(ewahor3)) throw new RuntimeException("bug FastAggregation.or");
