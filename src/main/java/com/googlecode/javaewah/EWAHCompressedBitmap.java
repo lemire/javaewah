@@ -605,9 +605,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
   }
 
   /**
- * @return the IteratingRLW iterator corresponding to this bitmap
- */
-public IteratingRLW getIteratingRLW() {
+  * @return the IteratingRLW iterator corresponding to this bitmap
+  */
+  public IteratingRLW getIteratingRLW() {
 	  return new IteratingBufferedRunningLengthWord(this);
   }
   /**
