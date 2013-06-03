@@ -118,7 +118,11 @@ public class BufferedIterator implements IteratingRLW  {
 	  public long size() {
 	    return this.brlw.size();
 	  }
-	  
+
+          public BufferedIterator clone() throws CloneNotSupportedException{
+              throw new CloneNotSupportedException();
+	  }
+
 	  private BufferedRunningLengthWord brlw;
 	  private long[] buffer;
 	  private int literalWordStartPosition;

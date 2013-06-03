@@ -50,6 +50,11 @@ public class IteratorAggregation {
 			public void discardFirstWords(long y) {
 				x.discardFirstWords(y);
 			}
+
+                           public IteratingRLW clone() throws CloneNotSupportedException {
+                               throw new CloneNotSupportedException();
+                           }
+
 			
 		};
 	}
@@ -713,5 +718,6 @@ public class IteratorAggregation {
 		}
 		return pos;
 	}
+
 
 }

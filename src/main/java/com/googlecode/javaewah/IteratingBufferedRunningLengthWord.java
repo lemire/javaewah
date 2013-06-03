@@ -11,7 +11,7 @@ package com.googlecode.javaewah;
  * @since 0.4.0
  * @author David McIntosh
  */
-public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
+public final class IteratingBufferedRunningLengthWord implements IteratingRLW, Cloneable{
   /**
    * Instantiates a new iterating buffered running length word.
    *
@@ -26,12 +26,29 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
   
   /**
    * Instantiates a new iterating buffered running length word.
-   * @param bitmap over which we want to iterator 
+   * @param bitmap over which we want to iterate
    *
    */  
-  public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
-    this(EWAHIterator.getEWAHIterator(bitmap));
-  }
+  // public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
+  //   this(EWAHIterator.getEWAHIterator(bitmap));
+ //  }
+
+
+    // hide this horror from Daniel.
+    private boolean hack = false;
+    private EWAHCompressedBitmap source = null;
+
+ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
+    this.iterator = EWAHIterator.getEWAHIterator(bitmap);
+    this.brlw = new BufferedRunningLengthWord(this.iterator.next());
+    this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;
+    this.buffer = this.iterator.buffer();
+    hack = true; // until a next() or other mutating op is done.
+    source = bitmap;
+ }
+
+
+
   
   /**
    * Discard first words, iterating to the next running length word if needed.
@@ -39,6 +56,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @param x the number of words to be discarded
    */
   public void discardFirstWords(long x) {
+      hack = false;
     while (x > 0) {
       if (this.brlw.RunningLength > x) {
         this.brlw.RunningLength -= x;
@@ -65,6 +83,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @return whether the move was possible
    */
   public boolean next() {
+      hack = false;
 	  if (!this.iterator.hasNext()) {
 		  this.brlw.NumberOfLiteralWords = 0;
 		  this.brlw.RunningLength = 0;
@@ -82,6 +101,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @return how many written
    */
   public long discharge(BitmapStorage container, long max) {
+      hack = false;
     long index = 0;
     while ((index < max) && (size() > 0)) {
       // first run
@@ -109,6 +129,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @return how many written
    */
   public long dischargeNegated(BitmapStorage container, long max) {
+      hack = false;
     long index = 0;
     while ((index < max) && (size() > 0)) {
       // first run
@@ -135,6 +156,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @param container target for writes
    */
   public void dischargeAsEmpty(BitmapStorage container) {
+      hack = false;
     while(size()>0) {
       container.addStreamOfEmptyWords(false, size());
       discardFirstWords(size());
@@ -148,6 +170,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
    * @param container target for writes
    */
   public void discharge(BitmapStorage container) {
+      hack = false;
     this.brlw.literalwordoffset = this.literalWordStartPosition - this.iterator.literalWords();
     discharge(this.brlw, this.iterator, container);
   }
@@ -241,6 +264,20 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW {
       runningLengthWord = new BufferedRunningLengthWord(iterator.next());
     }
   }
+
+
+     public IteratingBufferedRunningLengthWord clone() throws CloneNotSupportedException {
+       //throw new CloneNotSupportedException();
+         if (hack)
+             return new IteratingBufferedRunningLengthWord(source);
+         else {
+             System.err.println("can clone IteratingBufferedRunningLengthWord only on untouched ones operating directly over a bitmap.");
+             throw new CloneNotSupportedException();
+         }
+             
+
+    }
+
   
   private BufferedRunningLengthWord brlw;
   private long[] buffer;
