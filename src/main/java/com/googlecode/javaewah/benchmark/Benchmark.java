@@ -182,19 +182,7 @@ public class Benchmark {
 				}
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);
-			// fast logical and
-			bef = System.currentTimeMillis();
-			for (int r = 0; r < repeat; ++r)
-				for (int k = 0; k < N; ++k) {
-					EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
-					for (int j = 0; j < k + 1; ++j) {
-						ewahcp[j] = ewah[j];
-					}
-					EWAHCompressedBitmap ewahand = FastAggregation.and(ewahcp);
-					bogus += ewahand.sizeInBits();
-				}
-			aft = System.currentTimeMillis();
-			line += "\t" + df.format((aft - bef) / 1000.0);
+
 
 			// fast logical and
 			bef = System.currentTimeMillis();
@@ -214,7 +202,7 @@ public class Benchmark {
 
 			
 			System.out
-					.println("time for building, toArray(), Java iterator, intIterator,\t\t\t logical or (2-by-2), logical or (grouped), FastAggregation.or, iterator-based or, \t\t\t (2-by-2) and,  logical and (grouped), FastAggregation.and, iterator-based and");
+					.println("time for building, toArray(), Java iterator, intIterator,\t\t\t logical or (2-by-2), logical or (grouped), FastAggregation.or, iterator-based or, \t\t\t (2-by-2) and,  logical and (grouped), iterator-based and");
 			System.out.println(line);
 			System.out.println("# bogus =" + bogus);
 		}

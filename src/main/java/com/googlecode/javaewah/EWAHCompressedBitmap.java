@@ -1516,14 +1516,7 @@ public IteratingRLW getIteratingRLW() {
 		if (size * 8 > sinbits) {
 			FastAggregation.bufferedorWithContainer(container, bitmaps);
 		} else {
-			if(bitmaps.length == 2)
-				bitmaps[0].orToContainer(bitmaps[1], container);
-			else  {
-				EWAHCompressedBitmap x = bitmaps[0].or(bitmaps[1]);
-				for (int k = 2; k < bitmaps.length - 1; ++k)
-		              x = x.or(bitmaps[k]); 
-				x.orToContainer(bitmaps[bitmaps.length-1], container);
-			}
+			FastAggregation.orToContainer(container, bitmaps);
 		}
 	}
 

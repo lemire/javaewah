@@ -69,32 +69,10 @@ public class FastAggregation {
 		}
 		container.setSizeInBits(range);
 	}
-	/**
-	 * @param bitmaps
-	 *            bitmaps to be aggregated
-	 * @return the and aggregate
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends LogicalElement> T and(T... bitmaps) {
-		// for "and" a priority queue is not needed, but
-		// overhead ought to be small
-		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
-				new Comparator<T>() {
-					public int compare(T a, T b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (T x : bitmaps)
-			pq.add(x);
-		while (pq.size() > 1) {
-			T x1 = pq.poll();
-			T x2 = pq.poll();
-			pq.add((T) x1.and(x2));
-		}
-		return pq.poll();
-	}
 
 	/**
+	 * Uses a priority queue to compute the or aggregate.
+	 * 
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
 	 * @return the or aggregate
@@ -117,8 +95,35 @@ public class FastAggregation {
 		}
 		return pq.poll();
 	}
-
 	/**
+	 * Uses a priority queue to compute the or aggregate.
+	 * @param container
+	 * @param bitmaps to be aggregated
+	 */
+	public static void orToContainer(final BitmapStorage container, 
+			final EWAHCompressedBitmap ... bitmaps) {
+		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
+		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
+				new Comparator<EWAHCompressedBitmap>() {
+					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+						return a.sizeInBytes() - b.sizeInBytes();
+					}
+				});
+		for (EWAHCompressedBitmap x : bitmaps) {
+			pq.add(x);
+		}
+		while (pq.size() > 2) {
+			EWAHCompressedBitmap x1 = pq.poll();
+			EWAHCompressedBitmap x2 = pq.poll();
+			pq.add(x1.or(x2));
+		}
+		pq.poll().orToContainer(pq.poll(), container);
+	}
+
+	
+	/**
+	 * Uses a priority queue to compute the xor aggregate.
+	 * 
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
 	 * @return the xor aggregate
@@ -142,10 +147,34 @@ public class FastAggregation {
 		return pq.poll();
 	}
 	
+	/**
+	 * Uses a priority queue to compute the xor aggregate.
+	 * @param container
+	 * @param bitmaps to be aggregated
+	 */
+	public static void xorToContainer(final BitmapStorage container, 
+			final EWAHCompressedBitmap ... bitmaps) {
+		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
+		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
+				new Comparator<EWAHCompressedBitmap>() {
+					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+						return a.sizeInBytes() - b.sizeInBytes();
+					}
+				});
+		for (EWAHCompressedBitmap x : bitmaps) {
+			pq.add(x);
+		}
+		while (pq.size() > 2) {
+			EWAHCompressedBitmap x1 = pq.poll();
+			EWAHCompressedBitmap x2 = pq.poll();
+			pq.add(x1.xor(x2));
+		}
+		pq.poll().xorToContainer(pq.poll(), container);
+	}
 
 	  /**
 	   * For internal use. Computes the bitwise or of the provided bitmaps and
-	   * stores the result in the container.
+	   * stores the result in the container. (This used to be the default.)
 	   * 
 	   * @deprecated
 	   * @since 0.4.0
