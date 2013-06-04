@@ -182,7 +182,7 @@ public class FastAggregation {
 
 	/**
 	 * Uses a priority queue to compute the or aggregate.
-	 * 
+	 * @param <T> a class extending LogicalElement (like a compressed bitmap) 
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
 	 * @return the or aggregate
@@ -234,6 +234,7 @@ public class FastAggregation {
 	/**
 	 * Uses a priority queue to compute the xor aggregate.
 	 * 
+	 * @param <T> a class extending LogicalElement (like a compressed bitmap) 
 	 * @param bitmaps
 	 *            bitmaps to be aggregated
 	 * @return the xor aggregate
