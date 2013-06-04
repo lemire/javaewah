@@ -1,8 +1,6 @@
 package com.googlecode.javaewah.benchmark;
 
 import java.text.DecimalFormat;
-
-import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah32.*;
 
 /*
@@ -10,14 +8,13 @@ import com.googlecode.javaewah32.*;
  * Licensed under APL 2.0.
  */
 /**
- * To benchmark the logical xor aggregate. 
+ * To benchmark the logical and (intersection) aggregate. 
  */
-public class BenchmarkXOR32 {
+public class BenchmarkIntersection32 {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
 		test(10, 18, 1);
-		//test(2, 22, 1);
 	}
 
 	@SuppressWarnings({ "javadoc" })
@@ -33,8 +30,9 @@ public class BenchmarkXOR32 {
 				line += sparsity;
 				int[][] data = new int[N][];
 				int Max = (1 << (nbr + sparsity));
-				for (int k = 0; k < N; ++k)
-					data[k] = cdg.generateClustered(1 << nbr, Max);
+				int[] inter = cdg.generateClustered(1 << (nbr/2), Max);
+				for (int k = 0; k < N; ++k) 
+					data[k] = Benchmark.unite2by2(cdg.generateClustered(1 << nbr, Max),inter);
 				// building
 				EWAHCompressedBitmap32[] ewah = new EWAHCompressedBitmap32[N];
 				for (int k = 0; k < N; ++k) {
@@ -46,37 +44,35 @@ public class BenchmarkXOR32 {
 				}
 				// sanity check
 				if (true) {
-					EWAHCompressedBitmap32 answer = ewah[0].xor(ewah[1]);
+					EWAHCompressedBitmap32 answer = ewah[0].and(ewah[1]);
 					for (int k = 2; k < ewah.length; ++k)
-						answer = answer.xor(ewah[k]);
-					EWAHCompressedBitmap32 ewahor3 = FastAggregation.xor(ewah);
-					if (!answer.equals(ewahor3))
-						throw new RuntimeException("bug FastAggregation.xor");
-					EWAHCompressedBitmap32 ewahor2 = FastAggregation32
-							.bufferedxor(ewah);
-					if (!answer.equals(ewahor2))
+						answer = answer.and(ewah[k]);
+
+					EWAHCompressedBitmap32 ewahand = EWAHCompressedBitmap32.and(ewah);
+					if (!answer.equals(ewahand))
 						throw new RuntimeException(
-								"bug FastAggregation.bufferedxor ");
-					EWAHCompressedBitmap32 iwah = IteratorUtil32.materialize(IteratorAggregation32.xor(IteratorUtil32.toIterators(ewah)));
-					if (!answer.equals(iwah))
+								"bug EWAHCompressedBitmap.and");
+					EWAHCompressedBitmap32 ewahand2 = FastAggregation32
+							.bufferedand(ewah);
+					if (!ewahand.equals(ewahand2))
 						throw new RuntimeException(
-								"bug xor it ");
+								"bug FastAggregation.bufferedand ");
 
 				}
 
-				// logical xor
+				// logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
 						EWAHCompressedBitmap32 ewahor = ewah[0];
 						for (int j = 1; j < k + 1; ++j) {
-							ewahor = ewahor.xor(ewah[j]);
+							ewahor = ewahor.and(ewah[j]);
 						}
 					}
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
-				// fast logical xor
+				// fast logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
@@ -84,15 +80,13 @@ public class BenchmarkXOR32 {
 						for (int j = 0; j < k + 1; ++j) {
 							ewahcp[j] = ewah[j];
 						}
-						EWAHCompressedBitmap32 ewahor = FastAggregation
-								.xor(ewahcp);
+						EWAHCompressedBitmap32 ewahor = EWAHCompressedBitmap32
+								.and(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
-
-
-				// fast logical xor
+				// fast logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
@@ -101,13 +95,13 @@ public class BenchmarkXOR32 {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap32 ewahor = FastAggregation32
-								.bufferedxor(ewahcp);
+								.bufferedand(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
+
 				line += "\t" + df.format((aft - bef) / 1000.0);
-				
-				// fast logical xor
+				// fast logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
@@ -116,7 +110,7 @@ public class BenchmarkXOR32 {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord32(
 									ewah[j]);
 						}
-						IteratingRLW32 ewahor = IteratorAggregation32.xor(ewahcp);
+						IteratingRLW32 ewahor = IteratorAggregation32.and(ewahcp);
 						int wordcounter = IteratorUtil32.cardinality(ewahor);
 						bogus += wordcounter;
 					}
@@ -124,9 +118,8 @@ public class BenchmarkXOR32 {
 
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
-
 				System.out
-						.println("# times for: 2by2 FastAggregation.xor  bufferedxor iterator-based");
+						.println("# times for: 2by2 EWAHCompressedBitmap.and bufferedand iterator-bufferedand");
 
 				System.out.println(line);
 			}

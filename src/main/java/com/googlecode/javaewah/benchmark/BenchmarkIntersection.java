@@ -8,16 +8,16 @@ import com.googlecode.javaewah.*;
  * Licensed under APL 2.0.
  */
 /**
- * To benchmark the logical or (union) aggregate. 
+ * To benchmark the logical and (intersection) aggregate. 
  */
-public class BenchmarkUnion {
+public class BenchmarkIntersection {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
 		test(10, 18, 1);
 	}
 
-	@SuppressWarnings({ "javadoc", "deprecation" })
+	@SuppressWarnings({ "javadoc"})
 	public static void test(int N, int nbr, int repeat) {
 		long bogus = 0;
 
@@ -30,8 +30,9 @@ public class BenchmarkUnion {
 				line += sparsity;
 				int[][] data = new int[N][];
 				int Max = (1 << (nbr + sparsity));
-				for (int k = 0; k < N; ++k)
-					data[k] = cdg.generateClustered(1 << nbr, Max);
+				int[] inter = cdg.generateClustered(1 << (nbr/2), Max);
+				for (int k = 0; k < N; ++k) 
+					data[k] = Benchmark.unite2by2(cdg.generateClustered(1 << nbr, Max),inter);
 				// building
 				EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
 				for (int k = 0; k < N; ++k) {
@@ -43,22 +44,19 @@ public class BenchmarkUnion {
 				}
 				// sanity check
 				if (true) {
-					EWAHCompressedBitmap answer = ewah[0].or(ewah[1]);
+					EWAHCompressedBitmap answer = ewah[0].and(ewah[1]);
 					for (int k = 2; k < ewah.length; ++k)
-						answer = answer.or(ewah[k]);
+						answer = answer.and(ewah[k]);
 
-					EWAHCompressedBitmap ewahor = EWAHCompressedBitmap.or(ewah);
-					if (!answer.equals(ewahor))
+					EWAHCompressedBitmap ewahand = EWAHCompressedBitmap.and(ewah);
+					if (!answer.equals(ewahand))
 						throw new RuntimeException(
-								"bug EWAHCompressedBitmap.or");
-					EWAHCompressedBitmap ewahor3 = FastAggregation.or(ewah);
-					if (!ewahor.equals(ewahor3))
-						throw new RuntimeException("bug FastAggregation.or");
-					EWAHCompressedBitmap ewahor2 = FastAggregation
-							.bufferedor(ewah);
-					if (!ewahor.equals(ewahor2))
+								"bug EWAHCompressedBitmap.and");
+					EWAHCompressedBitmap ewahand2 = FastAggregation
+							.bufferedand(ewah);
+					if (!ewahand.equals(ewahand2))
 						throw new RuntimeException(
-								"bug FastAggregation.bufferedor ");
+								"bug FastAggregation.bufferedand ");
 
 				}
 
@@ -68,7 +66,7 @@ public class BenchmarkUnion {
 					for (int k = 0; k < N; ++k) {
 						EWAHCompressedBitmap ewahor = ewah[0];
 						for (int j = 1; j < k + 1; ++j) {
-							ewahor = ewahor.or(ewah[j]);
+							ewahor = ewahor.and(ewah[j]);
 						}
 					}
 				aft = System.currentTimeMillis();
@@ -83,12 +81,11 @@ public class BenchmarkUnion {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap ewahor = EWAHCompressedBitmap
-								.or(ewahcp);
+								.and(ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
-
 				// fast logical or
 				bef = System.currentTimeMillis();
 				for (int r = 0; r < repeat; ++r)
@@ -98,39 +95,8 @@ public class BenchmarkUnion {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap ewahor = FastAggregation
-								.or(ewahcp);
+								.bufferedand(ewahcp);
 						bogus += ewahor.sizeInBits();
-					}
-				aft = System.currentTimeMillis();
-				line += "\t" + df.format((aft - bef) / 1000.0);
-
-
-				// fast logical or
-				bef = System.currentTimeMillis();
-				for (int r = 0; r < repeat; ++r)
-					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
-						for (int j = 0; j < k + 1; ++j) {
-							ewahcp[j] = ewah[j];
-						}
-						EWAHCompressedBitmap ewahor = FastAggregation
-								.bufferedor(ewahcp);
-						bogus += ewahor.sizeInBits();
-					}
-				aft = System.currentTimeMillis();
-
-				line += "\t" + df.format((aft - bef) / 1000.0);
-				// fast logical or
-				bef = System.currentTimeMillis();
-				for (int r = 0; r < repeat; ++r)
-					for (int k = 0; k < N; ++k) {
-						EWAHCompressedBitmap[] ewahcp = new EWAHCompressedBitmap[k + 1];
-						for (int j = 0; j < k + 1; ++j) {
-							ewahcp[j] = ewah[j];
-						}
-						EWAHCompressedBitmap x = new EWAHCompressedBitmap();
-						FastAggregation.legacy_orWithContainer(x, ewahcp);
-						bogus += x.sizeInBits();
 					}
 				aft = System.currentTimeMillis();
 
@@ -144,7 +110,7 @@ public class BenchmarkUnion {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord(
 									ewah[j]);
 						}
-						IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
+						IteratingRLW ewahor = IteratorAggregation.and(ewahcp);
 						int wordcounter = IteratorUtil.cardinality(ewahor);
 						bogus += wordcounter;
 					}
@@ -153,7 +119,7 @@ public class BenchmarkUnion {
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
 				System.out
-						.println("# times for: 2by2 EWAHCompressedBitmap.or FastAggregation.or experimentalor bufferedor legacygroupedor iterator-bufferedor");
+						.println("# times for: 2by2 EWAHCompressedBitmap.and bufferedand iterator-bufferedand");
 
 				System.out.println(line);
 			}

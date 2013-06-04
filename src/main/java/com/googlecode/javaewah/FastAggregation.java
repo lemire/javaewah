@@ -19,7 +19,56 @@ import java.util.PriorityQueue;
  * 
  */
 public class FastAggregation {
+	/**
+	 * Compute the and aggregate using a temporary uncompressed bitmap.
+	 * @param bitmaps the source bitmaps
+	 * @return the or aggregate.
+	 */
+	public static EWAHCompressedBitmap bufferedand(
+			final EWAHCompressedBitmap... bitmaps) {
+		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+		bufferedandWithContainer(answer, bitmaps);
+		return answer;
+	}
+	/**
+	 * Compute the and aggregate using a temporary uncompressed bitmap.
+	 * 
+	 * @param container where the aggregate is written
+	 * @param bitmaps the source bitmaps
+	 */
+	public static void bufferedandWithContainer(final BitmapStorage container,
+			final EWAHCompressedBitmap... bitmaps) {
 
+		java.util.LinkedList<IteratingBufferedRunningLengthWord> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord>();
+		for (EWAHCompressedBitmap bitmap : bitmaps) {
+			al.add(new IteratingBufferedRunningLengthWord(bitmap));
+		}
+		final int MAXBUFSIZE = 65536;
+		long[] hardbitmap = new long[MAXBUFSIZE];
+		
+		for(IteratingRLW i : al) 
+			if (i.size() == 0) {
+				al.clear();
+				break;
+			}
+		
+		while (!al.isEmpty()) {
+			Arrays.fill(hardbitmap, ~0l);
+			long effective = Integer.MAX_VALUE;
+			for(IteratingRLW i : al)  {
+					int eff = IteratorAggregation.inplaceand(hardbitmap, i);
+					if (eff < effective)
+						effective = eff;
+			}
+			for (int k = 0; k < effective; ++k)
+				container.add(hardbitmap[k]);
+			for(IteratingRLW i : al) 
+				if (i.size() == 0) {
+					al.clear();
+					break;
+				}
+		}
+	}
 
 	/**
 	 * Compute the or aggregate using a temporary uncompressed bitmap.

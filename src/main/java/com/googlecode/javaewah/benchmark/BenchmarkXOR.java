@@ -8,7 +8,7 @@ import com.googlecode.javaewah.*;
  * Licensed under APL 2.0.
  */
 /**
- * To benchmark the logical or (union) aggregate. 
+ * To benchmark the logical xor aggregate. 
  */
 public class BenchmarkXOR {
 

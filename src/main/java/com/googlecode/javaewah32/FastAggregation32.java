@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+
 /**
  * Fast algorithms to aggregate many bitmaps. These algorithms are just given as
  * reference. They may not be faster than the corresponding methods in the
@@ -14,6 +15,56 @@ import java.util.PriorityQueue;
  */
 public class FastAggregation32 {
 
+	/**
+	 * Compute the and aggregate using a temporary uncompressed bitmap.
+	 * @param bitmaps the source bitmaps
+	 * @return the or aggregate.
+	 */
+	public static EWAHCompressedBitmap32 bufferedand(
+			final EWAHCompressedBitmap32... bitmaps) {
+		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
+		bufferedandWithContainer(answer, bitmaps);
+		return answer;
+	}
+	/**
+	 * Compute the and aggregate using a temporary uncompressed bitmap.
+	 * 
+	 * @param container where the aggregate is written
+	 * @param bitmaps the source bitmaps
+	 */
+	public static void bufferedandWithContainer(final BitmapStorage32 container,
+			final EWAHCompressedBitmap32... bitmaps) {
+
+		java.util.LinkedList<IteratingBufferedRunningLengthWord32> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord32>();
+		for (EWAHCompressedBitmap32 bitmap : bitmaps) {
+			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
+		}
+		final int MAXBUFSIZE = 65536;
+		int[] hardbitmap = new int[MAXBUFSIZE];
+		
+		for(IteratingRLW32 i : al) 
+			if (i.size() == 0) {
+				al.clear();
+				break;
+			}
+		
+		while (!al.isEmpty()) {
+			Arrays.fill(hardbitmap, ~0);
+			int effective = Integer.MAX_VALUE;
+			for(IteratingRLW32 i : al)  {
+					int eff = IteratorAggregation32.inplaceand(hardbitmap, i);
+					if (eff < effective)
+						effective = eff;
+			}
+			for (int k = 0; k < effective; ++k)
+				container.add(hardbitmap[k]);
+			for(IteratingRLW32 i : al) 
+				if (i.size() == 0) {
+					al.clear();
+					break;
+				}
+		}
+	}
 
 	/**
 	 * Compute the or aggregate using a temporary uncompressed bitmap.

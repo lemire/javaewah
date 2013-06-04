@@ -104,7 +104,6 @@ public class BenchmarkUnion32 {
 				aft = System.currentTimeMillis();
 				line += "\t" + df.format((aft - bef) / 1000.0);
 
-				line += "\t" + df.format((aft - bef) / 1000.0);
 
 				// fast logical or
 				bef = System.currentTimeMillis();

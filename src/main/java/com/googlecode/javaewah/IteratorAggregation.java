@@ -374,6 +374,47 @@ public class IteratorAggregation {
 		}
 		return pos;
 	}
+	protected static int inplaceand(long[] bitmap,
+			IteratingRLW i) {
+		int pos = 0;
+		long s;
+		while ((s = i.size()) > 0) {
+			if (pos + s < bitmap.length) {
+				final int L = (int) i.getRunningLength();
+				if (!i.getRunningBit()) {
+					for(int k = pos ; k < pos + L; ++k)
+						bitmap[k] = 0;
+				}
+				pos += L;
+				final int LR = i.getNumberOfLiteralWords();
+				for (int k = 0; k < LR; ++k)
+					bitmap[pos++] &= i.getLiteralWordAt(k);
+				if (!i.next()) {
+					return pos;
+				}
+			} else {
+				int howmany = bitmap.length - pos;
+				int L = (int) i.getRunningLength();
+				if (pos + L > bitmap.length) {
+					if (!i.getRunningBit()) {
+						for(int k = pos ; k < bitmap.length; ++k)
+							bitmap[k] = 0;
+					}
+					i.discardFirstWords(howmany);
+					return bitmap.length;
+				}
+				if (!i.getRunningBit())
+					for(int k = pos ; k < pos + L; ++k)
+						bitmap[k] = 0;
+				pos += L;
+				for (int k = 0; pos < bitmap.length; ++k)
+					bitmap[pos++] &= i.getLiteralWordAt(k);
+				i.discardFirstWords(howmany);
+				return pos;
+			}
+		}
+		return pos;
+	}
 
 	/**
 	 * An optimization option. Larger values may improve speed, but at
