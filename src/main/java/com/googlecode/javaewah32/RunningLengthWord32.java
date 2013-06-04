@@ -12,7 +12,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  * @author Daniel Lemire
  */
-public final class RunningLengthWord32 {
+public final class RunningLengthWord32 implements Cloneable {
 
   /**
    * Instantiates a new running length word.
@@ -106,6 +106,13 @@ public final class RunningLengthWord32 {
       + getNumberOfLiteralWords();
   }
 
+  public RunningLengthWord32 clone() throws CloneNotSupportedException {
+	  RunningLengthWord32 answer;
+	  answer = (RunningLengthWord32) super.clone();
+	  answer.array = this.array;
+	  answer.position = this.position;
+	  return answer;
+  }
 
   /** The array of words. */
   public int[] array;

@@ -14,7 +14,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  *
  */
-public final class EWAHIterator32 {
+public final class EWAHIterator32 implements Cloneable {
   
   /**
    * Instantiates a new eWAH iterator.
@@ -75,6 +75,14 @@ public final class EWAHIterator32 {
     this.pointer += this.rlw.getNumberOfLiteralWords() + 1;
     return this.rlw;
   }
+
+	public EWAHIterator32 clone() throws CloneNotSupportedException {
+		EWAHIterator32 ans = (EWAHIterator32) super.clone();
+		ans.rlw = this.rlw.clone();
+		ans.size = this.size;
+		ans.pointer = this.pointer;
+		return ans;
+	}
 
   /** The pointer represent the location of the current running length
    *  word in the array of words (embedded in the rlw attribute). */

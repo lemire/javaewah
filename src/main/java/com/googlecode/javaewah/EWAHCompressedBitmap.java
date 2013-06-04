@@ -507,7 +507,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * @see java.lang.Object#clone()
    */
   @Override
-  public Object clone() throws java.lang.CloneNotSupportedException {
+  public EWAHCompressedBitmap clone() throws java.lang.CloneNotSupportedException {
     final EWAHCompressedBitmap clone = (EWAHCompressedBitmap) super.clone();
     clone.buffer = this.buffer.clone();
     clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);

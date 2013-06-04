@@ -13,7 +13,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  * @author Daniel Lemire and David McIntosh
  */
-public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW32 {
+public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW32, Cloneable {
   /**
    * Instantiates a new iterating buffered running length word.
    *
@@ -247,6 +247,18 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
       runningLengthWord = new BufferedRunningLengthWord32(iterator.next());
     }
   }
+  
+  
+
+  public IteratingBufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
+ 	 IteratingBufferedRunningLengthWord32 answer = (IteratingBufferedRunningLengthWord32) super.clone();
+ 	 answer.brlw = this.brlw.clone();
+ 	 answer.buffer = this.buffer;
+ 	 answer.iterator = this.iterator.clone();
+ 	 answer.literalWordStartPosition = this.literalWordStartPosition;
+ 	 return answer;
+ }
+
   private BufferedRunningLengthWord32 brlw;
   private int[] buffer;
   private int literalWordStartPosition;

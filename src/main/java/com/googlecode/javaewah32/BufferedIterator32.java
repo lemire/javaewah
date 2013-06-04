@@ -1,6 +1,6 @@
 package com.googlecode.javaewah32;
 
-import java.util.Iterator;
+import com.googlecode.javaewah.CloneableIterator;
 
 
 /*
@@ -13,13 +13,13 @@ import java.util.Iterator;
  * @author Daniel Lemire
  *
  */
-public class BufferedIterator32 implements IteratingRLW32  {
+public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	  /**
 	   * Instantiates a new iterating buffered running length word.
 	   *
 	   * @param iterator iterator
 	   */
-	  public BufferedIterator32(final Iterator<EWAHIterator32> iterator) {
+	  public BufferedIterator32(final CloneableIterator<EWAHIterator32> iterator) {
 		this.masteriterator = iterator;
 		if(this.masteriterator.hasNext()) {
 			this.iterator = this.masteriterator.next();
@@ -126,9 +126,19 @@ public class BufferedIterator32 implements IteratingRLW32  {
 	    return this.brlw.size();
 	  }
 	  
+	  public BufferedIterator32 clone() throws CloneNotSupportedException {
+		  BufferedIterator32 answer = (BufferedIterator32) super.clone();
+		  answer.brlw = this.brlw.clone();
+		  answer.buffer = this.buffer;
+		  answer.iterator = this.iterator.clone();
+		  answer.literalWordStartPosition = this.literalWordStartPosition;
+		  answer.masteriterator = this.masteriterator.clone();
+		  return answer;
+	  }
+	  
 	  private BufferedRunningLengthWord32 brlw;
 	  private int[] buffer;
 	  private int literalWordStartPosition;
 	  private EWAHIterator32 iterator;
-	  private Iterator<EWAHIterator32> masteriterator;
+	  private CloneableIterator<EWAHIterator32> masteriterator;
 	}

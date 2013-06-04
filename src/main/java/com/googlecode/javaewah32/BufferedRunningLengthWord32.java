@@ -15,7 +15,7 @@ package com.googlecode.javaewah32;
  * @since 0.5.0
  *
  */
-public final class BufferedRunningLengthWord32 {
+public final class BufferedRunningLengthWord32 implements Cloneable  {
 
   /**
    * Instantiates a new buffered running length word.
@@ -146,6 +146,15 @@ public final class BufferedRunningLengthWord32 {
     return "running bit = " + getRunningBit() + " running length = "
       + getRunningLength() + " number of lit. words "
       + getNumberOfLiteralWords();
+  }
+  
+  public BufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
+	  BufferedRunningLengthWord32 answer = (BufferedRunningLengthWord32) super.clone();
+	  answer.literalwordoffset = this.literalwordoffset;
+	  answer.NumberOfLiteralWords = this.NumberOfLiteralWords;
+	  answer.RunningBit = this.RunningBit;
+	  answer.RunningLength = this.RunningLength;
+	  return answer;
   }
 
   /** how many literal words have we read so far? */

@@ -1,7 +1,5 @@
 package com.googlecode.javaewah;
 
-import java.util.Iterator;
-
 
 /*
  * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
@@ -19,7 +17,7 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @param iterator iterator
 	   */
-	  public BufferedIterator(final Iterator<EWAHIterator> iterator) {
+	  public BufferedIterator(final CloneableIterator<EWAHIterator> iterator) {
 		this.masteriterator = iterator;
 		if(this.masteriterator.hasNext()) {
 			this.iterator = this.masteriterator.next();
@@ -126,13 +124,20 @@ public class BufferedIterator implements IteratingRLW  {
 	    return this.brlw.size();
 	  }
 
-          public BufferedIterator clone() throws CloneNotSupportedException{
-              throw new CloneNotSupportedException();
+
+	  public BufferedIterator clone() throws CloneNotSupportedException {
+		  BufferedIterator answer = (BufferedIterator) super.clone();
+		  answer.brlw = this.brlw.clone();
+		  answer.buffer = this.buffer;
+		  answer.iterator = this.iterator.clone();
+		  answer.literalWordStartPosition = this.literalWordStartPosition;
+		  answer.masteriterator = this.masteriterator.clone();
+		  return answer;
 	  }
 
 	  private BufferedRunningLengthWord brlw;
 	  private long[] buffer;
 	  private int literalWordStartPosition;
 	  private EWAHIterator iterator;
-	  private Iterator<EWAHIterator> masteriterator;
+	  private CloneableIterator<EWAHIterator> masteriterator;
 	}

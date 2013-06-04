@@ -11,7 +11,7 @@ package com.googlecode.javaewah;
  * @since 0.1.0
  * @author Daniel Lemire
  */
-public final class RunningLengthWord  {
+public final class RunningLengthWord implements Cloneable {
 
   /**
    * Instantiates a new running length word.
@@ -89,7 +89,7 @@ public final class RunningLengthWord  {
    * Return the size in uncompressed words represented by
    * this running length word.
    *
-   * @return the long
+   * @return the size
    */
   public long size() {
     return getRunningLength() + getNumberOfLiteralWords();
@@ -103,6 +103,14 @@ public final class RunningLengthWord  {
     return "running bit = " + getRunningBit() + " running length = "
       + getRunningLength() + " number of lit. words "
       + getNumberOfLiteralWords();
+  }
+
+  public RunningLengthWord clone() throws CloneNotSupportedException {
+	  RunningLengthWord answer;
+	  answer = (RunningLengthWord) super.clone();
+	  answer.array = this.array;
+	  answer.position = this.position;
+	  return answer;
   }
 
 

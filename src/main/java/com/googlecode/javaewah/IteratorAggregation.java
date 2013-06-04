@@ -74,87 +74,10 @@ public class IteratorAggregation {
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
 			return al[0];
-		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+		final LinkedList<IteratingRLW> basell = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al) 
-			ll.add(i);
-		final int MAXBUFSIZE = 65536 * al.length;//512KB per bitmap
-
-		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
-
-			@Override
-			public boolean hasNext() {
-				return !ll.isEmpty();
-			}
-
-			@Override
-			public EWAHIterator next() {
-				buffer.clear();
-				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
-						ll.get(0), ll.get(1));
-				if (ll.size() > 2) {
-					Iterator<IteratingRLW> i = ll.iterator();
-					i.next();
-					i.next();
-					EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
-					while (i.hasNext() && buffer.sizeInBytes() > 0) {
-						IteratorAggregation.andToContainer(tmpbuffer,
-								 buffer.getIteratingRLW(), i.next());
-						buffer.swap(tmpbuffer);
-						tmpbuffer.clear();
-					}
-				}
-				Iterator<IteratingRLW> i = ll.iterator();
-				while(i.hasNext()) {
-					if(i.next().size() == 0) {
-						ll.clear();
-						break;
-					}
-				}
-				return buffer.getEWAHIterator();
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("unsupported");
-
-			}
-		};
-		return new BufferedIterator(i);
-	}
-
-	/**
-	 * @param x1 first iterator to aggregate
-	 * @param x2 second iterator to aggregate
-	 * @return xor aggregate
-	 */
-	public static IteratingRLW xor(final IteratingRLW x1, final IteratingRLW x2) {
-
-		final int MAXBUFSIZE = 65536;
-		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
-
-			@Override
-			public boolean hasNext() {
-				return x1.size()>0 || x2.size()>0;
-			}
-
-			@Override
-			public EWAHIterator next() {
-				buffer.clear();
-				IteratorAggregation.xorToContainer(buffer, MAXBUFSIZE,
-						x1, x2);
-				return buffer.getEWAHIterator();
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("unsupported");
-
-			}
-		};
-		return new BufferedIterator(i);
-
+			basell.add(i);
+		return new BufferedIterator(new AndIt(basell));
 	}
 
 	/**
@@ -167,48 +90,10 @@ public class IteratorAggregation {
 		if (al.length == 1)
 			return al[0];
 
-		final int MAXBUFSIZE = 65536;
-		final long[] hardbitmap = new long[MAXBUFSIZE];
-		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+		final LinkedList<IteratingRLW> basell = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al)
-			ll.add(i);
-
-		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
-
-			@Override
-			public boolean hasNext() {
-				return !ll.isEmpty();
-			}
-
-			@Override
-			public EWAHIterator next() {
-				buffer.clear();
-				long effective = 0;
-				Iterator<IteratingRLW> i = ll.iterator();
-				while (i.hasNext()) {
-					IteratingRLW rlw = i.next();
-					if (rlw.size() > 0) {
-						int eff = inplaceor(hardbitmap, rlw);
-						if (eff > effective)
-							effective = eff;
-					} else
-						i.remove();
-				}
-				for (int k = 0; k < effective; ++k)
-					buffer.add(hardbitmap[k]);
-				Arrays.fill(hardbitmap, 0);
-				return buffer.getEWAHIterator();
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("unsupported");
-
-			}
-
-		};
-		return new BufferedIterator(i);
+			basell.add(i);
+		return new BufferedIterator(new ORIt(basell));
 	}
 
 	/**
@@ -221,49 +106,14 @@ public class IteratorAggregation {
 		if (al.length == 1)
 			return al[0];
 
-		final int MAXBUFSIZE = 65536;
-		final long[] hardbitmap = new long[MAXBUFSIZE];
-		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+
+		final LinkedList<IteratingRLW> basell = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al)
-			ll.add(i);
+			basell.add(i);
 
-		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
-			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
-
-			@Override
-			public boolean hasNext() {
-				return !ll.isEmpty();
-			}
-
-			@Override
-			public EWAHIterator next() {
-				buffer.clear();
-				long effective = 0;
-				Iterator<IteratingRLW> i = ll.iterator();
-				while (i.hasNext()) {
-					IteratingRLW rlw = i.next();
-					if (rlw.size() > 0) {
-						int eff = inplacexor(hardbitmap, rlw);
-						if (eff > effective)
-							effective = eff;
-					} else
-						i.remove();
-				}
-				for (int k = 0; k < effective; ++k)
-					buffer.add(hardbitmap[k]);
-				Arrays.fill(hardbitmap, 0);
-				return buffer.getEWAHIterator();
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("unsupported");
-
-			}
-
-		};
-		return new BufferedIterator(i);
+		return new BufferedIterator(new XORIt(basell));
 	}
+	
 
 	/**
 	 * Write out the content of the iterator, but as if it were all zeros.
@@ -340,7 +190,7 @@ public class IteratorAggregation {
 		return counter;
 	}
 	
-	private static void andToContainer(final BitmapStorage container,
+	static void andToContainer(final BitmapStorage container,
 			int desiredrlwcount, final IteratingRLW rlwi, IteratingRLW rlwj) {
 		while ((rlwi.size()>0) && (rlwj.size()>0) && (desiredrlwcount-- >0) ) {
 		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
@@ -372,7 +222,7 @@ public class IteratorAggregation {
 		    }      
 	}
 
-	private static void andToContainer(final BitmapStorage container,
+	static void andToContainer(final BitmapStorage container,
 			 final IteratingRLW rlwi, IteratingRLW rlwj) {
 		while ((rlwi.size()>0) && (rlwj.size()>0) ) {
 		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
@@ -404,8 +254,16 @@ public class IteratorAggregation {
 	}
 
 
-	private static void xorToContainer(final BitmapStorage container,
-			int desiredrlwcount, final IteratingRLW rlwi, IteratingRLW rlwj) {
+	/**
+	 * Compute the first few words of the XOR aggregate between two iterators. 
+	 * 
+	 * @param container where to write
+	 * @param desiredrlwcount number of words to be written (max)
+	 * @param rlwi first iterator to aggregate
+	 * @param rlwj second iterator to aggregate
+	 */
+	public static void xorToContainer(final BitmapStorage container,
+			int desiredrlwcount, final IteratingRLW rlwi, final IteratingRLW rlwj) {
 		while ((rlwi.size()>0) && (rlwj.size()>0) && (desiredrlwcount-- >0) ) {
 		      while ((rlwi.getRunningLength() > 0) || (rlwj.getRunningLength() > 0)) {
 		          final boolean i_is_prey = rlwi.getRunningLength() < rlwj
@@ -517,4 +375,148 @@ public class IteratorAggregation {
 		return pos;
 	}
 
+	/**
+	 * An optimization option. Larger values may improve speed, but at
+	 * the expense of memory.
+	 */
+	public final static int MAXBUFSIZE = 65536;
 }
+class ORIt implements CloneableIterator<EWAHIterator> {
+	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+	long[] hardbitmap = new long[IteratorAggregation.MAXBUFSIZE];
+    LinkedList<IteratingRLW> ll;
+	
+	ORIt(LinkedList<IteratingRLW>  basell) {
+		ll = basell;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public XORIt clone() throws CloneNotSupportedException {
+		XORIt answer = (XORIt) super.clone();
+		answer.buffer = this.buffer.clone();
+		answer.hardbitmap = this.hardbitmap.clone();
+		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
+		return answer;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return !ll.isEmpty();
+	}
+
+	@Override
+	public EWAHIterator next() {
+		buffer.clear();
+		long effective = 0;
+		Iterator<IteratingRLW> i = ll.iterator();
+		while (i.hasNext()) {
+			IteratingRLW rlw = i.next();
+			if (rlw.size() > 0) {
+				int eff = IteratorAggregation.inplaceor(hardbitmap, rlw);
+				if (eff > effective)
+					effective = eff;
+			} else
+				i.remove();
+		}
+		for (int k = 0; k < effective; ++k)
+			buffer.add(hardbitmap[k]);
+		Arrays.fill(hardbitmap, 0);
+		return buffer.getEWAHIterator();
+	}
+};
+
+class XORIt implements CloneableIterator<EWAHIterator> {
+	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+	long[] hardbitmap = new long[IteratorAggregation.MAXBUFSIZE];
+    LinkedList<IteratingRLW> ll;
+	
+	XORIt(LinkedList<IteratingRLW>  basell) {
+		ll = basell;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public XORIt clone() throws CloneNotSupportedException {
+		XORIt answer = (XORIt) super.clone();
+		answer.buffer = this.buffer.clone();
+		answer.hardbitmap = this.hardbitmap.clone();
+		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
+		return answer;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return !ll.isEmpty();
+	}
+
+	@Override
+	public EWAHIterator next() {
+		buffer.clear();
+		long effective = 0;
+		Iterator<IteratingRLW> i = ll.iterator();
+		while (i.hasNext()) {
+			IteratingRLW rlw = i.next();
+			if (rlw.size() > 0) {
+				int eff = IteratorAggregation.inplacexor(hardbitmap, rlw);
+				if (eff > effective)
+					effective = eff;
+			} else
+				i.remove();
+		}
+		for (int k = 0; k < effective; ++k)
+			buffer.add(hardbitmap[k]);
+		Arrays.fill(hardbitmap, 0);
+		return buffer.getEWAHIterator();
+	}
+};
+
+
+class AndIt implements CloneableIterator<EWAHIterator> {
+	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+	LinkedList<IteratingRLW> ll;
+	
+	public AndIt(LinkedList<IteratingRLW> basell) {
+		ll = basell;
+		
+	}
+	
+	@Override
+	public boolean hasNext() {
+		return !ll.isEmpty();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public AndIt clone() throws CloneNotSupportedException {
+		AndIt answer = (AndIt) super.clone();
+		answer.buffer = this.buffer.clone();
+		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
+		return answer;
+	}
+
+	@Override
+	public EWAHIterator next() {
+		buffer.clear();
+		IteratorAggregation.andToContainer(buffer, IteratorAggregation.MAXBUFSIZE * ll.size(),
+				ll.get(0), ll.get(1));
+		if (ll.size() > 2) {
+			Iterator<IteratingRLW> i = ll.iterator();
+			i.next();
+			i.next();
+			EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
+			while (i.hasNext() && buffer.sizeInBytes() > 0) {
+				IteratorAggregation.andToContainer(tmpbuffer,
+						 buffer.getIteratingRLW(), i.next());
+				buffer.swap(tmpbuffer);
+				tmpbuffer.clear();
+			}
+		}
+		Iterator<IteratingRLW> i = ll.iterator();
+		while(i.hasNext()) {
+			if(i.next().size() == 0) {
+				ll.clear();
+				break;
+			}
+		}
+		return buffer.getEWAHIterator();
+	}
+
+};
