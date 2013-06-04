@@ -24,21 +24,18 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW, C
     this.buffer = this.iterator.buffer();
   }
   
-  /**
-   * Instantiates a new iterating buffered running length word.
-   * @param bitmap over which we want to iterate
-   *
-   */  
-  // public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
-  //   this(EWAHIterator.getEWAHIterator(bitmap));
- //  }
 
 
     // hide this horror from Daniel.
     private boolean hack = false;
     private EWAHCompressedBitmap source = null;
 
- public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
+    /**
+     * Instantiates a new iterating buffered running length word.
+     * @param bitmap over which we want to iterate
+     *
+     */  
+public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
     this.iterator = EWAHIterator.getEWAHIterator(bitmap);
     this.brlw = new BufferedRunningLengthWord(this.iterator.next());
     this.literalWordStartPosition = this.iterator.literalWords() + this.brlw.literalwordoffset;

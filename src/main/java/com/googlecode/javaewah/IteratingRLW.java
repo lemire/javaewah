@@ -35,5 +35,9 @@ public interface IteratingRLW {
 	 */
 	public void discardFirstWords(long x);
 
+    /**
+     * @return a copy of the iterator
+     * @throws CloneNotSupportedException this should not be thrown in theory
+     */
     public IteratingRLW clone() throws CloneNotSupportedException;
 }

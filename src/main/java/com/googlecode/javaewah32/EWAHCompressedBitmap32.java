@@ -8,7 +8,6 @@ package com.googlecode.javaewah32;
 import java.util.*;
 import java.io.*;
 
-import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
 
@@ -533,7 +532,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /**
    * Check to see whether the two compressed bitmaps contain the same set bits.
    * 
-   * @author Colby Ranger
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
