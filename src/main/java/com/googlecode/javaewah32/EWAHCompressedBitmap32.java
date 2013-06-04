@@ -8,6 +8,7 @@ package com.googlecode.javaewah32;
 import java.util.*;
 import java.io.*;
 
+import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
 
@@ -341,10 +342,13 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         rlwj.discardFirstWords(nbre_literal);
       }
     }
-    final boolean i_remains = rlwi.size()>0;
-    final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
-    remaining.dischargeAsEmpty(container);
-    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+    if (adjustContainerSizeWhenAggregating) {
+			final boolean i_remains = rlwi.size() > 0;
+			final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi
+					: rlwj;
+			remaining.dischargeAsEmpty(container);
+			container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+	}
   }
 
 
@@ -439,9 +443,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
     if(i_remains)
       remaining.discharge(container);
-    else
+    else if (adjustContainerSizeWhenAggregating)
       remaining.dischargeAsEmpty(container);
-    container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+    if (adjustContainerSizeWhenAggregating)
+    	container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
 
   }
 
@@ -1302,118 +1307,20 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public static void andWithContainer(final BitmapStorage32 container,
     final EWAHCompressedBitmap32... bitmaps) {
-    if (bitmaps.length == 2) {
-      // should be more efficient
-      bitmaps[0].andToContainer(bitmaps[1], container);
-      return;
-    }
-
-    // Sort the bitmaps in ascending order by sizeinbits. When we exhaust the
-    // first bitmap the rest
-    // of the result is zeros.
-    final EWAHCompressedBitmap32[] sortedBitmaps = bitmaps.clone();
-    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap32>() {
-      public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
-        return a.sizeinbits < b.sizeinbits ? -1
-          : a.sizeinbits == b.sizeinbits ? 0 : 1;
-      }
-    });
-
-    int maxSize = sortedBitmaps[sortedBitmaps.length - 1].sizeinbits;
-
-    final IteratingBufferedRunningLengthWord32[] rlws = new IteratingBufferedRunningLengthWord32[bitmaps.length];
-    for (int i = 0; i < sortedBitmaps.length; i++) {
-      EWAHIterator32 iterator = sortedBitmaps[i].getEWAHIterator();
-      if (iterator.hasNext()) {
-        rlws[i] = new IteratingBufferedRunningLengthWord32(iterator);
-      } else {
-        // this never happens...
-        if (maxSize > 0) {
-          extendEmptyBits(container, 0, maxSize);
-        }
-        container.setSizeInBits(maxSize);
-        return;
-      }
-    }
-
-    while (true) {
-      int maxZeroRl = 0;
-      int minOneRl = Integer.MAX_VALUE;
-      int minSize = Integer.MAX_VALUE;
-      int numEmptyRl = 0;
-
-      for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-        int size = rlw.size();
-        minSize = Math.min(minSize, size);
-
-        if (!rlw.getRunningBit()) {
-          int rl = rlw.getRunningLength();
-          maxZeroRl = Math.max(maxZeroRl, rl);
-          minOneRl = 0;
-          if (rl == 0 && size > 0) {
-            numEmptyRl++;
-          }
-        } else {
-          int rl = rlw.getRunningLength();
-          minOneRl = Math.min(minOneRl, rl);
-          if (rl == 0 && size > 0) {
-            numEmptyRl++;
-          }
-        }
-      }
-      if (minSize == 0) {
-        extendEmptyBits(container, sortedBitmaps[0].sizeinbits, maxSize);
-        break;
-      }
-      if (maxZeroRl > 0) {
-        container.addStreamOfEmptyWords(false, maxZeroRl);
-        for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-          rlw.discardFirstWords(maxZeroRl);
-        }
-      } else if (minOneRl > 0) {
-        container.addStreamOfEmptyWords(true, minOneRl);
-        for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-          rlw.discardFirstWords(minOneRl);
-        }
-      } else {
-        int index = 0;
-
-        if (numEmptyRl == 1) {
-          // if one rlw has literal words to process and the rest have a run of
-          // 1's we can write them out here
-          IteratingBufferedRunningLengthWord32 emptyRl = null;
-          int minNonEmptyRl = Integer.MAX_VALUE;
-          for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-            int rl = rlw.getRunningLength();
-            if (rl == 0) {
-              assert emptyRl == null;
-              emptyRl = rlw;
-            } else {
-              minNonEmptyRl = Math.min(minNonEmptyRl, rl);
-            }
-          }
-          int wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
-          if (emptyRl != null)
-            emptyRl.writeLiteralWords(wordsToWrite, container);
-          index += wordsToWrite;
-        }
-
-        while (index < minSize) {
-          int word = ~0;
-          for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-            if (rlw.getRunningLength() <= index) {
-              word &= rlw.getLiteralWordAt(index - rlw.getRunningLength());
-            }
-          }
-          container.add(word);
-          index++;
-        }
-        for (IteratingBufferedRunningLengthWord32 rlw : rlws) {
-          rlw.discardFirstWords(minSize);
-        }
-      }
-    }
-    container.setSizeInBits(maxSize);
+	    if(bitmaps.length == 1) throw new IllegalArgumentException("Need at least one bitmap");
+		if(bitmaps.length == 2) {
+			bitmaps[0].andToContainer(bitmaps[1],container);
+			return;
+		}
+		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 tmp = new EWAHCompressedBitmap32();	
+		bitmaps[0].andToContainer(bitmaps[1], answer);
+		for(int k = 2; k < bitmaps.length - 1; ++k) {
+			answer.andToContainer(bitmaps[k], tmp);
+			tmp.swap(answer);
+			tmp.clear();
+		}
+		answer.andToContainer(bitmaps[bitmaps.length - 1], container);	  
   }
 
   /**
@@ -1433,15 +1340,17 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public static EWAHCompressedBitmap32 and(
     final EWAHCompressedBitmap32... bitmaps) {
-	if(bitmaps.length == 1) return bitmaps[0];
-    final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
-    int largestSize = 0;
-    for (EWAHCompressedBitmap32 bitmap : bitmaps) {
-      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
-    }
-    container.reserve((int) (largestSize * 1.5));
-    andWithContainer(container, bitmaps);
-    return container;
+		if(bitmaps.length == 1) return bitmaps[0];
+		if(bitmaps.length == 2) return bitmaps[0].and(bitmaps[1]);
+		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 tmp = new EWAHCompressedBitmap32();	
+		bitmaps[0].andToContainer(bitmaps[1], answer);
+		for(int k = 2; k < bitmaps.length; ++k) {
+			answer.andToContainer(bitmaps[k], tmp);
+			tmp.swap(answer);
+			tmp.clear();
+		}
+		return answer;
   }
 
   /**
@@ -1454,6 +1363,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @return the cardinality
    */
   public static int andCardinality(final EWAHCompressedBitmap32... bitmaps) {
+	if(bitmaps.length == 1) return bitmaps[0].cardinality();
     final BitCounter32 counter = new BitCounter32();
     andWithContainer(counter, bitmaps);
     return counter.getCount();
@@ -1588,6 +1498,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /** optimization option **/
   public static final boolean usetrailingzeros = true;
 
+  /** whether we adjust after some aggregation by adding in zeroes **/
+  public static final boolean adjustContainerSizeWhenAggregating = false;
+ 
   /** The Constant wordinbits represents the number of bits in a int. */
   public static final int wordinbits = 32;
 

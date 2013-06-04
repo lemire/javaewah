@@ -19,7 +19,7 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
 	private boolean hasnext;
 
 	/**
-	 * @param p
+	 * @param p iterator we wish to iterate over
 	 */
 	public IntIteratorOverIteratingRLW32(final IteratingRLW32 p) {
 		parent = p;

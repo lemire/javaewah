@@ -17,7 +17,7 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 	private boolean hasnext;
 
 	/**
-	 * @param p
+	 * @param p iterator we wish to iterate over
 	 */
 	public IntIteratorOverIteratingRLW(final IteratingRLW p) {
 		parent = p;

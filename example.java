@@ -8,8 +8,8 @@ import java.io.*;
 public class example {
 	  
   /**
- * @param args
- * @throws IOException
+ * @param args arguments from the command line
+ * @throws IOException if an IO error occurs
  */
 public static void main(final String[] args) throws java.io.IOException {
     EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0,2,64,1<<30);

@@ -9,7 +9,7 @@ import java.util.Iterator;
 public class IteratorUtil {
 	
 	/**
-	 * @param i
+	 * @param i iterator we wish to iterate over
 	 * @return an iterator over the set bits corresponding to the iterator
 	 */
 	public static IntIterator toSetBitsIntIterator(final IteratingRLW i) {
@@ -17,7 +17,7 @@ public class IteratorUtil {
 	}
 
 	/**
-	 * @param i
+	 * @param i  iterator we wish to iterate over
 	 * @return an iterator over the set bits corresponding to the iterator
 	 */
 	public static Iterator<Integer> toSetBitsIterator(final IteratingRLW i) {
@@ -39,8 +39,10 @@ public class IteratorUtil {
 	}
 
 	/**
-	 * @param i
-	 * @param c
+	 * Generate a bitmap from an iterator
+	 * 
+	 * @param i  iterator we wish to materialize
+	 * @param c where we write
 	 */
 	public static void materialize(final IteratingRLW i, final BitmapStorage c) {
 		while (true) {
@@ -55,7 +57,7 @@ public class IteratorUtil {
 	}
 
 	/**
-	 * @param i
+	 * @param i iterator we wish to iterate over
 	 * @return the cardinality (number of set bits) corresponding to the iterator
 	 */
 	public static int cardinality(final IteratingRLW i) {
@@ -70,7 +72,7 @@ public class IteratorUtil {
 	}
 	
 	/**
-	 * @param x
+	 * @param x set of bitmaps
 	 * @return an array of iterators corresponding to the array of bitmaps
 	 */
 	public static IteratingRLW[] toIterators(final EWAHCompressedBitmap... x) {
@@ -81,9 +83,11 @@ public class IteratorUtil {
 		return X;
 	}
 	/**
-	 * @param i
-	 * @param c
-	 * @param Max
+	 * Turn an iterator into a bitmap.
+	 * 
+	 * @param i iterator we wish to materialize
+	 * @param c where we write
+	 * @param Max maximum number of words we wish to materialize
 	 * @return how many words were actually materialized
 	 */
 	public static long materialize(final IteratingRLW i, final BitmapStorage c, long Max) {
@@ -107,7 +111,9 @@ public class IteratorUtil {
 		return origMax - Max;
 	}
 	/**
-	 * @param i
+	 * Turn an iterator into a bitmap
+	 * 
+	 * @param i iterator we wish to materialize
 	 * @return materialized version of the iterator
 	 */
 	public static EWAHCompressedBitmap materialize(final IteratingRLW i) {

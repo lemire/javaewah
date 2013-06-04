@@ -25,7 +25,7 @@ public class UniformDataGenerator {
 	}
 
 	/**
-	 * @param seed
+	 * @param seed random seed
 	 */
 	public UniformDataGenerator(final int seed) {
 		rand = new Random(seed);

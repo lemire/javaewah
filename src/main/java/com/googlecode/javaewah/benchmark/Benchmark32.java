@@ -8,7 +8,6 @@ package com.googlecode.javaewah.benchmark;
 import java.text.DecimalFormat;
 import java.util.List;
 import com.googlecode.javaewah32.EWAHCompressedBitmap32;
-import com.googlecode.javaewah32.FastAggregation32;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah32.IteratingRLW32;
@@ -25,6 +24,7 @@ public class Benchmark32 {
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
 		test(100, 16, 1);
+//		test(2, 24, 1);
 	}
 
 	@SuppressWarnings("javadoc")
@@ -39,8 +39,9 @@ public class Benchmark32 {
 			int[][] data = new int[N][];
 			int Max = (1 << (nbr + sparsity));
 			System.out.println("# generating random data...");
+			int[] inter = cdg.generateClustered(1 << (nbr/2), Max);			
 			for (int k = 0; k < N; ++k)
-				data[k] = cdg.generateClustered(1 << nbr, Max);
+				data[k] = Benchmark.unite2by2(cdg.generateClustered(1 << nbr, Max),inter);
 			System.out.println("# generating random data... ok.");
 			// building
 			bef = System.currentTimeMillis();
@@ -108,9 +109,10 @@ public class Benchmark32 {
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
 					EWAHCompressedBitmap32 ewahor = ewah[0];
-					for (int j = 1; j < k; ++j) {
+					for (int j = 1; j < k + 1; ++j) {
 						ewahor = ewahor.or(ewah[j]);
 					}
+					bogus += ewahor.sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);
@@ -162,9 +164,10 @@ public class Benchmark32 {
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
 					EWAHCompressedBitmap32 ewahand = ewah[0];
-					for (int j = 1; j < k; ++j) {
+					for (int j = 1; j < k + 1; ++j) {
 						ewahand = ewahand.and(ewah[j]);
 					}
+					bogus += ewahand.sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);

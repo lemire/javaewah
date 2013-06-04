@@ -10,7 +10,7 @@ import java.util.LinkedList;
  */
 public class IteratorAggregation {
 	/**
-	 * @param x
+	 * @param x iterator to negate
 	 * @return negated version of the iterator
 	 */
 	public static IteratingRLW not(final IteratingRLW x) {
@@ -56,7 +56,7 @@ public class IteratorAggregation {
 
 	
 	/**
-	 * @param al
+	 * @param al set of iterators to aggregate
 	 * @return and aggregate
 	 */
 	public static IteratingRLW and(final IteratingRLW... al) {
@@ -80,9 +80,8 @@ public class IteratorAggregation {
 			@Override
 			public EWAHIterator next() {
 				buffer.clear();
-//				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
-	//					ll.get(0), ll.get(1));
-				IteratorUtil.materialize(ll.get(0)).andToContainer(IteratorUtil.materialize(ll.get(1)),buffer);
+				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
+						ll.get(0), ll.get(1));
 				if (ll.size() > 2) {
 					Iterator<IteratingRLW> i = ll.iterator();
 					i.next();
@@ -115,8 +114,8 @@ public class IteratorAggregation {
 	}
 
 	/**
-	 * @param x1
-	 * @param x2
+	 * @param x1 first iterator to aggregate
+	 * @param x2 second iterator to aggregate
 	 * @return xor aggregate
 	 */
 	public static IteratingRLW xor(final IteratingRLW x1, final IteratingRLW x2) {
@@ -149,7 +148,7 @@ public class IteratorAggregation {
 	}
 
 	/**
-	 * @param al
+	 * @param al iterators to aggregate
 	 * @return or aggregate
 	 */
 	public static IteratingRLW or(final IteratingRLW... al) {

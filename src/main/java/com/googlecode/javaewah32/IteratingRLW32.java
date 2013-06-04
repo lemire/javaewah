@@ -10,7 +10,7 @@ public interface IteratingRLW32 {
 	 */
 	public boolean next() ;
 	 /**
-	 * @param index
+	 * @param index where the literal word is
 	 * @return the literal word at the given index.
 	 */
 	public int getLiteralWordAt(int index);

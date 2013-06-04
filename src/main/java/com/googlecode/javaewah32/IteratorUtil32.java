@@ -11,7 +11,7 @@ import com.googlecode.javaewah.IntIterator;
 public class IteratorUtil32 {
 	
 	/**
-	 * @param i
+	 * @param i iterator we wish to iterate over
 	 * @return an iterator over the set bits corresponding to the iterator
 	 */
 	public static IntIterator toSetBitsIntIterator(final IteratingRLW32 i) {
@@ -19,7 +19,7 @@ public class IteratorUtil32 {
 	}
 
 	/**
-	 * @param i
+	 * @param i iterator we wish to iterate over
 	 * @return an iterator over the set bits corresponding to the iterator
 	 */
 	public static Iterator<Integer> toSetBitsIterator(final IteratingRLW32 i) {
@@ -41,8 +41,9 @@ public class IteratorUtil32 {
 	}
 
 	/**
-	 * @param i
-	 * @param c
+	 * Turn an iterator into a bitmap
+	 * @param i  iterator we wish to materialize
+	 * @param c where we write
 	 */
 	public static void materialize(final IteratingRLW32 i, final BitmapStorage32 c) {
 		while (true) {
@@ -57,7 +58,7 @@ public class IteratorUtil32 {
 	}
 
 	/**
-	 * @param i
+	 * @param i  iterator we wish to iterate over
 	 * @return the cardinality (number of set bits) corresponding to the iterator
 	 */
 	public static int cardinality(final IteratingRLW32 i) {
@@ -72,7 +73,8 @@ public class IteratorUtil32 {
 	}
 	
 	/**
-	 * @param x
+	 * 
+	 * @param x set of bitmaps we wish to iterate over
 	 * @return an array of iterators corresponding to the array of bitmaps
 	 */
 	public static IteratingRLW32[] toIterators(final EWAHCompressedBitmap32... x) {
@@ -83,9 +85,11 @@ public class IteratorUtil32 {
 		return X;
 	}
 	/**
-	 * @param i
-	 * @param c
-	 * @param Max
+	 * Turn an iterator into a bitmap
+	 * 
+	 * @param i  iterator we wish to materialize
+	 * @param c where we write
+	 * @param Max maximum number of words to materialize
 	 * @return how many words were actually materialized
 	 */
 	public static long materialize(final IteratingRLW32 i, final BitmapStorage32 c, int Max) {
@@ -109,7 +113,9 @@ public class IteratorUtil32 {
 		return origMax - Max;
 	}
 	/**
-	 * @param i
+	 * Turn an iterator into a bitmap 
+	 * 
+	 * @param i  iterator we wish to materialize
 	 * @return materialized version of the iterator
 	 */
 	public static EWAHCompressedBitmap32 materialize(final IteratingRLW32 i) {

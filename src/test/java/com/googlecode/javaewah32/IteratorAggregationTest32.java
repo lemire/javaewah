@@ -12,7 +12,7 @@ import com.googlecode.javaewah.benchmark.ClusteredDataGenerator;
 public class IteratorAggregationTest32 {
 
 	/**
-	 * @param N
+	 * @param N number of bitmaps to generate in each set
 	 * @return an iterator over sets of bitmaps
 	 */
 	public static Iterator<EWAHCompressedBitmap32[]> getCollections(final int N) {

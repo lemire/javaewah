@@ -22,7 +22,7 @@ public ClusteredDataGenerator() {
   }
 
   /**
- * @param seed
+ * @param seed random seed
  */
 public ClusteredDataGenerator(final int seed) {
 	  unidg = new UniformDataGenerator(seed);
@@ -68,15 +68,6 @@ public ClusteredDataGenerator(final int seed) {
     int[] v = this.unidg.generateUniform(length, Max - Min);
     for (int k = 0; k < v.length; ++k)
       array[k + offset] = Min + v[k];
-  }
-
-  /**
- * @param args
- */
-public static void main(final String[] args) {
-    int[] example = (new ClusteredDataGenerator()).generateClustered(20, 1000);
-    for (int k = 0; k < example.length; ++k)
-      System.out.println(example[k]);
   }
 
   UniformDataGenerator unidg;

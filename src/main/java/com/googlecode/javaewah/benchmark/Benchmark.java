@@ -21,9 +21,61 @@ import com.googlecode.javaewah.IteratorUtil;
  * @author Daniel Lemire
  */
 public class Benchmark {
+	
+	/**
+	 * Compute the union between two sorted arrays
+	 * @param set1 first sorted array
+	 * @param set2 second sorted array
+	 * @return merged array
+	 */
+	static public int[] unite2by2(final int[] set1, final int[] set2) {
+		int pos = 0;
+		int k1 = 0, k2 = 0;
+		if (0 == set1.length)
+			return Arrays.copyOf(set2, set2.length);
+		if (0 == set2.length)
+			return Arrays.copyOf(set1, set1.length);
+		int[] buffer = new int[set1.length + set2.length];
+		while (true) {
+			if (set1[k1] < set2[k2]) {
+				buffer[pos++] = set1[k1];
+				++k1;
+				if (k1 >= set1.length) {
+					for (; k2 < set2.length; ++k2)
+						buffer[pos++] = set2[k2];
+					break;
+				}
+			} else if (set1[k1] == set2[k2]) {
+				buffer[pos++] = set1[k1];
+				++k1;
+				++k2;
+				if (k1 >= set1.length) {
+					for (; k2 < set2.length; ++k2)
+						buffer[pos++] = set2[k2];
+					break;
+				}
+				if (k2 >= set2.length) {
+					for (; k1 < set1.length; ++k1)
+						buffer[pos++] = set1[k1];
+					break;
+				}
+			} else {// if (set1[k1]>set2[k2]) {
+				buffer[pos++] = set2[k2];
+				++k2;
+				if (k2 >= set2.length) {
+					for (; k1 < set1.length; ++k1)
+						buffer[pos++] = set1[k1];
+					break;
+				}
+			}
+		}
+		return Arrays.copyOf(buffer, pos);
+	}
+
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
+		//test(2, 24, 1);
 		test(100, 16, 1);
 	}
 
@@ -39,8 +91,9 @@ public class Benchmark {
 			int[][] data = new int[N][];
 			int Max = (1 << (nbr + sparsity));
 			System.out.println("# generating random data...");
-			for (int k = 0; k < N; ++k)
-				data[k] = cdg.generateClustered(1 << nbr, Max);
+			int[] inter = cdg.generateClustered(1 << (nbr/2), Max);
+			for (int k = 0; k < N; ++k) 
+				data[k] = unite2by2(cdg.generateClustered(1 << nbr, Max),inter);
 			System.out.println("# generating random data... ok.");
 			// building
 			bef = System.currentTimeMillis();
@@ -108,9 +161,10 @@ public class Benchmark {
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
 					EWAHCompressedBitmap ewahor = ewah[0];
-					for (int j = 1; j < k; ++j) {
+					for (int j = 1; j < k + 1; ++j) {
 						ewahor = ewahor.or(ewah[j]);
 					}
+					bogus += ewahor.sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);
@@ -173,9 +227,10 @@ public class Benchmark {
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
 					EWAHCompressedBitmap ewahand = ewah[0];
-					for (int j = 1; j < k; ++j) {
+					for (int j = 1; j < k + 1; ++j) {
 						ewahand = ewahand.and(ewah[j]);
 					}
+					bogus += ewahand.sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);

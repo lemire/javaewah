@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import com.googlecode.javaewah.BitmapStorage;
-import com.googlecode.javaewah.IteratingRLW;
 
 /**
  * @author lemire
@@ -13,7 +11,7 @@ import com.googlecode.javaewah.IteratingRLW;
  */
 public class IteratorAggregation32 {
 	/**
-	 * @param x
+	 * @param x iterator to negate
 	 * @return negated version of the iterator
 	 */
 	public static IteratingRLW32 not(final IteratingRLW32 x) {
@@ -59,7 +57,7 @@ public class IteratorAggregation32 {
 
 	
 	/**
-	 * @param al
+	 * @param al iterators to aggregate
 	 * @return and aggregate
 	 */
 	public static IteratingRLW32 and(final IteratingRLW32... al) {
@@ -117,8 +115,8 @@ public class IteratorAggregation32 {
 	}
 
 	/**
-	 * @param x1
-	 * @param x2
+	 * @param x1 first iterator to aggregate
+	 * @param x2 second iterator to aggregate
 	 * @return xor aggregate
 	 */
 	public static IteratingRLW32 xor(final IteratingRLW32 x1, final IteratingRLW32 x2) {
@@ -151,7 +149,7 @@ public class IteratorAggregation32 {
 	}
 
 	/**
-	 * @param al
+	 * @param al iterators to aggregate
 	 * @return or aggregate
 	 */
 	public static IteratingRLW32 or(final IteratingRLW32... al) {

@@ -72,7 +72,7 @@ public class FastAggregation32 {
 
 	/**
 	 * Uses a priority queue to compute the or aggregate.
-	 * @param container
+	 * @param container where we write the result
 	 * @param bitmaps to be aggregated
 	 */
 	public static void orToContainer(final BitmapStorage32 container, 
@@ -98,7 +98,7 @@ public class FastAggregation32 {
 	
 	/**
 	 * Uses a priority queue to compute the xor aggregate.
-	 * @param container
+	 * @param container where we write the result
 	 * @param bitmaps to be aggregated
 	 */
 	public static void xorToContainer(final BitmapStorage32 container, 
@@ -125,7 +125,7 @@ public class FastAggregation32 {
 	   * For internal use. Computes the bitwise or of the provided bitmaps and
 	   * stores the result in the container. (This used to be the default.)
 	   * 
-	   * @deprecated
+	   * @deprecated use EWAHCompressedBitmap32.or instead
 	   * @since 0.4.0
 	   * @param container where store the result
 	   * @param bitmaps to be aggregated

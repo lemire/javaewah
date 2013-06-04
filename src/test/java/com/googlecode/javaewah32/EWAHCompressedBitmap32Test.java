@@ -1156,7 +1156,7 @@ public class EWAHCompressedBitmap32Test {
 		for (int i = 1; i < bitmaps.length; i++) {
 			expected = expected.and(bitmaps[i]);
 		}
-		assertEquals(expected, EWAHCompressedBitmap32.and(bitmaps));
+		Assert.assertTrue(expected.equals(EWAHCompressedBitmap32.and(bitmaps)));
 	}
 
 	private static void assertEquals(EWAHCompressedBitmap32 expected,
