@@ -212,6 +212,60 @@ public class IteratorAggregation {
 	}
 
 	/**
+	 * @param al iterators to aggregate
+	 * @return xor aggregate
+	 */
+	public static IteratingRLW xor(final IteratingRLW... al) {
+		if (al.length == 0)
+			throw new IllegalArgumentException("Need at least one iterator");
+		if (al.length == 1)
+			return al[0];
+
+		final int MAXBUFSIZE = 65536;
+		final long[] hardbitmap = new long[MAXBUFSIZE];
+		final LinkedList<IteratingRLW> ll = new LinkedList<IteratingRLW>();
+		for (IteratingRLW i : al)
+			ll.add(i);
+
+		Iterator<EWAHIterator> i = new Iterator<EWAHIterator>() {
+			EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
+
+			@Override
+			public boolean hasNext() {
+				return !ll.isEmpty();
+			}
+
+			@Override
+			public EWAHIterator next() {
+				buffer.clear();
+				long effective = 0;
+				Iterator<IteratingRLW> i = ll.iterator();
+				while (i.hasNext()) {
+					IteratingRLW rlw = i.next();
+					if (rlw.size() > 0) {
+						int eff = inplacexor(hardbitmap, rlw);
+						if (eff > effective)
+							effective = eff;
+					} else
+						i.remove();
+				}
+				for (int k = 0; k < effective; ++k)
+					buffer.add(hardbitmap[k]);
+				Arrays.fill(hardbitmap, 0);
+				return buffer.getEWAHIterator();
+			}
+
+			@Override
+			public void remove() {
+				throw new RuntimeException("unsupported");
+
+			}
+
+		};
+		return new BufferedIterator(i);
+	}
+
+	/**
 	 * Write out the content of the iterator, but as if it were all zeros.
 	 * 
 	 * @param container
@@ -421,5 +475,46 @@ public class IteratorAggregation {
 		return pos;
 	}
 
+	protected static int inplacexor(long[] bitmap,
+			IteratingRLW i) {
+		int pos = 0;
+		long s;
+		while ((s = i.size()) > 0) {
+			if (pos + s < bitmap.length) {
+				final int L = (int) i.getRunningLength();
+				if (i.getRunningBit()) {
+					for(int k = pos ; k < pos + L; ++k)
+						bitmap[k] = ~bitmap[k];
+				}
+				pos += L;
+				final int LR = i.getNumberOfLiteralWords();
+				for (int k = 0; k < LR; ++k)
+					bitmap[pos++] ^= i.getLiteralWordAt(k);
+				if (!i.next()) {
+					return pos;
+				}
+			} else {
+				int howmany = bitmap.length - pos;
+				int L = (int) i.getRunningLength();
+				if (pos + L > bitmap.length) {
+					if (i.getRunningBit()) {
+						for(int k = pos ; k < bitmap.length; ++k)
+							bitmap[k] = ~bitmap[k];
+					}
+					i.discardFirstWords(howmany);
+					return bitmap.length;
+				}
+				if (i.getRunningBit())
+					for(int k = pos ; k < pos + L; ++k)
+						bitmap[k] = ~bitmap[k];
+				pos += L;
+				for (int k = 0; pos < bitmap.length; ++k)
+					bitmap[pos++] ^= i.getLiteralWordAt(k);
+				i.discardFirstWords(howmany);
+				return pos;
+			}
+		}
+		return pos;
+	}
 
 }

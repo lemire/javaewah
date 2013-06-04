@@ -66,7 +66,7 @@ public class BenchmarkUnion32 {
 				for (int r = 0; r < repeat; ++r)
 					for (int k = 0; k < N; ++k) {
 						EWAHCompressedBitmap32 ewahor = ewah[0];
-						for (int j = 1; j < k; ++j) {
+						for (int j = 1; j < k + 1; ++j) {
 							ewahor = ewahor.or(ewah[j]);
 						}
 					}

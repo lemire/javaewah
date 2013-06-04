@@ -1,7 +1,7 @@
 package com.googlecode.javaewah32;
 
 /*
- * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
  * Licensed under APL 2.0.
  */
 
@@ -1432,6 +1432,30 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 		}
 	}
 
+	  /**
+	   * For internal use. Computes the bitwise xor of the provided bitmaps and
+	   * stores the result in the container.
+	   * @param container where store the result
+	   * @param bitmaps to be aggregated
+	   */
+		public static void xorWithContainer(final BitmapStorage32 container,
+			    final EWAHCompressedBitmap32... bitmaps) {
+			if (bitmaps.length < 2)
+				throw new IllegalArgumentException("You should provide at least two bitmaps, provided "+bitmaps.length);
+			int size = 0;
+			int sinbits = 0;
+			for (EWAHCompressedBitmap32 b : bitmaps) {
+				size += b.sizeInBytes();
+				if (sinbits < b.sizeInBits())
+					sinbits = b.sizeInBits();
+			}
+			if (size * 8 > sinbits) {
+				FastAggregation32.bufferedxorWithContainer(container, bitmaps);
+			} else {
+				FastAggregation32.xorToContainer(container, bitmaps);
+			}
+		}
+
   /**
    * Returns a new compressed bitmap containing the bitwise OR values of the
    * provided bitmaps.  This is typically faster than doing the aggregation
@@ -1459,6 +1483,34 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     return container;
   }
 
+
+  /**
+   * Returns a new compressed bitmap containing the bitwise XOR values of the
+   * provided bitmaps.  This is typically faster than doing the aggregation
+   * two-by-two (A.xor(B).xor(C).xor(D)).
+   *
+   * If only one bitmap is provided, it is returned as is.
+   *
+   * If you are not planning on adding to the resulting bitmap, you may call the trim()
+   * method to reduce memory usage.
+   *
+   * @param bitmaps
+   *          bitmaps to XOR together
+   * @return result of the XOR
+   */
+  public static EWAHCompressedBitmap32 xor(
+    final EWAHCompressedBitmap32... bitmaps) {
+    if(bitmaps.length == 1) return bitmaps[0];
+    final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
+    int largestSize = 0;
+    for (EWAHCompressedBitmap32 bitmap : bitmaps) {
+      largestSize = Math.max(bitmap.actualsizeinwords, largestSize);
+    }
+    container.reserve((int) (largestSize * 1.5));
+    xorWithContainer(container, bitmaps);
+    return container;
+  }
+  
   /**
    * Returns the cardinality of the result of a bitwise OR of the values of the
    * provided bitmaps. Avoids needing to allocate an intermediate bitmap to hold

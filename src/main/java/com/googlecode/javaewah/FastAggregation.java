@@ -77,6 +77,61 @@ public class FastAggregation {
 	}
 
 	/**
+	 * Compute the xor aggregate using a temporary uncompressed bitmap.
+	 * @param bitmaps the source bitmaps
+	 * @return the xor aggregate.
+	 */
+	public static EWAHCompressedBitmap bufferedxor(
+			final EWAHCompressedBitmap... bitmaps) {
+		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+		bufferedxorWithContainer(answer, bitmaps);
+		return answer;
+	}
+
+	
+	/**
+	 * Compute the xor aggregate using a temporary uncompressed bitmap.
+	 * 
+	 * @param container where the aggregate is written
+	 * @param bitmaps the source bitmaps
+	 */
+	public static void bufferedxorWithContainer(final BitmapStorage container,
+			final EWAHCompressedBitmap... bitmaps) {
+		int range = 0;
+		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
+		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+				return b.sizeinbits - a.sizeinbits;
+			}
+		});
+
+		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
+		for (EWAHCompressedBitmap bitmap : sbitmaps) {
+			if (bitmap.sizeinbits > range)
+				range = bitmap.sizeinbits;
+			al.add(new IteratingBufferedRunningLengthWord(bitmap));
+		}
+		final int MAXBUFSIZE = 65536;
+		long[] hardbitmap = new long[MAXBUFSIZE];
+		int maxr = al.size();
+		while (maxr > 0) {
+			long effective = 0;
+			for (int k = 0; k < maxr; ++k) {
+				if (al.get(k).size() > 0) {
+					int eff = IteratorAggregation.inplacexor(hardbitmap, al.get(k));
+					if (eff > effective)
+						effective = eff;
+				} else
+					maxr = k;
+			}
+			for (int k = 0; k < effective; ++k)
+				container.add(hardbitmap[k]);
+			Arrays.fill(hardbitmap, 0);
+		}
+		container.setSizeInBits(range);
+	}
+
+	/**
 	 * Uses a priority queue to compute the or aggregate.
 	 * 
 	 * @param bitmaps
