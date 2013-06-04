@@ -6,6 +6,7 @@ package com.googlecode.javaewah.benchmark;
  */
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.FastAggregation;
@@ -142,6 +143,17 @@ public class Benchmark {
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);
 			// fast logical or
+			// run sanity check
+			for (int k = 0; k < N; ++k) {
+				IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+				for (int j = 0; j < k + 1; ++j) {
+					ewahcp[j] = ewah[j].getIteratingRLW();
+				}
+				IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
+				EWAHCompressedBitmap ewahorp = EWAHCompressedBitmap.or(Arrays.copyOf(ewah, k+1));
+				EWAHCompressedBitmap mewahor = IteratorUtil.materialize(ewahor);
+				if(!ewahorp.equals(mewahor)) throw new RuntimeException("bug");
+			}
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
 				for (int k = 0; k < N; ++k) {
@@ -150,8 +162,7 @@ public class Benchmark {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
 					IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
-					int wordcounter = IteratorUtil.cardinality(ewahor);
-					bogus += wordcounter;
+					bogus +=  IteratorUtil.materialize(ewahor).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 
@@ -183,7 +194,16 @@ public class Benchmark {
 			aft = System.currentTimeMillis();
 			line += "\t" + df.format((aft - bef) / 1000.0);
 
-
+			for (int k = 0; k < N; ++k) {
+				IteratingRLW[] ewahcp = new IteratingRLW[k + 1];
+				for (int j = 0; j < k + 1; ++j) {
+					ewahcp[j] = ewah[j].getIteratingRLW();
+				}
+				IteratingRLW ewahand = IteratorAggregation.and(ewahcp);
+				EWAHCompressedBitmap ewahandp = EWAHCompressedBitmap.and(Arrays.copyOf(ewah, k+1));
+				EWAHCompressedBitmap mewahand =  IteratorUtil.materialize(ewahand);
+				if(!ewahandp.equals(mewahand)) throw new RuntimeException("bug");
+			}
 			// fast logical and
 			bef = System.currentTimeMillis();
 			for (int r = 0; r < repeat; ++r)
@@ -193,8 +213,7 @@ public class Benchmark {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
 					IteratingRLW ewahand = IteratorAggregation.and(ewahcp);
-					int wordcounter = IteratorUtil.cardinality(ewahand);
-					bogus += wordcounter;
+					bogus += IteratorUtil.materialize(ewahand).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 

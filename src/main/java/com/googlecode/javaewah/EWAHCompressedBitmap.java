@@ -1175,6 +1175,28 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 		answer.append("}");
 		return answer.toString();
   }
+  
+ /**
+  * swap the content of the bitmap with another.
+ * @param other bitmap to swap with
+ */
+public void swap(final EWAHCompressedBitmap other)  {
+	  long[] tmp = this.buffer;
+	  this.buffer = other.buffer;
+	  other.buffer = tmp;
+	  
+	  RunningLengthWord tmp2 = this.rlw;
+	  this.rlw = other.rlw;
+	  other.rlw = tmp2;
+	  
+	  int tmp3 = this.actualsizeinwords;
+	  this.actualsizeinwords = other.actualsizeinwords;
+	  other.actualsizeinwords = tmp3;
+	    
+	  int tmp4 = this.sizeinbits;
+	  this.sizeinbits = other.sizeinbits;
+	  other.sizeinbits = tmp4;
+  }
 
   /**
    * Reduce the internal buffer to its minimal allowable size (given

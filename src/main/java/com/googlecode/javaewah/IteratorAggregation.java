@@ -85,18 +85,19 @@ public class IteratorAggregation {
 			@Override
 			public EWAHIterator next() {
 				buffer.clear();
-				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
-						ll.get(0), ll.get(1));
+//				IteratorAggregation.andToContainer(buffer, MAXBUFSIZE,
+	//					ll.get(0), ll.get(1));
+				IteratorUtil.materialize(ll.get(0)).andToContainer(IteratorUtil.materialize(ll.get(1)),buffer);
 				if (ll.size() > 2) {
 					Iterator<IteratingRLW> i = ll.iterator();
 					i.next();
 					i.next();
-					while (i.hasNext()) {
-						EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
+					EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
+					while (i.hasNext() && buffer.sizeInBytes() > 0) {
 						IteratorAggregation.andToContainer(tmpbuffer,
 								 buffer.getIteratingRLW(), i.next());
-						buffer = tmpbuffer;
-						
+						buffer.swap(tmpbuffer);
+						tmpbuffer.clear();
 					}
 				}
 				Iterator<IteratingRLW> i = ll.iterator();
@@ -205,6 +206,24 @@ public class IteratorAggregation {
 		};
 		return new BufferedIterator(i);
 	}
+
+	/**
+	 * Write out the content of the iterator, but as if it were all zeros.
+	 * 
+	 * @param container
+	 *            where we write
+	 * @param i
+	 *            the iterator
+	 */
+	protected static void dischargeAsEmpty(final BitmapStorage container,
+			final IteratingRLW i) {
+		while (i.size() > 0) {
+			container.addStreamOfEmptyWords(false, i.size());
+			i.next();
+
+		}
+	}
+	
 	/**
 	   * Write out up to max words, returns how many were written
 	   * @param container target for writes
@@ -213,15 +232,15 @@ public class IteratorAggregation {
 	   * @return how many written
 	   */
 
-	private static int discharge(final BitmapStorage container, IteratingRLW i, long max) {
-		int counter = 0;
+	protected static long discharge(final BitmapStorage container, IteratingRLW i, long max) {
+		long counter = 0;
 		while (i.size() > 0 && counter < max) {
-			if (i.getRunningLength() > 0) {
-				long L = i.getRunningLength();
-				if(L + counter > max) L = max - counter;
-				container.addStreamOfEmptyWords(i.getRunningBit(),
-						L);
-				counter += L;
+			long L1 = i.getRunningLength();
+			if (L1 > 0) {
+				if (L1 + counter > max)
+					L1 = max - counter;
+				container.addStreamOfEmptyWords(i.getRunningBit(), L1);
+				counter += L1;
 			}
 			long L = i.getNumberOfLiteralWords();
 			if(L + counter > max) L = max - counter;	
@@ -229,18 +248,28 @@ public class IteratorAggregation {
 				container.add(i.getLiteralWordAt(k));
 			}
 			counter += L;
+			i.discardFirstWords(L+L1);
 		}
 		return counter;
 	}
-	private static int dischargeNegated(final BitmapStorage container, IteratingRLW i, long max) {
-		int counter = 0;
+	
+
+	/**
+	   * Write out up to max negated words, returns how many were written
+	   * @param container target for writes
+	   * @param i source of data
+	   * @param max maximal number of writes
+	   * @return how many written
+	   */
+	protected static long dischargeNegated(final BitmapStorage container, IteratingRLW i, long max) {
+		long counter = 0;
 		while (i.size() > 0 && counter < max) {
-			if (i.getRunningLength() > 0) {
-				long L = i.getRunningLength();
-				if(L + counter > max) L = max - counter;
-				container.addStreamOfEmptyWords(!i.getRunningBit(),
-						L);
-				counter += L;
+			long L1 = i.getRunningLength();
+			if (L1 > 0) {
+				if (L1 + counter > max)
+					L1 = max - counter;
+				container.addStreamOfEmptyWords(!i.getRunningBit(), L1);
+				counter += L1;
 			}
 			long L = i.getNumberOfLiteralWords();
 			if(L + counter > max) L = max - counter;	
@@ -248,6 +277,7 @@ public class IteratorAggregation {
 				container.add(~i.getLiteralWordAt(k));
 			}
 			counter += L;
+			i.discardFirstWords(L+L1);
 		}
 		return counter;
 	}

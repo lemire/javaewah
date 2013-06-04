@@ -151,8 +151,7 @@ public class Benchmark32 {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
 					IteratingRLW32 ewahor = IteratorAggregation32.or(ewahcp);
-					int wordcounter = IteratorUtil32.cardinality(ewahor);
-					bogus += wordcounter;
+					bogus +=  IteratorUtil32.materialize(ewahor).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 
@@ -194,8 +193,7 @@ public class Benchmark32 {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
 					IteratingRLW32 ewahand = IteratorAggregation32.and(ewahcp);
-					int wordcounter = IteratorUtil32.cardinality(ewahand);
-					bogus += wordcounter;
+					bogus += IteratorUtil32.materialize(ewahand).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
 
