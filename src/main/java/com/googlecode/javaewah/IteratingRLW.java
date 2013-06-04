@@ -34,4 +34,6 @@ public interface IteratingRLW {
 	 * @param x the number of words to discard
 	 */
 	public void discardFirstWords(long x);
+
+    public IteratingRLW clone() throws CloneNotSupportedException;
 }

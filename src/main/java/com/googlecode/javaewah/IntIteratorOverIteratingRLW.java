@@ -22,18 +22,21 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 	public IntIteratorOverIteratingRLW(final IteratingRLW p) {
 		parent = p;
 		position = 0;
-
+                setupForCurrentRunningLengthWord();
+                // can we assume that an empty bitmap can always be recognized like this...?
+                hasnext = (runningHasNext() || literalHasNext()); // ??
 	}
 
 	/**
 	 * @return whether we could find another set bit
 	 */
 	private final boolean moveToNext() {
-		while (!runningHasNext() && !literalHasNext()) {
-			if (!eatRunningLengthWord())
-				return false;
-		}
-		return true;
+            while (!runningHasNext() && !literalHasNext()) {
+                if (parent.next())
+                    setupForCurrentRunningLengthWord();
+                else return false;
+            }
+            return true;
 	}
 
 	public boolean hasNext() {
@@ -53,17 +56,30 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 		return answer;
 	}
 
-	private final boolean eatRunningLengthWord() {
+	private final void setupForCurrentRunningLengthWord() {
 		this.runningLength = wordinbits * (int) this.parent.getRunningLength()
 				+ this.position;
 		if (!parent.getRunningBit()) {
 			this.position = this.runningLength;
 		}
-		this.wordPosition = this.parent.getNumberOfLiteralWords();
-		this.wordLength = this.wordPosition
+		this.wordPosition = 0;  // ofk, was: this.parent.getNumberOfLiteralWords();
+		this.wordLength = // ofk , was: this.wordPosition
 				+ this.parent.getNumberOfLiteralWords();
-		return this.parent.next();
 	}
+
+	// private final boolean eatRunningLengthWord() {
+	// 	this.runningLength = wordinbits * (int) this.parent.getRunningLength()
+	// 			+ this.position;
+        //         System.out.println("setting runningLength to "+runningLength+" since parent's running length is "+parent.getRunningLength());
+	// 	if (!parent.getRunningBit()) {
+	// 		this.position = this.runningLength;
+	// 	}
+	// 	this.wordPosition = 0;  // ofk, was: this.parent.getNumberOfLiteralWords();
+	// 	this.wordLength = // ofk , was: this.wordPosition
+	// 			+ this.parent.getNumberOfLiteralWords();
+        //         System.out.println("advancing parent to next");
+	// 	return this.parent.next();
+	// }
 
 	private final boolean runningHasNext() {
 		return this.position < this.runningLength;
