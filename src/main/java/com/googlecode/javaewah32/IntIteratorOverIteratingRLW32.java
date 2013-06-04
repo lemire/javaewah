@@ -4,8 +4,13 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
 
 import com.googlecode.javaewah.IntIterator;
 
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
 /**
- * @author lemire
+ * Implementation of an IntIterator over an IteratingRLW.
+ * 
  *
  */
 public class IntIteratorOverIteratingRLW32 implements IntIterator {

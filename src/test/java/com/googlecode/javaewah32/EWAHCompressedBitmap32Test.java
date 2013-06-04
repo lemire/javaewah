@@ -1,7 +1,7 @@
 package com.googlecode.javaewah32;
 
 /*
- * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
  * Licensed under APL 2.0.
  */
 
@@ -9,9 +9,11 @@ import org.junit.Test;
 import com.googlecode.javaewah.IntIterator;
 import java.util.*;
 import java.io.*;
-
 import junit.framework.Assert;
 
+/**
+ * This class is used for basic unit testing.
+ */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
 	@Test

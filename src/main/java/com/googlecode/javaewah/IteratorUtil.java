@@ -2,8 +2,12 @@ package com.googlecode.javaewah;
 
 import java.util.Iterator;
 
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
 /**
- * @author lemire
+ * Convenience functions for working over iterators
  *
  */
 public class IteratorUtil {

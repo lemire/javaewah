@@ -3,9 +3,12 @@ package com.googlecode.javaewah.benchmark;
 import java.text.DecimalFormat;
 import com.googlecode.javaewah.*;
 
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
 /**
- * @author lemire
- * 
+ * To benchmark the logical or (union) aggregate. 
  */
 public class BenchmarkUnion {
 

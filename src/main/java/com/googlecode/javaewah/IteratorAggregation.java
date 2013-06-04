@@ -4,8 +4,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
+
 /**
- * @author lemire
+ * Set of helper functions to aggregate bitmaps.
  *
  */
 public class IteratorAggregation {

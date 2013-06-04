@@ -1,7 +1,13 @@
 package com.googlecode.javaewah;
 
+
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
+
 /**
- * @author lemire
+ * High-level iterator over a compressed bitmap.
  *
  */
 public interface IteratingRLW {

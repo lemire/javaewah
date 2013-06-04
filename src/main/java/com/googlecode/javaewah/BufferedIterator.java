@@ -2,8 +2,15 @@ package com.googlecode.javaewah;
 
 import java.util.Iterator;
 
+
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
 /**
- * @author lemire
+ * This class can be used to iterator over blocks of bitmap data.
+ * 
+ * @author Daniel Lemire
  *
  */
 public class BufferedIterator implements IteratingRLW  {
@@ -113,7 +120,7 @@ public class BufferedIterator implements IteratingRLW  {
 	  /**
 	   * Size in uncompressed words of the current running length word.
 	   *
-	   * @return the long
+	   * @return the size
 	   */
 	  public long size() {
 	    return this.brlw.size();

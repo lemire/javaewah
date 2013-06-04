@@ -4,9 +4,12 @@ import static org.junit.Assert.*;
 import java.util.Iterator;
 import org.junit.Test;
 import com.googlecode.javaewah.benchmark.ClusteredDataGenerator;
-
+/*
+ * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Licensed under APL 2.0.
+ */
 /**
- * @author lemire
+ * Tests specifically for iterators.
  *
  */
 public class IteratorAggregationTest {
