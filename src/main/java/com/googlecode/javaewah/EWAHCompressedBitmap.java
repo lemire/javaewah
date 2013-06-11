@@ -104,6 +104,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    * This is normally how you add data to the array. So you add bits in streams
    * of 8*8 bits.
    * 
+   * Example: if you add 321, you are have added (in binary notation)
+   *  0b101000001, so you have effectively called set(0), set(6), set(8)
+   *  in sequence.
+   * 
    * @param newdata
    *          the word
    */
