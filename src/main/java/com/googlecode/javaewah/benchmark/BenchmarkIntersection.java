@@ -53,7 +53,7 @@ public class BenchmarkIntersection {
 						throw new RuntimeException(
 								"bug EWAHCompressedBitmap.and");
 					EWAHCompressedBitmap ewahand2 = FastAggregation
-							.bufferedand(ewah);
+							.bufferedand(65536,ewah);
 					if (!ewahand.equals(ewahand2))
 						throw new RuntimeException(
 								"bug FastAggregation.bufferedand ");
@@ -95,7 +95,7 @@ public class BenchmarkIntersection {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap ewahor = FastAggregation
-								.bufferedand(ewahcp);
+								.bufferedand(65536,ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();

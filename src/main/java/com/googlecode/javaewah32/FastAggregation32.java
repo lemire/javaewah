@@ -18,29 +18,30 @@ public class FastAggregation32 {
 	/**
 	 * Compute the and aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
 	 * @return the or aggregate.
 	 */
-	public static EWAHCompressedBitmap32 bufferedand(
+	public static EWAHCompressedBitmap32 bufferedand(final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
-		bufferedandWithContainer(answer, bitmaps);
+		bufferedandWithContainer(answer,bufsize, bitmaps);
 		return answer;
 	}
 	/**
 	 * Compute the and aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedandWithContainer(final BitmapStorage32 container,
+	public static void bufferedandWithContainer(final BitmapStorage32 container,final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 
 		java.util.LinkedList<IteratingBufferedRunningLengthWord32> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord32>();
 		for (EWAHCompressedBitmap32 bitmap : bitmaps) {
 			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		int[] hardbitmap = new int[MAXBUFSIZE];
+		int[] hardbitmap = new int[bufsize];
 		
 		for(IteratingRLW32 i : al) 
 			if (i.size() == 0) {
@@ -69,12 +70,13 @@ public class FastAggregation32 {
 	/**
 	 * Compute the or aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @return the or aggregate.
 	 */
-	public static EWAHCompressedBitmap32 bufferedor(
+	public static EWAHCompressedBitmap32 bufferedor(final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
-		bufferedorWithContainer(answer, bitmaps);
+		bufferedorWithContainer(answer, bufsize, bitmaps);
 		return answer;
 	}
 
@@ -82,9 +84,10 @@ public class FastAggregation32 {
 	 * Compute the or aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedorWithContainer(final BitmapStorage32 container,
+	public static void bufferedorWithContainer(final BitmapStorage32 container,final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 		int range = 0;
 		EWAHCompressedBitmap32[] sbitmaps = bitmaps.clone();
@@ -100,8 +103,7 @@ public class FastAggregation32 {
 				range = bitmap.sizeinbits;
 			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		int[] hardbitmap = new int[MAXBUFSIZE];
+		int[] hardbitmap = new int[bufsize];
 		int maxr = al.size();
 		while (maxr > 0) {
 			int effective = 0;
@@ -124,12 +126,13 @@ public class FastAggregation32 {
 	/**
 	 * Compute the xor aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @return the xor aggregate.
 	 */
-	public static EWAHCompressedBitmap32 bufferedxor(
+	public static EWAHCompressedBitmap32 bufferedxor(final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 		EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32();
-		bufferedxorWithContainer(answer, bitmaps);
+		bufferedxorWithContainer(answer, bufsize, bitmaps);
 		return answer;
 	}
 
@@ -138,9 +141,10 @@ public class FastAggregation32 {
 	 * Compute the xor aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedxorWithContainer(final BitmapStorage32 container,
+	public static void bufferedxorWithContainer(final BitmapStorage32 container,final int bufsize,
 			final EWAHCompressedBitmap32... bitmaps) {
 		int range = 0;
 		EWAHCompressedBitmap32[] sbitmaps = bitmaps.clone();
@@ -156,8 +160,7 @@ public class FastAggregation32 {
 				range = bitmap.sizeinbits;
 			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		int[] hardbitmap = new int[MAXBUFSIZE];
+		int[] hardbitmap = new int[bufsize];
 		int maxr = al.size();
 		while (maxr > 0) {
 			int effective = 0;
@@ -181,7 +184,7 @@ public class FastAggregation32 {
 	 * @param container where we write the result
 	 * @param bitmaps to be aggregated
 	 */
-	public static void orToContainer(final BitmapStorage32 container, 
+	public static void orToContainer(final BitmapStorage32 container,
 			final EWAHCompressedBitmap32 ... bitmaps) {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
 		PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,

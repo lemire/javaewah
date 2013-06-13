@@ -1445,7 +1445,7 @@ public void swap(final EWAHCompressedBitmap other)  {
 				sinbits = b.sizeInBits();
 		}
 		if (size * 8 > sinbits) {
-			FastAggregation.bufferedorWithContainer(container, bitmaps);
+			FastAggregation.bufferedorWithContainer(container, 65536, bitmaps);
 		} else {
 			FastAggregation.orToContainer(container, bitmaps);
 		}
@@ -1471,7 +1471,7 @@ public void swap(final EWAHCompressedBitmap other)  {
 					sinbits = b.sizeInBits();
 			}
 			if (size * 8 > sinbits) {
-				FastAggregation.bufferedxorWithContainer(container, bitmaps);
+				FastAggregation.bufferedxorWithContainer(container, 65536, bitmaps);
 			} else {
 				FastAggregation.xorToContainer(container, bitmaps);
 			}

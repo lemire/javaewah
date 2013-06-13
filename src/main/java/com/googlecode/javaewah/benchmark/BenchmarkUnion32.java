@@ -56,7 +56,7 @@ public class BenchmarkUnion32 {
 							.or(ewah);
 					if(!ewahor.equals(ewahor3)) throw new RuntimeException("bug FastAggregation.or");
 					EWAHCompressedBitmap32 ewahor2 = FastAggregation32
-							.bufferedor(ewah);
+							.bufferedor(65536,ewah);
 					if(!ewahor.equals(ewahor2)) throw new RuntimeException("bug FastAggregation.bufferedor ");
 
 				}
@@ -114,7 +114,7 @@ public class BenchmarkUnion32 {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap32 ewahor = FastAggregation32
-								.bufferedor(ewahcp);
+								.bufferedor(65536,ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();

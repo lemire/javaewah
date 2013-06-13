@@ -53,7 +53,7 @@ public class BenchmarkXOR32 {
 					if (!answer.equals(ewahor3))
 						throw new RuntimeException("bug FastAggregation.xor");
 					EWAHCompressedBitmap32 ewahor2 = FastAggregation32
-							.bufferedxor(ewah);
+							.bufferedxor(65536,ewah);
 					if (!answer.equals(ewahor2))
 						throw new RuntimeException(
 								"bug FastAggregation.bufferedxor ");
@@ -101,7 +101,7 @@ public class BenchmarkXOR32 {
 							ewahcp[j] = ewah[j];
 						}
 						EWAHCompressedBitmap32 ewahor = FastAggregation32
-								.bufferedxor(ewahcp);
+								.bufferedxor(65536,ewahcp);
 						bogus += ewahor.sizeInBits();
 					}
 				aft = System.currentTimeMillis();

@@ -22,29 +22,31 @@ public class FastAggregation {
 	/**
 	 * Compute the and aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
 	 * @return the or aggregate.
 	 */
-	public static EWAHCompressedBitmap bufferedand(
+	public static EWAHCompressedBitmap bufferedand(final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedandWithContainer(answer, bitmaps);
+		bufferedandWithContainer(answer,bufsize, bitmaps);
 		return answer;
 	}
 	/**
 	 * Compute the and aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedandWithContainer(final BitmapStorage container,
+	public static void bufferedandWithContainer(final BitmapStorage container,final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 
 		java.util.LinkedList<IteratingBufferedRunningLengthWord> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord>();
 		for (EWAHCompressedBitmap bitmap : bitmaps) {
 			al.add(new IteratingBufferedRunningLengthWord(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		long[] hardbitmap = new long[MAXBUFSIZE];
+		
+		long[] hardbitmap = new long[bufsize*bitmaps.length];
 		
 		for(IteratingRLW i : al) 
 			if (i.size() == 0) {
@@ -73,12 +75,13 @@ public class FastAggregation {
 	/**
 	 * Compute the or aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @return the or aggregate.
 	 */
-	public static EWAHCompressedBitmap bufferedor(
+	public static EWAHCompressedBitmap bufferedor(final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedorWithContainer(answer, bitmaps);
+		bufferedorWithContainer(answer, bufsize, bitmaps);
 		return answer;
 	}
 
@@ -86,9 +89,10 @@ public class FastAggregation {
 	 * Compute the or aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedorWithContainer(final BitmapStorage container,
+	public static void bufferedorWithContainer(final BitmapStorage container, final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 		int range = 0;
 		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
@@ -104,8 +108,7 @@ public class FastAggregation {
 				range = bitmap.sizeinbits;
 			al.add(new IteratingBufferedRunningLengthWord(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		long[] hardbitmap = new long[MAXBUFSIZE];
+		long[] hardbitmap = new long[bufsize];
 		int maxr = al.size();
 		while (maxr > 0) {
 			long effective = 0;
@@ -128,12 +131,13 @@ public class FastAggregation {
 	/**
 	 * Compute the xor aggregate using a temporary uncompressed bitmap.
 	 * @param bitmaps the source bitmaps
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @return the xor aggregate.
 	 */
-	public static EWAHCompressedBitmap bufferedxor(
+	public static EWAHCompressedBitmap bufferedxor(final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedxorWithContainer(answer, bitmaps);
+		bufferedxorWithContainer(answer, bufsize,bitmaps);
 		return answer;
 	}
 
@@ -142,9 +146,10 @@ public class FastAggregation {
 	 * Compute the xor aggregate using a temporary uncompressed bitmap.
 	 * 
 	 * @param container where the aggregate is written
+	 * @param bufsize buffer size used during the computation in 64-bit words
 	 * @param bitmaps the source bitmaps
 	 */
-	public static void bufferedxorWithContainer(final BitmapStorage container,
+	public static void bufferedxorWithContainer(final BitmapStorage container, final int bufsize,
 			final EWAHCompressedBitmap... bitmaps) {
 		int range = 0;
 		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
@@ -160,8 +165,7 @@ public class FastAggregation {
 				range = bitmap.sizeinbits;
 			al.add(new IteratingBufferedRunningLengthWord(bitmap));
 		}
-		final int MAXBUFSIZE = 65536;
-		long[] hardbitmap = new long[MAXBUFSIZE];
+		long[] hardbitmap = new long[bufsize];
 		int maxr = al.size();
 		while (maxr > 0) {
 			long effective = 0;

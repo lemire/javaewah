@@ -1430,7 +1430,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 				sinbits = b.sizeInBits();
 		}
 		if (size * 8 > sinbits) {
-			FastAggregation32.bufferedorWithContainer(container, bitmaps);
+			FastAggregation32.bufferedorWithContainer(container, 65536, bitmaps);
 		} else {
 			FastAggregation32.orToContainer(container, bitmaps);
 		}
@@ -1454,7 +1454,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 					sinbits = b.sizeInBits();
 			}
 			if (size * 8 > sinbits) {
-				FastAggregation32.bufferedxorWithContainer(container, bitmaps);
+				FastAggregation32.bufferedxorWithContainer(container, 65536, bitmaps);
 			} else {
 				FastAggregation32.xorToContainer(container, bitmaps);
 			}
