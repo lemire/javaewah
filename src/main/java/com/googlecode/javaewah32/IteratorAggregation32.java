@@ -63,12 +63,20 @@ public class IteratorAggregation32 {
 		};
 	}
 
-	
 	/**
 	 * @param al iterators to aggregate
 	 * @return and aggregate
 	 */
 	public static IteratingRLW32 and(final IteratingRLW32... al) {
+		return and (DEFAULTMAXBUFSIZE,al);
+	}
+	
+	/**
+	 * @param al iterators to aggregate
+	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
+	 * @return and aggregate
+	 */
+	public static IteratingRLW32 and(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -76,14 +84,23 @@ public class IteratorAggregation32 {
 		final LinkedList<IteratingRLW32> basell = new LinkedList<IteratingRLW32>();
 		for (IteratingRLW32 i : al) 
 			basell.add(i);
-		return new BufferedIterator32(new AndIt(basell));
+		return new BufferedIterator32(new AndIt(basell,bufsize));
 	}
-
+	
 	/**
 	 * @param al iterators to aggregate
 	 * @return or aggregate
 	 */
 	public static IteratingRLW32 or(final IteratingRLW32... al) {
+		return or (DEFAULTMAXBUFSIZE,al);
+	}
+
+	/**
+	 * @param al iterators to aggregate
+	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
+	 * @return or aggregate
+	 */
+	public static IteratingRLW32 or(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -94,15 +111,22 @@ public class IteratorAggregation32 {
 			basell.add(i);
 
 
-		return new BufferedIterator32(new ORIt(basell));
+		return new BufferedIterator32(new ORIt(basell,bufsize));
 	}
 	
-
 	/**
 	 * @param al iterators to aggregate
 	 * @return xor aggregate
 	 */
 	public static IteratingRLW32 xor(final IteratingRLW32... al) {
+		return xor (DEFAULTMAXBUFSIZE,al);
+	}
+	/**
+	 * @param al iterators to aggregate
+	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
+	 * @return xor aggregate
+	 */
+	public static IteratingRLW32 xor(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -111,7 +135,7 @@ public class IteratorAggregation32 {
 		final LinkedList<IteratingRLW32> basell = new LinkedList<IteratingRLW32>();
 		for (IteratingRLW32 i : al)
 			basell.add(i);
-		return new BufferedIterator32(new XORIt(basell));
+		return new BufferedIterator32(new XORIt(basell,bufsize));
 	}
 	/**
 	 * Write out the content of the iterator, but as if it were all zeros.
@@ -417,7 +441,7 @@ public class IteratorAggregation32 {
 	 * An optimization option. Larger values may improve speed, but at
 	 * the expense of memory.
 	 */
-	public final static int MAXBUFSIZE = 65536;
+	public final static int DEFAULTMAXBUFSIZE = 65536;
 
 	
 }
@@ -425,11 +449,12 @@ public class IteratorAggregation32 {
 
 class ORIt implements CloneableIterator<EWAHIterator32> {
 	EWAHCompressedBitmap32 buffer = new EWAHCompressedBitmap32();
-	int[] hardbitmap = new int[IteratorAggregation32.MAXBUFSIZE];
+	int[] hardbitmap;
     LinkedList<IteratingRLW32> ll;
 	
-	ORIt(LinkedList<IteratingRLW32>  basell) {
+	ORIt(LinkedList<IteratingRLW32>  basell, final int bufsize) {
 		ll = basell;
+		hardbitmap = new int[bufsize];
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -469,11 +494,13 @@ class ORIt implements CloneableIterator<EWAHIterator32> {
 
 class XORIt implements CloneableIterator<EWAHIterator32> {
 	EWAHCompressedBitmap32 buffer = new EWAHCompressedBitmap32();
-	int[] hardbitmap = new int[IteratorAggregation32.MAXBUFSIZE];
+	int[] hardbitmap;
     LinkedList<IteratingRLW32> ll;
 	
-	XORIt(LinkedList<IteratingRLW32>  basell) {
+	XORIt(LinkedList<IteratingRLW32>  basell, final int bufsize) {
 		ll = basell;
+		hardbitmap = new int[bufsize];
+
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -514,10 +541,11 @@ class XORIt implements CloneableIterator<EWAHIterator32> {
 class AndIt implements CloneableIterator<EWAHIterator32> {
 	EWAHCompressedBitmap32 buffer = new EWAHCompressedBitmap32();
 	LinkedList<IteratingRLW32> ll;
+	int buffersize;
 	
-	public AndIt(LinkedList<IteratingRLW32> basell) {
+	public AndIt(LinkedList<IteratingRLW32> basell, final int bufsize) {
 		ll = basell;
-		
+		buffersize = bufsize;
 	}
 	
 	@Override
@@ -536,7 +564,7 @@ class AndIt implements CloneableIterator<EWAHIterator32> {
 	@Override
 	public EWAHIterator32 next() {
 		buffer.clear();
-		IteratorAggregation32.andToContainer(buffer, IteratorAggregation32.MAXBUFSIZE * ll.size(),
+		IteratorAggregation32.andToContainer(buffer, buffersize * ll.size(),
 				ll.get(0), ll.get(1));
 		if (ll.size() > 2) {
 			Iterator<IteratingRLW32> i = ll.iterator();
