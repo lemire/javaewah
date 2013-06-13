@@ -41,7 +41,7 @@ public class FastAggregation32 {
 		for (EWAHCompressedBitmap32 bitmap : bitmaps) {
 			al.add(new IteratingBufferedRunningLengthWord32(bitmap));
 		}
-		int[] hardbitmap = new int[bufsize];
+		int[] hardbitmap = new int[bufsize*bitmaps.length];
 		
 		for(IteratingRLW32 i : al) 
 			if (i.size() == 0) {
