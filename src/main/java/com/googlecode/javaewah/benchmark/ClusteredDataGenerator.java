@@ -8,8 +8,10 @@ package com.googlecode.javaewah.benchmark;
 
 
 /**
- * This class will generate uniformly distributed lists of random integers.
- * 
+ * This class will generate lists of random integers with a "clustered" distribution.
+ * Reference:
+ * Anh VN, Moffat A. Index compression using 64-bit words. Software: Practice and Experience 2010; 40(2):131-147. 
+ *
  * @author Daniel Lemire
  */
 class ClusteredDataGenerator {
