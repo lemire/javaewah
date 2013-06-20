@@ -14,6 +14,7 @@ import java.util.LinkedList;
  *
  */
 public class IteratorAggregation {
+
 	/**
 	 * @param x iterator to negate
 	 * @return negated version of the iterator
@@ -65,19 +66,23 @@ public class IteratorAggregation {
 	}
 
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al set of iterators to aggregate
 	 * @return and aggregate
 	 */
-	public static IteratingRLW and(final IteratingRLW... al) {
-		return and(DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW bufferedand(final IteratingRLW... al) {
+		return bufferedand(DEFAULTMAXBUFSIZE,al);
 	}
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al set of iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words (per input iterator)
 	 * @return and aggregate
 	 */
-	public static IteratingRLW and(final int bufsize, final IteratingRLW... al) {
+	public static IteratingRLW bufferedand(final int bufsize, final IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -85,23 +90,28 @@ public class IteratorAggregation {
 		final LinkedList<IteratingRLW> basell = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al) 
 			basell.add(i);
-		return new BufferedIterator(new AndIt(basell,bufsize));
+		return new BufferedIterator(new BufferedAndIterator(basell,bufsize));
 	}
+	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 *
 	 * @param al set of iterators to aggregate
 	 * @return or aggregate
 	 */
-	public static IteratingRLW or(final IteratingRLW... al) {
-		return or(DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW bufferedor(final IteratingRLW... al) {
+		return bufferedor(DEFAULTMAXBUFSIZE,al);
 	}
 	
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
 	 * @return or aggregate
 	 */
-	public static IteratingRLW or(final int bufsize, final IteratingRLW... al) {
+	public static IteratingRLW bufferedor(final int bufsize, final IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -110,24 +120,28 @@ public class IteratorAggregation {
 		final LinkedList<IteratingRLW> basell = new LinkedList<IteratingRLW>();
 		for (IteratingRLW i : al)
 			basell.add(i);
-		return new BufferedIterator(new ORIt(basell,bufsize));
+		return new BufferedIterator(new BufferedORIterator(basell,bufsize));
 	}
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al set of iterators to aggregate
 	 * @return xor aggregate
 	 */
-	public static IteratingRLW xor(final IteratingRLW... al) {
-		return xor(DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW bufferedxor(final IteratingRLW... al) {
+		return bufferedxor(DEFAULTMAXBUFSIZE,al);
 	}
 	
 
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
 	 * @return xor aggregate
 	 */
-	public static IteratingRLW xor(final int bufsize, final IteratingRLW... al) {
+	public static IteratingRLW bufferedxor(final int bufsize, final IteratingRLW... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -138,7 +152,7 @@ public class IteratorAggregation {
 		for (IteratingRLW i : al)
 			basell.add(i);
 
-		return new BufferedIterator(new XORIt(basell, bufsize));
+		return new BufferedIterator(new BufferedXORIterator(basell, bufsize));
 	}
 	
 
@@ -449,20 +463,20 @@ public class IteratorAggregation {
 	 */
 	public final static int DEFAULTMAXBUFSIZE = 65536;
 }
-class ORIt implements CloneableIterator<EWAHIterator> {
+class BufferedORIterator implements CloneableIterator<EWAHIterator> {
 	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
 	long[] hardbitmap;
     LinkedList<IteratingRLW> ll;
 	int buffersize;
 	
-	ORIt(LinkedList<IteratingRLW>  basell, int bufsize) {
+	BufferedORIterator(LinkedList<IteratingRLW>  basell, int bufsize) {
 		ll = basell;
 		hardbitmap = new long[bufsize];
 	}
 	
 	@SuppressWarnings("unchecked")
-	public XORIt clone() throws CloneNotSupportedException {
-		XORIt answer = (XORIt) super.clone();
+	public BufferedXORIterator clone() throws CloneNotSupportedException {
+		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
 		answer.buffer = this.buffer.clone();
 		answer.hardbitmap = this.hardbitmap.clone();
 		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
@@ -495,20 +509,20 @@ class ORIt implements CloneableIterator<EWAHIterator> {
 	}
 };
 
-class XORIt implements CloneableIterator<EWAHIterator> {
+class BufferedXORIterator implements CloneableIterator<EWAHIterator> {
 	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
 	long[] hardbitmap;
     LinkedList<IteratingRLW> ll;
 	int buffersize;
 	
-	XORIt(LinkedList<IteratingRLW>  basell, int bufsize) {
+	BufferedXORIterator(LinkedList<IteratingRLW>  basell, int bufsize) {
 		ll = basell;
 		hardbitmap = new long[bufsize];
 	}
 	
 	@SuppressWarnings("unchecked")
-	public XORIt clone() throws CloneNotSupportedException {
-		XORIt answer = (XORIt) super.clone();
+	public BufferedXORIterator clone() throws CloneNotSupportedException {
+		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
 		answer.buffer = this.buffer.clone();
 		answer.hardbitmap = this.hardbitmap.clone();
 		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
@@ -542,12 +556,12 @@ class XORIt implements CloneableIterator<EWAHIterator> {
 };
 
 
-class AndIt implements CloneableIterator<EWAHIterator> {
+class BufferedAndIterator implements CloneableIterator<EWAHIterator> {
 	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
 	LinkedList<IteratingRLW> ll;
 	int buffersize;
 	
-	public AndIt(LinkedList<IteratingRLW> basell, int bufsize) {
+	public BufferedAndIterator(LinkedList<IteratingRLW> basell, int bufsize) {
 		ll = basell;
 		buffersize = bufsize;
 		
@@ -559,8 +573,8 @@ class AndIt implements CloneableIterator<EWAHIterator> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public AndIt clone() throws CloneNotSupportedException {
-		AndIt answer = (AndIt) super.clone();
+	public BufferedAndIterator clone() throws CloneNotSupportedException {
+		BufferedAndIterator answer = (BufferedAndIterator) super.clone();
 		answer.buffer = this.buffer.clone();
 		answer.ll = (LinkedList<IteratingRLW>) this.ll.clone();
 		return answer;

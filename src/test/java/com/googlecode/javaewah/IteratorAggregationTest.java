@@ -68,7 +68,7 @@ public class IteratorAggregationTest {
 				EWAHCompressedBitmap[] x = i.next();
 				EWAHCompressedBitmap tanswer = EWAHCompressedBitmap.and(x);
 				EWAHCompressedBitmap x1 = IteratorUtil
-						.materialize(IteratorAggregation.and(IteratorUtil
+						.materialize(IteratorAggregation.bufferedand(IteratorUtil
 								.toIterators(x)));
 				assertTrue(x1.equals(tanswer));
 			}
@@ -89,14 +89,9 @@ public class IteratorAggregationTest {
 				EWAHCompressedBitmap[] x = i.next();
 				EWAHCompressedBitmap tanswer = EWAHCompressedBitmap.or(x);
 				EWAHCompressedBitmap x1 = IteratorUtil
-						.materialize(IteratorAggregation.or(IteratorUtil
+						.materialize(IteratorAggregation.bufferedor(IteratorUtil
 								.toIterators(x)));
-				//EWAHCompressedBitmap x2 = IteratorUtil
-					//	.materialize(IteratorAggregation
-						//		.bufferedor(IteratorUtil.toIterators(x)));
 				assertTrue(x1.equals(tanswer));
-			//	assertTrue(x2.equals(tanswer));
-				//assertTrue(x1.equals(x2));
 			}
 			System.gc();
 		}
@@ -113,7 +108,7 @@ public class IteratorAggregationTest {
 			EWAHCompressedBitmap[] x = i.next();
 			EWAHCompressedBitmap tanswer = x[0].xor(x[1]);
 			EWAHCompressedBitmap x1 = IteratorUtil
-					.materialize(IteratorAggregation.xor(
+					.materialize(IteratorAggregation.bufferedxor(
 							x[0].getIteratingRLW(), x[1].getIteratingRLW()));
 			assertTrue(x1.equals(tanswer));
 		}

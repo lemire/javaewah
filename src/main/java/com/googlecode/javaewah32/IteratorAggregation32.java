@@ -64,19 +64,23 @@ public class IteratorAggregation32 {
 	}
 
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @return and aggregate
 	 */
-	public static IteratingRLW32 and(final IteratingRLW32... al) {
-		return and (DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW32 bufferedand(final IteratingRLW32... al) {
+		return bufferedand (DEFAULTMAXBUFSIZE,al);
 	}
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
 	 * @return and aggregate
 	 */
-	public static IteratingRLW32 and(final int bufsize, final IteratingRLW32... al) {
+	public static IteratingRLW32 bufferedand(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -88,19 +92,23 @@ public class IteratorAggregation32 {
 	}
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @return or aggregate
 	 */
-	public static IteratingRLW32 or(final IteratingRLW32... al) {
-		return or (DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW32 bufferedor(final IteratingRLW32... al) {
+		return bufferedor(DEFAULTMAXBUFSIZE,al);
 	}
 
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
 	 * @return or aggregate
 	 */
-	public static IteratingRLW32 or(final int bufsize, final IteratingRLW32... al) {
+	public static IteratingRLW32 bufferedor(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)
@@ -109,24 +117,26 @@ public class IteratorAggregation32 {
 		final LinkedList<IteratingRLW32> basell = new LinkedList<IteratingRLW32>();
 		for (IteratingRLW32 i : al)
 			basell.add(i);
-
-
 		return new BufferedIterator32(new ORIt(basell,bufsize));
 	}
 	
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @return xor aggregate
 	 */
-	public static IteratingRLW32 xor(final IteratingRLW32... al) {
-		return xor (DEFAULTMAXBUFSIZE,al);
+	public static IteratingRLW32 bufferedxor(final IteratingRLW32... al) {
+		return bufferedxor (DEFAULTMAXBUFSIZE,al);
 	}
 	/**
+	 * Aggregate the iterators using a bitmap buffer.
+	 * 
 	 * @param al iterators to aggregate
 	 * @param bufsize size of the internal buffer used by the iterator in 64-bit words
 	 * @return xor aggregate
 	 */
-	public static IteratingRLW32 xor(final int bufsize, final IteratingRLW32... al) {
+	public static IteratingRLW32 bufferedxor(final int bufsize, final IteratingRLW32... al) {
 		if (al.length == 0)
 			throw new IllegalArgumentException("Need at least one iterator");
 		if (al.length == 1)

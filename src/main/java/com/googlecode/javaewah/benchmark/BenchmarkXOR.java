@@ -55,7 +55,7 @@ public class BenchmarkXOR {
 					if (!answer.equals(ewahor2))
 						throw new RuntimeException(
 								"bug FastAggregation.bufferedxor ");
-					EWAHCompressedBitmap iwah = IteratorUtil.materialize(IteratorAggregation.xor(IteratorUtil.toIterators(ewah)));
+					EWAHCompressedBitmap iwah = IteratorUtil.materialize(IteratorAggregation.bufferedxor(IteratorUtil.toIterators(ewah)));
 					if (!answer.equals(iwah))
 						throw new RuntimeException(
 								"bug xor it ");
@@ -114,7 +114,7 @@ public class BenchmarkXOR {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord(
 									ewah[j]);
 						}
-						IteratingRLW ewahor = IteratorAggregation.xor(ewahcp);
+						IteratingRLW ewahor = IteratorAggregation.bufferedxor(ewahcp);
 						int wordcounter = IteratorUtil.cardinality(ewahor);
 						bogus += wordcounter;
 					}

@@ -152,7 +152,7 @@ public class Benchmark32 {
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW32 ewahor = IteratorAggregation32.or(ewahcp);
+					IteratingRLW32 ewahor = IteratorAggregation32.bufferedor(ewahcp);
 					bogus +=  IteratorUtil32.materialize(ewahor).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
@@ -195,7 +195,7 @@ public class Benchmark32 {
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW32 ewahand = IteratorAggregation32.and(ewahcp);
+					IteratingRLW32 ewahand = IteratorAggregation32.bufferedand(ewahcp);
 					bogus += IteratorUtil32.materialize(ewahand).sizeInBits();
 				}
 			aft = System.currentTimeMillis();

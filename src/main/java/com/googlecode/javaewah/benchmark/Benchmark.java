@@ -203,7 +203,7 @@ public class Benchmark {
 				for (int j = 0; j < k + 1; ++j) {
 					ewahcp[j] = ewah[j].getIteratingRLW();
 				}
-				IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
+				IteratingRLW ewahor = IteratorAggregation.bufferedor(ewahcp);
 				EWAHCompressedBitmap ewahorp = EWAHCompressedBitmap.or(Arrays.copyOf(ewah, k+1));
 				EWAHCompressedBitmap mewahor = IteratorUtil.materialize(ewahor);
 				if(!ewahorp.equals(mewahor)) throw new RuntimeException("bug");
@@ -215,7 +215,7 @@ public class Benchmark {
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW ewahor = IteratorAggregation.or(ewahcp);
+					IteratingRLW ewahor = IteratorAggregation.bufferedor(ewahcp);
 					bogus +=  IteratorUtil.materialize(ewahor).sizeInBits();
 				}
 			aft = System.currentTimeMillis();
@@ -254,7 +254,7 @@ public class Benchmark {
 				for (int j = 0; j < k + 1; ++j) {
 					ewahcp[j] = ewah[j].getIteratingRLW();
 				}
-				IteratingRLW ewahand = IteratorAggregation.and(ewahcp);
+				IteratingRLW ewahand = IteratorAggregation.bufferedand(ewahcp);
 				EWAHCompressedBitmap ewahandp = EWAHCompressedBitmap.and(Arrays.copyOf(ewah, k+1));
 				EWAHCompressedBitmap mewahand =  IteratorUtil.materialize(ewahand);
 				if(!ewahandp.equals(mewahand)) throw new RuntimeException("bug");
@@ -267,7 +267,7 @@ public class Benchmark {
 					for (int j = 0; j < k + 1; ++j) {
 						ewahcp[j] = ewah[j].getIteratingRLW();
 					}
-					IteratingRLW ewahand = IteratorAggregation.and(ewahcp);
+					IteratingRLW ewahand = IteratorAggregation.bufferedand(ewahcp);
 					bogus += IteratorUtil.materialize(ewahand).sizeInBits();
 				}
 			aft = System.currentTimeMillis();

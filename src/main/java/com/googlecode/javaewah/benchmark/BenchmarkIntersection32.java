@@ -110,7 +110,7 @@ public class BenchmarkIntersection32 {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord32(
 									ewah[j]);
 						}
-						IteratingRLW32 ewahor = IteratorAggregation32.and(ewahcp);
+						IteratingRLW32 ewahor = IteratorAggregation32.bufferedand(ewahcp);
 						int wordcounter = IteratorUtil32.cardinality(ewahor);
 						bogus += wordcounter;
 					}

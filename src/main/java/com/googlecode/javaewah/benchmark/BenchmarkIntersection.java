@@ -110,7 +110,7 @@ public class BenchmarkIntersection {
 							ewahcp[j] = new IteratingBufferedRunningLengthWord(
 									ewah[j]);
 						}
-						IteratingRLW ewahor = IteratorAggregation.and(ewahcp);
+						IteratingRLW ewahor = IteratorAggregation.bufferedand(ewahcp);
 						int wordcounter = IteratorUtil.cardinality(ewahor);
 						bogus += wordcounter;
 					}
