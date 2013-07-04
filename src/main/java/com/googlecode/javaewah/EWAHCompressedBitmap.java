@@ -1437,8 +1437,8 @@ public void swap(final EWAHCompressedBitmap other)  {
 		    final EWAHCompressedBitmap... bitmaps) {
 		if (bitmaps.length < 2)
 			throw new IllegalArgumentException("You should provide at least two bitmaps, provided "+bitmaps.length);
-		int size = 0;
-		int sinbits = 0;
+	        long size = 0L;
+		long sinbits = 0L;
 		for (EWAHCompressedBitmap b : bitmaps) {
 			size += b.sizeInBytes();
 			if (sinbits < b.sizeInBits())
@@ -1463,8 +1463,8 @@ public void swap(final EWAHCompressedBitmap other)  {
 			    final EWAHCompressedBitmap... bitmaps) {
 			if (bitmaps.length < 2)
 				throw new IllegalArgumentException("You should provide at least two bitmaps, provided "+bitmaps.length);
-			int size = 0;
-			int sinbits = 0;
+			long size = 0L;
+			long sinbits = 0L;
 			for (EWAHCompressedBitmap b : bitmaps) {
 				size += b.sizeInBytes();
 				if (sinbits < b.sizeInBits())
