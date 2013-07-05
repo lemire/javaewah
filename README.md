@@ -78,13 +78,13 @@ http://repo1.maven.org/maven2/com/googlecode/javaewah/JavaEWAH/
 
 You can also specify the dependency in the Maven "pom.xml" file:
 
-<dependencies>
-    <dependency>
-	<groupId>com.googlecode.javaewah</groupId>
-	<artifactId>JavaEWAH</artifactId>
-	<version>0.6.12</version>
-    </dependency>
-</dependencies>
+    <dependencies>
+         <dependency>
+	     <groupId>com.googlecode.javaewah</groupId>
+	     <artifactId>JavaEWAH</artifactId>
+	     <version>0.6.12</version>
+         </dependency>
+     </dependencies>
 
 Naturally, you should replace "version" by the version
 you desire.
