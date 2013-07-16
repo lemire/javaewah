@@ -1,3 +1,7 @@
+version 0.7.0 (July 16th 2013)
+ - Performance improvements when aggregating several bitmaps
+ - Introduction of an iterator-based approach
+
 version 0.6.12 (May 21st 2013)
  - Fixed bug with addStreamOfNegatedDirtyWords (Vicent Marti)
  - Removed some unnecessary recursion
