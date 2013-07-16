@@ -1,4 +1,6 @@
 JavaEWAH
+==========================================================
+
 (c) 2009-2013
 Daniel Lemire (http://lemire.me/en/), 
 Cliff Moon (https://github.com/cliffmoon), 
@@ -42,14 +44,16 @@ Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap i
  
  (The PDF file is freely available on the arXiv site.)
 
-== Benchmark ==
+Benchmark
+---------
 
 For a simple comparison between this library and other libraries such as
 WAH, ConciseSet, BitSet and other options, please see
 
 https://github.com/lemire/simplebitmapbenchmark
  
-== Unit testing ==
+Unit testing
+------------
 
 As of October 2011, this packages relies on Maven. To
 test it:
@@ -61,31 +65,34 @@ http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 for details.
 
 
-=== Usage ==
+Usage
+-----
 
 See example.java.
 
-== Maven central repository ==
+Maven central repository
+------------------------
 
 You can download JavaEWAH from the Maven central repository:
 http://repo1.maven.org/maven2/com/googlecode/javaewah/JavaEWAH/
 
 You can also specify the dependency in the Maven "pom.xml" file:
 
-<dependencies>
-    <dependency>
-	<groupId>com.googlecode.javaewah</groupId>
-	<artifactId>JavaEWAH</artifactId>
-	<version>0.6.12</version>
-    </dependency>
-</dependencies>
+    <dependencies>
+         <dependency>
+	     <groupId>com.googlecode.javaewah</groupId>
+	     <artifactId>JavaEWAH</artifactId>
+	     <version>0.6.12</version>
+         </dependency>
+     </dependencies>
 
 Naturally, you should replace "version" by the version
 you desire.
 
 
 
-== Clojure ==
+Clojure 
+-------
 
 Joel Boehland wrote Clojure wrappers:
 
