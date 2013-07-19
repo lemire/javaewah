@@ -16,6 +16,99 @@ import junit.framework.Assert;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
+	
+
+	@Test
+	public void testSizeInBitsWithAnd() {
+		System.out.println("testing SizeInBitsWithAnd");
+		EWAHCompressedBitmap32 a = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 b = new EWAHCompressedBitmap32();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap32 and = a.and(b);
+		Assert.assertEquals(10, and.sizeInBits());
+		EWAHCompressedBitmap32 and2 = EWAHCompressedBitmap32.and(a,b);
+		Assert.assertEquals(10, and2.sizeInBits());
+	}
+	@Test
+	public void testSizeInBitsWithAndNot() {
+		System.out.println("testing SizeInBitsWithAndNot");
+		EWAHCompressedBitmap32 a = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 b = new EWAHCompressedBitmap32();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap32 and = a.andNot(b);
+		Assert.assertEquals(10, and.sizeInBits());
+	}	
+
+	@Test
+	public void testSizeInBitsWithOr() {
+		System.out.println("testing SizeInBitsWithOr");
+		EWAHCompressedBitmap32 a = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 b = new EWAHCompressedBitmap32();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap32 or = a.or(b);
+		Assert.assertEquals(10, or.sizeInBits());
+		EWAHCompressedBitmap32 or2 = EWAHCompressedBitmap32.or(a,b);
+		Assert.assertEquals(10, or2.sizeInBits());
+	}
+	
+
+	@Test
+	public void testSizeInBitsWithXor() {
+		System.out.println("testing SizeInBitsWithXor");
+		EWAHCompressedBitmap32 a = new EWAHCompressedBitmap32();
+		EWAHCompressedBitmap32 b = new EWAHCompressedBitmap32();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap32 xor = a.xor(b);
+		Assert.assertEquals(10, xor.sizeInBits());
+		EWAHCompressedBitmap32 xor2 = EWAHCompressedBitmap32.xor(a,b);
+		Assert.assertEquals(10, xor2.sizeInBits());
+	}
+
+	
 	@Test
 	public void testDebugSetSizeInBitsTest() {
 		System.out.println("testing DebugSetSizeInBits");
@@ -161,7 +254,7 @@ public class EWAHCompressedBitmap32Test {
 		EWAHCompressedBitmap32 bb = aa.or(ab);
 		EWAHCompressedBitmap32 bbAnd = aa.and(ab);
 		try {
-			EWAHCompressedBitmap32 abnot = (EWAHCompressedBitmap32) ab.clone();
+			EWAHCompressedBitmap32 abnot = ab.clone();
 			abnot.not();
 			EWAHCompressedBitmap32 bbAnd2 = aa.andNot(abnot);
 			assertEquals(bbAnd2, bbAnd);
@@ -472,7 +565,7 @@ public class EWAHCompressedBitmap32Test {
 			answer = answer.andNot(ewah[k]);
 			EWAHCompressedBitmap32 copy = null;
 			try {
-				copy = (EWAHCompressedBitmap32) ewah[k].clone();
+				copy = ewah[k].clone();
 				copy.not();
 				answer2.and(copy);
 				assertEqualsPositions(answer, answer2);
@@ -952,7 +1045,7 @@ public class EWAHCompressedBitmap32Test {
 
 		EWAHCompressedBitmap32 b;
 
-		b = (EWAHCompressedBitmap32) a.clone();
+		b = a.clone();
 
 		a.setSizeInBits(487123, false);
 		b.setSizeInBits(487123, false);

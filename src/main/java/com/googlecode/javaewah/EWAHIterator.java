@@ -77,6 +77,7 @@ public final class EWAHIterator implements Cloneable {
     return this.rlw;
   }
 
+	@Override
 	public EWAHIterator clone() throws CloneNotSupportedException {
 		EWAHIterator ans = (EWAHIterator) super.clone();
 		ans.rlw = this.rlw.clone();

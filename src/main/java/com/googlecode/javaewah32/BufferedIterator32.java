@@ -35,7 +35,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   *
 	   * @param x the number of words to be discarded
 	   */
-	  public void discardFirstWords(int x) {
+	  @Override
+	public void discardFirstWords(int x) {
 	    while (x > 0) {
 	      if (this.brlw.RunningLength > x) {
 	        this.brlw.RunningLength -= x;
@@ -59,7 +60,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   * Move to the next RunningLengthWord
 	   * @return whether the move was possible
 	   */
-	  public boolean next() {
+	  @Override
+	public boolean next() {
 		  if (!this.iterator.hasNext()) {
 			  if(!reload()) {
 				  this.brlw.NumberOfLiteralWords = 0;
@@ -86,7 +88,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   * @param index zero based index
 	   * @return the literal word
 	   */
-	  public int getLiteralWordAt(int index) {
+	  @Override
+	public int getLiteralWordAt(int index) {
 	    return this.buffer[this.literalWordStartPosition + index];
 	  }
 
@@ -95,7 +98,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   *
 	   * @return the number of literal words
 	   */
-	  public int getNumberOfLiteralWords() {
+	  @Override
+	public int getNumberOfLiteralWords() {
 	    return this.brlw.NumberOfLiteralWords;
 	  }
 
@@ -104,7 +108,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   *
 	   * @return the running bit
 	   */
-	  public boolean getRunningBit() {
+	  @Override
+	public boolean getRunningBit() {
 	    return this.brlw.RunningBit;
 	  }
 	  
@@ -113,7 +118,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   *
 	   * @return the running length
 	   */
-	  public int getRunningLength() {
+	  @Override
+	public int getRunningLength() {
 	    return this.brlw.RunningLength;
 	  }
 	  
@@ -122,11 +128,13 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable  {
 	   *
 	   * @return the size
 	   */
-	  public int size() {
+	  @Override
+	public int size() {
 	    return this.brlw.size();
 	  }
 	  
-	  public BufferedIterator32 clone() throws CloneNotSupportedException {
+	  @Override
+	public BufferedIterator32 clone() throws CloneNotSupportedException {
 		  BufferedIterator32 answer = (BufferedIterator32) super.clone();
 		  answer.brlw = this.brlw.clone();
 		  answer.buffer = this.buffer;

@@ -21,14 +21,14 @@ public class UniformDataGenerator {
 	 * construct generator of random arrays.
 	 */
 	public UniformDataGenerator() {
-		rand = new Random();
+		this.rand = new Random();
 	}
 
 	/**
 	 * @param seed random seed
 	 */
 	public UniformDataGenerator(final int seed) {
-		rand = new Random(seed);
+		this.rand = new Random(seed);
 	}
 
 	/**

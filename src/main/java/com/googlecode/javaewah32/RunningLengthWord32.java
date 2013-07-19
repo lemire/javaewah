@@ -106,7 +106,8 @@ public final class RunningLengthWord32 implements Cloneable {
       + getNumberOfLiteralWords();
   }
 
-  public RunningLengthWord32 clone() throws CloneNotSupportedException {
+  @Override
+public RunningLengthWord32 clone() throws CloneNotSupportedException {
 	  RunningLengthWord32 answer;
 	  answer = (RunningLengthWord32) super.clone();
 	  answer.array = this.array;

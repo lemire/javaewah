@@ -148,7 +148,8 @@ public final class BufferedRunningLengthWord32 implements Cloneable  {
       + getNumberOfLiteralWords();
   }
   
-  public BufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
+  @Override
+public BufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
 	  BufferedRunningLengthWord32 answer = (BufferedRunningLengthWord32) super.clone();
 	  answer.literalwordoffset = this.literalwordoffset;
 	  answer.NumberOfLiteralWords = this.NumberOfLiteralWords;

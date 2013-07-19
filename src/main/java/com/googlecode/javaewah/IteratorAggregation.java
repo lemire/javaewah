@@ -57,6 +57,7 @@ public class IteratorAggregation {
 				x.discardFirstWords(y);
 			}
 
+			@Override
 			public IteratingRLW clone() throws CloneNotSupportedException {
 				throw new CloneNotSupportedException();
 			}
@@ -470,11 +471,11 @@ class BufferedORIterator implements CloneableIterator<EWAHIterator> {
 	int buffersize;
 	
 	BufferedORIterator(LinkedList<IteratingRLW>  basell, int bufsize) {
-		ll = basell;
-		hardbitmap = new long[bufsize];
+		this.ll = basell;
+		this.hardbitmap = new long[bufsize];
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public BufferedXORIterator clone() throws CloneNotSupportedException {
 		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
 		answer.buffer = this.buffer.clone();
@@ -485,29 +486,29 @@ class BufferedORIterator implements CloneableIterator<EWAHIterator> {
 
 	@Override
 	public boolean hasNext() {
-		return !ll.isEmpty();
+		return !this.ll.isEmpty();
 	}
 
 	@Override
 	public EWAHIterator next() {
-		buffer.clear();
+		this.buffer.clear();
 		long effective = 0;
-		Iterator<IteratingRLW> i = ll.iterator();
+		Iterator<IteratingRLW> i = this.ll.iterator();
 		while (i.hasNext()) {
 			IteratingRLW rlw = i.next();
 			if (rlw.size() > 0) {
-				int eff = IteratorAggregation.inplaceor(hardbitmap, rlw);
+				int eff = IteratorAggregation.inplaceor(this.hardbitmap, rlw);
 				if (eff > effective)
 					effective = eff;
 			} else
 				i.remove();
 		}
 		for (int k = 0; k < effective; ++k)
-			buffer.add(hardbitmap[k]);
-		Arrays.fill(hardbitmap, 0);
-		return buffer.getEWAHIterator();
+			this.buffer.add(this.hardbitmap[k]);
+		Arrays.fill(this.hardbitmap, 0);
+		return this.buffer.getEWAHIterator();
 	}
-};
+}
 
 class BufferedXORIterator implements CloneableIterator<EWAHIterator> {
 	EWAHCompressedBitmap buffer = new EWAHCompressedBitmap();
@@ -516,11 +517,11 @@ class BufferedXORIterator implements CloneableIterator<EWAHIterator> {
 	int buffersize;
 	
 	BufferedXORIterator(LinkedList<IteratingRLW>  basell, int bufsize) {
-		ll = basell;
-		hardbitmap = new long[bufsize];
+		this.ll = basell;
+		this.hardbitmap = new long[bufsize];
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public BufferedXORIterator clone() throws CloneNotSupportedException {
 		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
 		answer.buffer = this.buffer.clone();
@@ -531,29 +532,29 @@ class BufferedXORIterator implements CloneableIterator<EWAHIterator> {
 
 	@Override
 	public boolean hasNext() {
-		return !ll.isEmpty();
+		return !this.ll.isEmpty();
 	}
 
 	@Override
 	public EWAHIterator next() {
-		buffer.clear();
+		this.buffer.clear();
 		long effective = 0;
-		Iterator<IteratingRLW> i = ll.iterator();
+		Iterator<IteratingRLW> i = this.ll.iterator();
 		while (i.hasNext()) {
 			IteratingRLW rlw = i.next();
 			if (rlw.size() > 0) {
-				int eff = IteratorAggregation.inplacexor(hardbitmap, rlw);
+				int eff = IteratorAggregation.inplacexor(this.hardbitmap, rlw);
 				if (eff > effective)
 					effective = eff;
 			} else
 				i.remove();
 		}
 		for (int k = 0; k < effective; ++k)
-			buffer.add(hardbitmap[k]);
-		Arrays.fill(hardbitmap, 0);
-		return buffer.getEWAHIterator();
+			this.buffer.add(this.hardbitmap[k]);
+		Arrays.fill(this.hardbitmap, 0);
+		return this.buffer.getEWAHIterator();
 	}
-};
+}
 
 
 class BufferedAndIterator implements CloneableIterator<EWAHIterator> {
@@ -562,17 +563,17 @@ class BufferedAndIterator implements CloneableIterator<EWAHIterator> {
 	int buffersize;
 	
 	public BufferedAndIterator(LinkedList<IteratingRLW> basell, int bufsize) {
-		ll = basell;
-		buffersize = bufsize;
+		this.ll = basell;
+		this.buffersize = bufsize;
 		
 	}
 	
 	@Override
 	public boolean hasNext() {
-		return !ll.isEmpty();
+		return !this.ll.isEmpty();
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public BufferedAndIterator clone() throws CloneNotSupportedException {
 		BufferedAndIterator answer = (BufferedAndIterator) super.clone();
 		answer.buffer = this.buffer.clone();
@@ -582,29 +583,29 @@ class BufferedAndIterator implements CloneableIterator<EWAHIterator> {
 
 	@Override
 	public EWAHIterator next() {
-		buffer.clear();
-		IteratorAggregation.andToContainer(buffer, buffersize * ll.size(),
-				ll.get(0), ll.get(1));
-		if (ll.size() > 2) {
-			Iterator<IteratingRLW> i = ll.iterator();
+		this.buffer.clear();
+		IteratorAggregation.andToContainer(this.buffer, this.buffersize * this.ll.size(),
+				this.ll.get(0), this.ll.get(1));
+		if (this.ll.size() > 2) {
+			Iterator<IteratingRLW> i = this.ll.iterator();
 			i.next();
 			i.next();
 			EWAHCompressedBitmap tmpbuffer = new EWAHCompressedBitmap();
-			while (i.hasNext() && buffer.sizeInBytes() > 0) {
+			while (i.hasNext() && this.buffer.sizeInBytes() > 0) {
 				IteratorAggregation.andToContainer(tmpbuffer,
-						 buffer.getIteratingRLW(), i.next());
-				buffer.swap(tmpbuffer);
+						 this.buffer.getIteratingRLW(), i.next());
+				this.buffer.swap(tmpbuffer);
 				tmpbuffer.clear();
 			}
 		}
-		Iterator<IteratingRLW> i = ll.iterator();
+		Iterator<IteratingRLW> i = this.ll.iterator();
 		while(i.hasNext()) {
 			if(i.next().size() == 0) {
-				ll.clear();
+				this.ll.clear();
 				break;
 			}
 		}
-		return buffer.getEWAHIterator();
+		return this.buffer.getEWAHIterator();
 	}
 
-};
+}

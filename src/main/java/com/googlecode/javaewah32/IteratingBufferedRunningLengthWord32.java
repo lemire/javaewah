@@ -42,7 +42,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    *
    * @param x the x
    */
-  public void discardFirstWords(int x) {
+  @Override
+public void discardFirstWords(int x) {
     
     while (x > 0) {
       if (this.brlw.RunningLength > x) {
@@ -123,7 +124,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    * Move to the next RunningLengthWord
    * @return whether the move was possible
    */
-  public boolean next() {
+  @Override
+public boolean next() {
 	  if (!this.iterator.hasNext()) {
 		  this.brlw.NumberOfLiteralWords = 0;
 		  this.brlw.RunningLength = 0;
@@ -160,7 +162,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    * @param index zero based index
    * @return the literal word
    */
-  public int getLiteralWordAt(int index) {
+  @Override
+public int getLiteralWordAt(int index) {
     return this.buffer[this.literalWordStartPosition + index];
   }
 
@@ -169,7 +172,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    *
    * @return the number of literal words
    */
-  public int getNumberOfLiteralWords() {
+  @Override
+public int getNumberOfLiteralWords() {
     return this.brlw.NumberOfLiteralWords;
   }
 
@@ -178,7 +182,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    *
    * @return the running bit
    */
-  public boolean getRunningBit() {
+  @Override
+public boolean getRunningBit() {
     return this.brlw.RunningBit;
   }
   
@@ -187,7 +192,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    *
    * @return the running length
    */
-  public int getRunningLength() {
+  @Override
+public int getRunningLength() {
     return this.brlw.RunningLength;
   }
   
@@ -196,7 +202,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
    *
    * @return the int
    */
-  public int size() {
+  @Override
+public int size() {
     return this.brlw.size();
   }
   
@@ -250,7 +257,8 @@ public final class IteratingBufferedRunningLengthWord32 implements IteratingRLW3
   
   
 
-  public IteratingBufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
+  @Override
+public IteratingBufferedRunningLengthWord32 clone() throws CloneNotSupportedException {
  	 IteratingBufferedRunningLengthWord32 answer = (IteratingBufferedRunningLengthWord32) super.clone();
  	 answer.brlw = this.brlw.clone();
  	 answer.buffer = this.buffer;

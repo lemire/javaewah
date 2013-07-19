@@ -27,13 +27,13 @@ public class IteratorAggregationTest32 {
 
 			@Override
 			public boolean hasNext() {
-				return sparsity < 5;
+				return this.sparsity < 5;
 			}
 
 			@Override
 			public EWAHCompressedBitmap32[] next() {
 				int[][] data = new int[N][];
-				int Max = (1 << (nbr + sparsity));
+				int Max = (1 << (nbr + this.sparsity));
 				for (int k = 0; k < N; ++k)
 					data[k] = cdg.generateClustered(1 << nbr, Max);
 				EWAHCompressedBitmap32[] ewah = new EWAHCompressedBitmap32[N];
@@ -44,7 +44,7 @@ public class IteratorAggregationTest32 {
 					}
 					data[k] = null;
 				}
-				sparsity += 3;
+				this.sparsity += 3;
 				return ewah;
 			}
 

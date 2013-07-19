@@ -87,7 +87,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param newdata
    *          the word
    */
-  public void add(final int newdata) {
+  @Override
+public void add(final int newdata) {
     add(newdata, wordinbits);
   }
 
@@ -167,7 +168,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param number
    *          the number of literal words to add
    */
-  public void addStreamOfLiteralWords(final int[] data, final int start,
+  @Override
+public void addStreamOfLiteralWords(final int[] data, final int start,
     final int number) {
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
@@ -197,7 +199,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param number
    *          the number
    */
-  public void addStreamOfEmptyWords(final boolean v, int number) {
+  @Override
+public void addStreamOfEmptyWords(final boolean v, int number) {
     if (number == 0)
       return;
     this.sizeinbits += number * wordinbits;
@@ -243,7 +246,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * @param number
    *          the number of literal words to add
    */
-  public void addStreamOfNegatedLiteralWords(final int[] data, final int start,
+  @Override
+public void addStreamOfNegatedLiteralWords(final int[] data, final int start,
  final int number) {
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
@@ -278,7 +282,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  public EWAHCompressedBitmap32 and(final EWAHCompressedBitmap32 a) {
+  @Override
+public EWAHCompressedBitmap32 and(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
@@ -384,7 +389,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
+  @Override
+public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container
       .reserve(this.actualsizeinwords > a.actualsizeinwords ? this.actualsizeinwords
@@ -709,17 +715,21 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @return the iterator
    */
-  public Iterator<Integer> iterator() {
+  @Override
+public Iterator<Integer> iterator() {
     return new Iterator<Integer>() {
-      public boolean hasNext() {
+      @Override
+	public boolean hasNext() {
         return this.under.hasNext();
       }
 
-      public Integer next() {
+      @Override
+	public Integer next() {
         return new Integer(this.under.next());
       }
 
-      public void remove() {
+      @Override
+	public void remove() {
         throw new UnsupportedOperationException("bitsets do not support remove");
       }
 
@@ -763,7 +773,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * sizeInBytes()).
    * 
    */
-  public void not() {
+  @Override
+public void not() {
     final EWAHIterator32 i = new EWAHIterator32(this.buffer,
       this.actualsizeinwords);
     if (!i.hasNext())
@@ -808,7 +819,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  public EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32 a) {
+  @Override
+public EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
     orToContainer(a, container);
@@ -928,7 +940,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /*
    * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
    */
-  public void readExternal(ObjectInput in) throws IOException {
+  @Override
+public void readExternal(ObjectInput in) throws IOException {
     deserialize(in);
   }
 
@@ -1023,7 +1036,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * Set the size in bits. This does not change the compressed bitmap.
    * 
    */
-  public void setSizeInBits(final int size) {
+  @Override
+public void setSizeInBits(final int size) {
     this.sizeinbits = size;
   }
 
@@ -1068,7 +1082,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @return the size in bits
    */
-  public int sizeInBits() {
+  @Override
+public int sizeInBits() {
     return this.sizeinbits;
   }
 
@@ -1078,7 +1093,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    * 
    * @return the size in bytes
    */
-  public int sizeInBytes() {
+  @Override
+public int sizeInBytes() {
     return this.actualsizeinwords * (wordinbits / 8);
   }
 
@@ -1206,7 +1222,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   /*
    * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
    */
-  public void writeExternal(ObjectOutput out) throws IOException {
+  @Override
+public void writeExternal(ObjectOutput out) throws IOException {
     serialize(out);
   }
 
@@ -1224,7 +1241,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *          the other bitmap
    * @return the EWAH compressed bitmap
    */
-  public EWAHCompressedBitmap32 xor(final EWAHCompressedBitmap32 a) {
+  @Override
+public EWAHCompressedBitmap32 xor(final EWAHCompressedBitmap32 a) {
     final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
     container.reserve(this.actualsizeinwords + a.actualsizeinwords);
     xorToContainer(a, container);
@@ -1553,7 +1571,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
   public static final boolean usetrailingzeros = true;
 
   /** whether we adjust after some aggregation by adding in zeroes **/
-  public static final boolean adjustContainerSizeWhenAggregating = false;
+  public static final boolean adjustContainerSizeWhenAggregating = true;
  
   /** The Constant wordinbits represents the number of bits in a int. */
   public static final int wordinbits = 32;

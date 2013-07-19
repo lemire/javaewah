@@ -43,11 +43,13 @@ final class IntIteratorImpl implements IntIterator {
     return true;
   }
   
-  public boolean hasNext() {
+  @Override
+public boolean hasNext() {
 	  return this.hasnext;
   }
 
-  public final int next() {
+  @Override
+public final int next() {
 	final int answer;
     if (runningHasNext()) {
     	answer = this.position++;

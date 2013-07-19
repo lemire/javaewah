@@ -16,7 +16,100 @@ import junit.framework.Assert;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+	
+	
 
+	@Test
+	public void testSizeInBitsWithAnd() {
+		System.out.println("testing SizeInBitsWithAnd");
+		EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b = new EWAHCompressedBitmap();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap and = a.and(b);
+		Assert.assertEquals(10, and.sizeInBits());
+		EWAHCompressedBitmap and2 = EWAHCompressedBitmap.and(a,b);
+		Assert.assertEquals(10, and2.sizeInBits());
+	}
+	@Test
+	public void testSizeInBitsWithAndNot() {
+		System.out.println("testing SizeInBitsWithAndNot");
+		EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b = new EWAHCompressedBitmap();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap and = a.andNot(b);
+		Assert.assertEquals(10, and.sizeInBits());
+	}	
+
+	@Test
+	public void testSizeInBitsWithOr() {
+		System.out.println("testing SizeInBitsWithOr");
+		EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b = new EWAHCompressedBitmap();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap or = a.or(b);
+		Assert.assertEquals(10, or.sizeInBits());
+		EWAHCompressedBitmap or2 = EWAHCompressedBitmap.or(a,b);
+		Assert.assertEquals(10, or2.sizeInBits());
+	}
+	
+
+	@Test
+	public void testSizeInBitsWithXor() {
+		System.out.println("testing SizeInBitsWithXor");
+		EWAHCompressedBitmap a = new EWAHCompressedBitmap();
+		EWAHCompressedBitmap b = new EWAHCompressedBitmap();
+		                
+		a.set(1);
+		a.set(2);
+		a.set(3);
+		                
+		b.set(3);
+		b.set(4);
+		b.set(5);
+		                
+		a.setSizeInBits(10);
+		b.setSizeInBits(10);
+		                
+		EWAHCompressedBitmap xor = a.xor(b);
+		Assert.assertEquals(10, xor.sizeInBits());
+		EWAHCompressedBitmap xor2 = EWAHCompressedBitmap.xor(a,b);
+		Assert.assertEquals(10, xor2.sizeInBits());
+	}
+
+	
 	@Test
 	public void testDebugSetSizeInBitsTest() {
 		System.out.println("testing DebugSetSizeInBits");
@@ -162,7 +255,7 @@ public class EWAHCompressedBitmapTest {
 		EWAHCompressedBitmap bb = aa.or(ab);
 		EWAHCompressedBitmap bbAnd = aa.and(ab);
 		try {
-			EWAHCompressedBitmap abnot = (EWAHCompressedBitmap) ab.clone();
+			EWAHCompressedBitmap abnot = ab.clone();
 			abnot.not();
 			EWAHCompressedBitmap bbAnd2 = aa.andNot(abnot);
 			assertEquals(bbAnd2, bbAnd);
@@ -472,7 +565,7 @@ public class EWAHCompressedBitmapTest {
 			answer = answer.andNot(ewah[k]);
 			EWAHCompressedBitmap copy = null;
 			try {
-				copy = (EWAHCompressedBitmap) ewah[k].clone();
+				copy = ewah[k].clone();
 				copy.not();
 				answer2.and(copy);
 				assertEqualsPositions(answer, answer2);
@@ -945,7 +1038,7 @@ public class EWAHCompressedBitmapTest {
 
 		EWAHCompressedBitmap b;
 
-		b = (EWAHCompressedBitmap) a.clone();
+		b = a.clone();
 
 		a.setSizeInBits(487123, false);
 		b.setSizeInBits(487123, false);

@@ -27,8 +27,8 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
 	 * @param p iterator we wish to iterate over
 	 */
 	public IntIteratorOverIteratingRLW32(final IteratingRLW32 p) {
-		parent = p;
-		position = 0;
+		this.parent = p;
+		this.position = 0;
 
 	}
 
@@ -43,10 +43,12 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
 		return true;
 	}
 
+	@Override
 	public boolean hasNext() {
 		return this.hasnext;
 	}
 
+	@Override
 	public final int next() {
 		final int answer;
 		if (runningHasNext()) {
@@ -61,9 +63,9 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
 	}
 
 	private final boolean eatRunningLengthWord() {
-		this.runningLength = wordinbits * (int) this.parent.getRunningLength()
+		this.runningLength = wordinbits * this.parent.getRunningLength()
 				+ this.position;
-		if (!parent.getRunningBit()) {
+		if (!this.parent.getRunningBit()) {
 			this.position = this.runningLength;
 		}
 		this.wordPosition = this.parent.getNumberOfLiteralWords();

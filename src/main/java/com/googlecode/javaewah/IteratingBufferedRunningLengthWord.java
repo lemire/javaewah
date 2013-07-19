@@ -46,7 +46,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    *
    * @param x the number of words to be discarded
    */
-  public void discardFirstWords(long x) {
+  @Override
+public void discardFirstWords(long x) {
     while (x > 0) {
       if (this.brlw.RunningLength > x) {
         this.brlw.RunningLength -= x;
@@ -72,7 +73,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    * Move to the next RunningLengthWord
    * @return whether the move was possible
    */
-  public boolean next() {
+  @Override
+public boolean next() {
 	  if (!this.iterator.hasNext()) {
 		  this.brlw.NumberOfLiteralWords = 0;
 		  this.brlw.RunningLength = 0;
@@ -165,7 +167,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    * @param index zero based index
    * @return the literal word
    */
-  public long getLiteralWordAt(int index) {
+  @Override
+public long getLiteralWordAt(int index) {
     return this.buffer[this.literalWordStartPosition + index];
   }
 
@@ -174,7 +177,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    *
    * @return the number of literal words
    */
-  public int getNumberOfLiteralWords() {
+  @Override
+public int getNumberOfLiteralWords() {
     return this.brlw.NumberOfLiteralWords;
   }
 
@@ -183,7 +187,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    *
    * @return the running bit
    */
-  public boolean getRunningBit() {
+  @Override
+public boolean getRunningBit() {
     return this.brlw.RunningBit;
   }
   
@@ -192,7 +197,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    *
    * @return the running length
    */
-  public long getRunningLength() {
+  @Override
+public long getRunningLength() {
     return this.brlw.RunningLength;
   }
   
@@ -201,7 +207,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
    *
    * @return the long
    */
-  public long size() {
+  @Override
+public long size() {
     return this.brlw.size();
   }
   
@@ -251,7 +258,8 @@ public IteratingBufferedRunningLengthWord(final EWAHCompressedBitmap bitmap) {
   }
 
 
-     public IteratingBufferedRunningLengthWord clone() throws CloneNotSupportedException {
+     @Override
+	public IteratingBufferedRunningLengthWord clone() throws CloneNotSupportedException {
     	 IteratingBufferedRunningLengthWord answer = (IteratingBufferedRunningLengthWord) super.clone();
     	 answer.brlw = this.brlw.clone();
     	 answer.buffer = this.buffer;

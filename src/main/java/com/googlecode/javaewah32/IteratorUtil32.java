@@ -29,14 +29,17 @@ public class IteratorUtil32 {
 	 */
 	public static Iterator<Integer> toSetBitsIterator(final IteratingRLW32 i) {
 		return new Iterator<Integer>() {
+			@Override
 			public boolean hasNext() {
 				return this.under.hasNext();
 			}
 
+			@Override
 			public Integer next() {
 				return new Integer(this.under.next());
 			}
 
+			@Override
 			public void remove() {
 			}
 

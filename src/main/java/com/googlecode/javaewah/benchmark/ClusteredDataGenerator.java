@@ -20,14 +20,14 @@ public class ClusteredDataGenerator {
  * 
  */
 public ClusteredDataGenerator() {
-	  unidg = new UniformDataGenerator();
+	  this.unidg = new UniformDataGenerator();
   }
 
   /**
  * @param seed random seed
  */
 public ClusteredDataGenerator(final int seed) {
-	  unidg = new UniformDataGenerator(seed);
+	  this.unidg = new UniformDataGenerator(seed);
 }
 
 /**

@@ -97,6 +97,7 @@ public class FastAggregation {
 		int range = 0;
 		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
 		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+			@Override
 			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
 				return b.sizeinbits - a.sizeinbits;
 			}
@@ -154,6 +155,7 @@ public class FastAggregation {
 		int range = 0;
 		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
 		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+			@Override
 			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
 				return b.sizeinbits - a.sizeinbits;
 			}
@@ -195,6 +197,7 @@ public class FastAggregation {
 	public static <T extends LogicalElement> T or(T... bitmaps) {
 		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
 				new Comparator<T>() {
+					@Override
 					public int compare(T a, T b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -219,6 +222,7 @@ public class FastAggregation {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
 		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
 				new Comparator<EWAHCompressedBitmap>() {
+					@Override
 					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -248,6 +252,7 @@ public class FastAggregation {
 		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
 				new Comparator<T>() {
 
+					@Override
 					public int compare(T a, T b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -272,6 +277,7 @@ public class FastAggregation {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
 		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
 				new Comparator<EWAHCompressedBitmap>() {
+					@Override
 					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -296,7 +302,8 @@ public class FastAggregation {
 	   * @param container where store the result
 	   * @param bitmaps to be aggregated
 	   */
-	  public static void legacy_orWithContainer(final BitmapStorage container,
+	  @Deprecated
+	public static void legacy_orWithContainer(final BitmapStorage container,
 	    final EWAHCompressedBitmap... bitmaps) {
 	    if (bitmaps.length == 2) {
 	      // should be more efficient
@@ -308,7 +315,8 @@ public class FastAggregation {
 	    // sorted bitmaps from right to left.
 	    final EWAHCompressedBitmap[] sortedBitmaps = bitmaps.clone();
 	    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap>() {
-	      public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+	      @Override
+		public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
 	        return a.sizeinbits < b.sizeinbits ? 1
 	          : a.sizeinbits == b.sizeinbits ? 0 : -1;
 	      }

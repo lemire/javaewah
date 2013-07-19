@@ -38,7 +38,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
   /**
    * If the word to be added is non-zero, a NonEmptyException exception is thrown.
    */
-  public void add(int newdata) {
+  @Override
+public void add(int newdata) {
     if(newdata!=0) throw nonEmptyException; 
   }
 
@@ -46,7 +47,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * throws a NonEmptyException exception when number is greater than 0
    * 
    */
-  public void addStreamOfLiteralWords(int[] data, int start, int number) {
+  @Override
+public void addStreamOfLiteralWords(int[] data, int start, int number) {
     if (number > 0){
       throw nonEmptyException;
     }
@@ -57,7 +59,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * otherwise, nothing happens.
    * 
    */
-  public void addStreamOfEmptyWords(boolean v, int number) {
+  @Override
+public void addStreamOfEmptyWords(boolean v, int number) {
     if(v && (number>0)) throw nonEmptyException; 
   }
 
@@ -65,7 +68,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * throws a NonEmptyException exception when number is greater than 0
    * 
    */
-  public void addStreamOfNegatedLiteralWords(int[] data, int start, int number) {
+  @Override
+public void addStreamOfNegatedLiteralWords(int[] data, int start, int number) {
     if (number > 0){
       throw nonEmptyException;
     }
@@ -76,7 +80,8 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
    * 
    * @see com.googlecode.javaewah.BitmapStorage#setSizeInBits(int)
    */
-  public void setSizeInBits(int bits) {
+  @Override
+public void setSizeInBits(int bits) {
   }
 
 }

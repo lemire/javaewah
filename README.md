@@ -35,6 +35,7 @@ For better performance, use a 64-bit JVM over
 The 32-bit version (javaewah32.EWAHCompressedBitmap32) should
 compress better but be comparatively slower.
 
+Java 6 or better is required.
 
 For more details regarding the compression format, please
 see Section 3 of the following paper:

@@ -22,7 +22,8 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param newdata the word
    */  
   // @Override : causes problems with Java 1.5
-  public void add(final int newdata) {
+  @Override
+public void add(final int newdata) {
     this.oneBits += Integer.bitCount(newdata);
   }
   
@@ -35,7 +36,8 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param number the number of literal words to add
    */
   // @Override : causes problems with Java 1.5
-  public void addStreamOfLiteralWords(int[] data, int start, int number) {
+  @Override
+public void addStreamOfLiteralWords(int[] data, int start, int number) {
     for(int i=start;i<start+number;i++) {
       add(data[i]);      
     }
@@ -50,7 +52,8 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param number how many to words add
    */
   // @Override : causes problems with Java 1.5
-  public void addStreamOfEmptyWords(boolean v, int number) {
+  @Override
+public void addStreamOfEmptyWords(boolean v, int number) {
     if (v) {
       this.oneBits += number * EWAHCompressedBitmap32.wordinbits;
     }
@@ -64,7 +67,8 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param number the number of literal words to add
    */
   // @Override : causes problems with Java 1.5
-  public void addStreamOfNegatedLiteralWords(int[] data, int start,
+  @Override
+public void addStreamOfNegatedLiteralWords(int[] data, int start,
     int number) {
     for(int i=start;i<start+number;i++) {
       add(~data[i]);      
@@ -86,7 +90,8 @@ public final class BitCounter32 implements BitmapStorage32 {
    * @param bits number of bits
    */
   // @Override : causes problems with Java 1.5
-  public void setSizeInBits(int bits) {
+  @Override
+public void setSizeInBits(int bits) {
     // no action
   }
 

@@ -33,7 +33,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @param x the number of words to be discarded
 	   */
-	  public void discardFirstWords(long x) {
+	  @Override
+	public void discardFirstWords(long x) {
 	    while (x > 0) {
 	      if (this.brlw.RunningLength > x) {
 	        this.brlw.RunningLength -= x;
@@ -57,7 +58,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   * Move to the next RunningLengthWord
 	   * @return whether the move was possible
 	   */
-	  public boolean next() {
+	  @Override
+	public boolean next() {
 		  if (!this.iterator.hasNext()) {
 			  if(!reload()) {
 				  this.brlw.NumberOfLiteralWords = 0;
@@ -84,7 +86,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   * @param index zero based index
 	   * @return the literal word
 	   */
-	  public long getLiteralWordAt(int index) {
+	  @Override
+	public long getLiteralWordAt(int index) {
 	    return this.buffer[this.literalWordStartPosition + index];
 	  }
 
@@ -93,7 +96,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @return the number of literal words
 	   */
-	  public int getNumberOfLiteralWords() {
+	  @Override
+	public int getNumberOfLiteralWords() {
 	    return this.brlw.NumberOfLiteralWords;
 	  }
 
@@ -102,7 +106,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @return the running bit
 	   */
-	  public boolean getRunningBit() {
+	  @Override
+	public boolean getRunningBit() {
 	    return this.brlw.RunningBit;
 	  }
 	  
@@ -111,7 +116,8 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @return the running length
 	   */
-	  public long getRunningLength() {
+	  @Override
+	public long getRunningLength() {
 	    return this.brlw.RunningLength;
 	  }
 	  
@@ -120,12 +126,14 @@ public class BufferedIterator implements IteratingRLW  {
 	   *
 	   * @return the size
 	   */
-	  public long size() {
+	  @Override
+	public long size() {
 	    return this.brlw.size();
 	  }
 
 
-	  public BufferedIterator clone() throws CloneNotSupportedException {
+	  @Override
+	public BufferedIterator clone() throws CloneNotSupportedException {
 		  BufferedIterator answer = (BufferedIterator) super.clone();
 		  answer.brlw = this.brlw.clone();
 		  answer.buffer = this.buffer;

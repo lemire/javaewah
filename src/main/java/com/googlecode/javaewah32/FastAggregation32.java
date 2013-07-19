@@ -92,6 +92,7 @@ public class FastAggregation32 {
 		int range = 0;
 		EWAHCompressedBitmap32[] sbitmaps = bitmaps.clone();
 		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap32>() {
+			@Override
 			public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 				return b.sizeinbits - a.sizeinbits;
 			}
@@ -149,6 +150,7 @@ public class FastAggregation32 {
 		int range = 0;
 		EWAHCompressedBitmap32[] sbitmaps = bitmaps.clone();
 		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap32>() {
+			@Override
 			public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 				return b.sizeinbits - a.sizeinbits;
 			}
@@ -189,6 +191,7 @@ public class FastAggregation32 {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
 		PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
 				new Comparator<EWAHCompressedBitmap32>() {
+					@Override
 					public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -215,6 +218,7 @@ public class FastAggregation32 {
 		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
 		PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
 				new Comparator<EWAHCompressedBitmap32>() {
+					@Override
 					public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 						return a.sizeInBytes() - b.sizeInBytes();
 					}
@@ -239,7 +243,8 @@ public class FastAggregation32 {
 	   * @param container where store the result
 	   * @param bitmaps to be aggregated
 	   */
-	  public static void legacy_orWithContainer(final BitmapStorage32 container,
+	  @Deprecated
+	public static void legacy_orWithContainer(final BitmapStorage32 container,
 	    final EWAHCompressedBitmap32... bitmaps) {
 	    if (bitmaps.length == 2) {
 	      // should be more efficient
@@ -251,7 +256,8 @@ public class FastAggregation32 {
 	    // sorted bitmaps from right to left.
 	    final EWAHCompressedBitmap32[] sortedBitmaps = bitmaps.clone();
 	    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap32>() {
-	      public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
+	      @Override
+		public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
 	        return a.sizeinbits < b.sizeinbits ? 1
 	          : a.sizeinbits == b.sizeinbits ? 0 : -1;
 	      }
@@ -344,7 +350,7 @@ public class FastAggregation32 {
 	          }
 	          int wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
 	          if (emptyRl != null)
-	            emptyRl.writeLiteralWords((int) wordsToWrite, container);
+	            emptyRl.writeLiteralWords(wordsToWrite, container);
 	          index += wordsToWrite;
 	        }
 
@@ -353,7 +359,7 @@ public class FastAggregation32 {
 	          for (int i = 0; i < maxAvailablePos; i++) {
 	            IteratingBufferedRunningLengthWord32 rlw = rlws[i];
 	            if (rlw.getRunningLength() <= index) {
-	              word |= rlw.getLiteralWordAt(index - (int) rlw.getRunningLength());
+	              word |= rlw.getLiteralWordAt(index - rlw.getRunningLength());
 	            }
 	          }
 	          container.add(word);

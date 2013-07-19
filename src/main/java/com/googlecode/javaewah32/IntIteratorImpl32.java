@@ -45,10 +45,12 @@ final class IntIteratorImpl32 implements IntIterator {
 		return true;
 	}
 
+	@Override
 	public final boolean hasNext() {
 		return this.hasnext;
 	}
 
+	@Override
 	public final int next() {
 		final int answer;
 		if (runningHasNext()) {

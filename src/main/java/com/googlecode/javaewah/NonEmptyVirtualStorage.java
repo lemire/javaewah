@@ -38,7 +38,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see com.googlecode.javaewah.BitmapStorage#add(long)
    */
-  public void add(long newdata) {
+  @Override
+public void add(long newdata) {
     if (newdata != 0)
       throw nonEmptyException;
     return;
@@ -48,7 +49,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * throws a NonEmptyException exception when number is greater than 0
    * 
    */
-  public void addStreamOfLiteralWords(long[] data, int start, int number) {
+  @Override
+public void addStreamOfLiteralWords(long[] data, int start, int number) {
       if(number>0){
           throw nonEmptyException;
       }
@@ -60,7 +62,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see com.googlecode.javaewah.BitmapStorage#addStreamOfEmptyWords(boolean, long)
    */
-  public void addStreamOfEmptyWords(boolean v, long number) {
+  @Override
+public void addStreamOfEmptyWords(boolean v, long number) {
     if (v && (number>0))
       throw nonEmptyException;
     return;
@@ -70,7 +73,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * throws a NonEmptyException exception when number is greater than 0
    * 
    */
-  public void addStreamOfNegatedLiteralWords(long[] data, int start, int number) {
+  @Override
+public void addStreamOfNegatedLiteralWords(long[] data, int start, int number) {
       if(number>0){
           throw nonEmptyException;
       }
@@ -81,7 +85,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
    * 
    * @see com.googlecode.javaewah.BitmapStorage#setSizeInBits(int)
    */
-  public void setSizeInBits(int bits) {
+  @Override
+public void setSizeInBits(int bits) {
   }
 
 }
