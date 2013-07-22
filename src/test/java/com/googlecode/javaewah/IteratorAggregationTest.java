@@ -18,8 +18,7 @@ public class IteratorAggregationTest {
 	 * @param N Number of bitmaps to generate in each set
 	 * @return an iterator over sets of bitmaps
 	 */
-	public static Iterator<EWAHCompressedBitmap[]> getCollections(final int N) {
-		final int nbr = 3;
+	public static Iterator<EWAHCompressedBitmap[]> getCollections(final int N, final int nbr) {
 		final ClusteredDataGenerator cdg = new ClusteredDataGenerator(123);
 		return new Iterator<EWAHCompressedBitmap[]>() {
 			int sparsity = 1;
@@ -63,7 +62,7 @@ public class IteratorAggregationTest {
 	public void testAnd() {
 		for (int N = 1; N < 10; ++N) {
 			System.out.println("testAnd N = " + N);
-			Iterator<EWAHCompressedBitmap[]> i = getCollections(N);
+			Iterator<EWAHCompressedBitmap[]> i = getCollections(N,3);
 			while (i.hasNext()) {
 				EWAHCompressedBitmap[] x = i.next();
 				EWAHCompressedBitmap tanswer = EWAHCompressedBitmap.and(x);
@@ -84,7 +83,7 @@ public class IteratorAggregationTest {
 	public void testOr() {
 		for (int N = 1; N < 10; ++N) {
 			System.out.println("testOr N = " + N);
-			Iterator<EWAHCompressedBitmap[]> i = getCollections(N);
+			Iterator<EWAHCompressedBitmap[]> i = getCollections(N,3);
 			while (i.hasNext()) {
 				EWAHCompressedBitmap[] x = i.next();
 				EWAHCompressedBitmap tanswer = EWAHCompressedBitmap.or(x);
@@ -100,10 +99,36 @@ public class IteratorAggregationTest {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testWideOr() {
+		for (int nbr = 3; nbr <= 24; nbr += 3) {
+			for (int N = 100; N < 1000; N += 100) {
+				System.out.println("testWideOr N = " + N);
+				Iterator<EWAHCompressedBitmap[]> i = getCollections(N, 3);
+				while (i.hasNext()) {
+					EWAHCompressedBitmap[] x = i.next();
+					EWAHCompressedBitmap tanswer = EWAHCompressedBitmap.or(x);
+					EWAHCompressedBitmap container = new EWAHCompressedBitmap();
+					FastAggregation.legacy_orWithContainer(container, x);
+					assertTrue(container.equals(tanswer));
+					EWAHCompressedBitmap x1 = IteratorUtil
+							.materialize(IteratorAggregation
+									.bufferedor(IteratorUtil.toIterators(x)));
+					assertTrue(x1.equals(tanswer));
+				}
+				System.gc();
+			}
+		}
+	}	
+	
+	/**
+	 * 
+	 */
 	@Test
 	public void testXor() {
 		System.out.println("testXor ");
-		Iterator<EWAHCompressedBitmap[]> i = getCollections(2);
+		Iterator<EWAHCompressedBitmap[]> i = getCollections(2,3);
 		while (i.hasNext()) {
 			EWAHCompressedBitmap[] x = i.next();
 			EWAHCompressedBitmap tanswer = x[0].xor(x[1]);
