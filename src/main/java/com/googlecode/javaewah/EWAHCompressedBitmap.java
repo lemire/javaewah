@@ -1050,6 +1050,8 @@ public void readExternal(ObjectInput in) throws IOException {
    */
   @Override
 public void setSizeInBits(final int size) {
+   if((size+EWAHCompressedBitmap.wordinbits-1)/EWAHCompressedBitmap.wordinbits!= (this.sizeinbits+EWAHCompressedBitmap.wordinbits-1)/EWAHCompressedBitmap.wordinbits)
+	    throw new RuntimeException("You can only reduce the size of the bitmap within the scope of the last word. To extend the bitmap, please call setSizeInbits(int,boolean).");
     this.sizeinbits = size;
   }
 

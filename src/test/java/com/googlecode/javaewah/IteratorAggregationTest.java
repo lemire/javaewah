@@ -16,6 +16,7 @@ public class IteratorAggregationTest {
 
 	/**
 	 * @param N Number of bitmaps to generate in each set
+	 * @param nbr parameter determining the size of the arrays (in a log scale)
 	 * @return an iterator over sets of bitmaps
 	 */
 	public static Iterator<EWAHCompressedBitmap[]> getCollections(final int N, final int nbr) {

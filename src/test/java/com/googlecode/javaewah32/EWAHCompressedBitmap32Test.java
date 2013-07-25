@@ -6,6 +6,8 @@ package com.googlecode.javaewah32;
  */
 
 import org.junit.Test;
+
+import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import java.util.*;
 import java.io.*;
@@ -16,7 +18,36 @@ import junit.framework.Assert;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
-	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void OKaserBugReportJuly2013() {
+		System.out.println("testing OKaserBugReportJuly2013");
+		int[][] data = { {}, { 5, 6, 7, 8, 9 }, { 1 }, { 2 }, { 2, 5, 7 },
+				{ 1 }, { 2 }, { 1, 6, 9 }, { 1, 3, 4, 6, 8, 9 },
+				{ 1, 3, 4, 6, 8, 9 }, { 1, 3, 6, 8, 9 }, { 2, 5, 7 },
+				{ 2, 5, 7 }, { 1, 3, 9 }, { 3, 8, 9 } };
+
+		EWAHCompressedBitmap32[] toBeOred = new EWAHCompressedBitmap32[data.length];
+		Set<Integer> bruteForceAnswer = new HashSet<Integer>();
+		for (int i = 0; i < toBeOred.length; ++i) {
+			toBeOred[i] = new EWAHCompressedBitmap32();
+			for (int j : data[i]) {
+				toBeOred[i].set(j);
+				bruteForceAnswer.add(j);
+			}
+			toBeOred[i].setSizeInBits(1000,false);
+		}
+
+		long rightcard = bruteForceAnswer.size();
+		EWAHCompressedBitmap32 foo = new EWAHCompressedBitmap32();
+		FastAggregation32.legacy_orWithContainer(foo, toBeOred);
+		Assert.assertEquals(rightcard, foo.cardinality());
+		EWAHCompressedBitmap32 e1 = FastAggregation.or(toBeOred);
+		Assert.assertEquals(rightcard, e1.cardinality());
+		EWAHCompressedBitmap32 e2 = FastAggregation32.bufferedor(65536,
+				toBeOred);
+		Assert.assertEquals(rightcard, e2.cardinality());
+	}
 
 	@Test
 	public void testSizeInBitsWithAnd() {
@@ -580,7 +611,7 @@ public class EWAHCompressedBitmap32Test {
 		System.out.println("testing setSizeInBits");
 		for (int k = 0; k < 4096; ++k) {
 			EWAHCompressedBitmap32 ewah = new EWAHCompressedBitmap32();
-			ewah.setSizeInBits(k);
+			ewah.setSizeInBits(k,false);
 			Assert.assertEquals(ewah.sizeinbits, k);
 			Assert.assertEquals(ewah.cardinality(), 0);
 			EWAHCompressedBitmap32 ewah2 = new EWAHCompressedBitmap32();
@@ -1230,7 +1261,7 @@ public class EWAHCompressedBitmap32Test {
 		EWAHCompressedBitmap32 b1 = new EWAHCompressedBitmap32();
 		EWAHCompressedBitmap32 b2 = new EWAHCompressedBitmap32();
 		EWAHCompressedBitmap32 b3 = new EWAHCompressedBitmap32();
-		b3.setSizeInBits(5);
+		b3.setSizeInBits(5,false);
 		b1.set(2);
 		b2.set(4);
 		EWAHCompressedBitmap32.and(b1, b2, b3);
