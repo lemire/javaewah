@@ -339,6 +339,7 @@ public class IteratorAggregation {
 
 	protected static int inplaceor(long[] bitmap,
 			IteratingRLW i) {
+
 		int pos = 0;
 		long s;
 		while ((s = i.size()) > 0) {
@@ -348,14 +349,16 @@ public class IteratorAggregation {
 					java.util.Arrays.fill(bitmap, pos, pos + L, ~0l);
 				pos += L;
 				final int LR = i.getNumberOfLiteralWords();
+
 				for (int k = 0; k < LR; ++k)
 					bitmap[pos++] |= i.getLiteralWordAt(k);
-				if (!i.next()) {
+				if (!i.next()) { 
 					return pos;
 				}
 			} else {
 				int howmany = bitmap.length - pos;
 				int L = (int) i.getRunningLength();
+
 				if (pos + L > bitmap.length) {
 					if (i.getRunningBit()) {
                       java.util.Arrays.fill(bitmap, pos, bitmap.length, ~0l); 
@@ -498,13 +501,15 @@ class BufferedORIterator implements CloneableIterator<EWAHIterator> {
 			IteratingRLW rlw = i.next();
 			if (rlw.size() > 0) {
 				int eff = IteratorAggregation.inplaceor(this.hardbitmap, rlw);
-				if (eff > effective)
+				if (eff > effective) 
 					effective = eff;
 			} else
 				i.remove();
 		}
-		for (int k = 0; k < effective; ++k)
+		for (int k = 0; k < effective; ++k) {
 			this.buffer.add(this.hardbitmap[k]);
+                }
+
 		Arrays.fill(this.hardbitmap, 0);
 		return this.buffer.getEWAHIterator();
 	}
