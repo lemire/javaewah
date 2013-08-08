@@ -29,12 +29,14 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 		this.parent = p;
 		this.position = 0;
                 setupForCurrentRunningLengthWord();
-                // can we assume that an empty bitmap can always be recognized like this...?
-                this.hasnext = (runningHasNext() || literalHasNext()); // ??
+                // can we assume that an empty bitmap can always be recognized by 
+                // runninghasNext() || literalHasNext() ??
+                // no, think about a clean runs of zeros followed by another  clean runs (of 1 or 0) (so no dirties)
+                this.hasnext = moveToNext();  // hmmm: worried ofk may be reverting to a previous bug
 	}
 
 	/**
-	 * @return whether we could find another set bit
+	 * @return whether we could find another set bit; don't move if there is an unprocessed value
 	 */
 	private final boolean moveToNext() {
             while (!runningHasNext() && !literalHasNext()) {
@@ -67,6 +69,7 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 	private final void setupForCurrentRunningLengthWord() {
 		this.runningLength = wordinbits * (int) this.parent.getRunningLength()
 				+ this.position;
+
 		if (!this.parent.getRunningBit()) {
 			this.position = this.runningLength;
 		}
