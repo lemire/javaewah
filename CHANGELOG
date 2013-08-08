@@ -1,3 +1,10 @@
+version 0.7.2 (July 25th 2013)
+ - Clarifying the difference between setSizeInBits(int) and
+   setSizeInBits(int,boolean). Some code that worked previously
+   (but was potentially unsafe) might throw an exception when
+   using setSizeInBits(int). The fix is to call setSizeInBits(int,false)
+   which will be equivalent, but safer. 
+
 version 0.7.1 (July 16th 2013)
  - From now on, we require java 6 or better: in practice this means
  that we are starting to use annotations such as @Override. 
