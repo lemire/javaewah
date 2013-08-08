@@ -1,3 +1,7 @@
+version 0.7.3 (August 8th 2013)
+ - Fixed bug that could sometimes arise with the new iterator-based processing (O. Kaser)
+
+
 version 0.7.2 (July 25th 2013)
  - Clarifying the difference between setSizeInBits(int) and
    setSizeInBits(int,boolean). Some code that worked previously

@@ -1,7 +1,9 @@
-package com.googlecode.javaewah;
+package com.googlecode.javaewah32;
 
-import static org.junit.Assert.*;
-import java.util.Iterator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 /*
@@ -12,17 +14,17 @@ import org.junit.Test;
  * Tests for utility class. Sketchy for now.
  * 
  */
-public class IntIteratorOverIteratingRLWTest {
+public class IntIteratorOverIteratingRLWTest32 {
 
         @Test
         // had problems with bitmaps beginning with two consecutive clean runs
         public void testConsecClean() {
                 System.out
                         .println("testing int iteration, 2 consec clean runs starting with zeros");
-                EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+                EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
                 for (int i = 64; i < 128; ++i)
                         e.set(i);
-                IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
+                IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 assertTrue(ii.hasNext());
                 int ctr = 0;
@@ -37,13 +39,13 @@ public class IntIteratorOverIteratingRLWTest {
         public void testConsecCleanStartOnes() {
                 System.out
                         .println("testing int iteration, 2 consec clean runs starting with ones");
-                EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+                EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
                 for (int i = 0; i < 2 * 64; ++i)
                         e.set(i);
                 for (int i = 4 * 64; i < 5 * 64; ++i)
                         e.set(i);
 
-                IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
+                IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 assertTrue(ii.hasNext());
                 int ctr = 0;
@@ -57,13 +59,13 @@ public class IntIteratorOverIteratingRLWTest {
         @Test
         public void testStartDirty() {
                 System.out.println("testing int iteration, no initial runs");
-                EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+                EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
                 for (int i = 1; i < 2 * 64; ++i)
                         e.set(i);
                 for (int i = 4 * 64; i < 5 * 64; ++i)
                         e.set(i);
 
-                IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
+                IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 assertTrue(ii.hasNext());
                 int ctr = 0;
@@ -77,16 +79,16 @@ public class IntIteratorOverIteratingRLWTest {
         @Test
         public void testEmpty() {
                 System.out.println("testing int iteration over empty bitmap");
-                EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+                EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
 
-                IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
+                IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 assertFalse(ii.hasNext());
         }
 
         @Test
         public void testRandomish() {
-                EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+                EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
 
                 int upperlimit = 100000;
                 for (int i = 0; i < upperlimit; ++i) {
@@ -98,7 +100,7 @@ public class IntIteratorOverIteratingRLWTest {
                         }
                 }
 
-                IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
+                IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 int ctr = 0;
                 while (ii.hasNext()) {

@@ -29,10 +29,7 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 		this.parent = p;
 		this.position = 0;
                 setupForCurrentRunningLengthWord();
-                // can we assume that an empty bitmap can always be recognized by 
-                // runninghasNext() || literalHasNext() ??
-                // no, think about a clean runs of zeros followed by another  clean runs (of 1 or 0) (so no dirties)
-                this.hasnext = moveToNext();  // hmmm: worried ofk may be reverting to a previous bug
+                this.hasnext = moveToNext(); 
 	}
 
 	/**
@@ -77,20 +74,6 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 		this.wordLength = // ofk , was: this.wordPosition
 				+ this.parent.getNumberOfLiteralWords();
 	}
-
-	// private final boolean eatRunningLengthWord() {
-	// 	this.runningLength = wordinbits * (int) this.parent.getRunningLength()
-	// 			+ this.position;
-        //         System.out.println("setting runningLength to "+runningLength+" since parent's running length is "+parent.getRunningLength());
-	// 	if (!parent.getRunningBit()) {
-	// 		this.position = this.runningLength;
-	// 	}
-	// 	this.wordPosition = 0;  // ofk, was: this.parent.getNumberOfLiteralWords();
-	// 	this.wordLength = // ofk , was: this.wordPosition
-	// 			+ this.parent.getNumberOfLiteralWords();
-        //         System.out.println("advancing parent to next");
-	// 	return this.parent.next();
-	// }
 
 	private final boolean runningHasNext() {
 		return this.position < this.runningLength;

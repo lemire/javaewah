@@ -19,7 +19,7 @@ public class EWAHCompressedBitmapTest {
 	
 	@SuppressWarnings("deprecation")
 	@Test
-	public void OKaserBugReportJuly2013() throws CloneNotSupportedException {
+	public void OKaserBugReportJuly2013() {
 		System.out.println("testing OKaserBugReportJuly2013");
 		int[][] data = { {}, { 5, 6, 7, 8, 9 }, { 1 }, { 2 }, { 2, 5, 7 },
 				{ 1 }, { 2 }, { 1, 6, 9 }, { 1, 3, 4, 6, 8, 9 },
