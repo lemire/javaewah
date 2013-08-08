@@ -475,6 +475,7 @@ class BufferedORIterator implements CloneableIterator<EWAHIterator> {
 		this.hardbitmap = new long[bufsize];
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public BufferedXORIterator clone() throws CloneNotSupportedException {
 		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
@@ -521,6 +522,7 @@ class BufferedXORIterator implements CloneableIterator<EWAHIterator> {
 		this.hardbitmap = new long[bufsize];
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public BufferedXORIterator clone() throws CloneNotSupportedException {
 		BufferedXORIterator answer = (BufferedXORIterator) super.clone();
@@ -573,7 +575,8 @@ class BufferedAndIterator implements CloneableIterator<EWAHIterator> {
 		return !this.ll.isEmpty();
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public BufferedAndIterator clone() throws CloneNotSupportedException {
 		BufferedAndIterator answer = (BufferedAndIterator) super.clone();
 		answer.buffer = this.buffer.clone();
