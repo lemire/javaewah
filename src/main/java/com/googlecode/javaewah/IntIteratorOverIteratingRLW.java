@@ -70,9 +70,8 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
 		if (!this.parent.getRunningBit()) {
 			this.position = this.runningLength;
 		}
-		this.wordPosition = 0;  // ofk, was: this.parent.getNumberOfLiteralWords();
-		this.wordLength = // ofk , was: this.wordPosition
-				+ this.parent.getNumberOfLiteralWords();
+		this.wordPosition = 0;  
+		this.wordLength = this.parent.getNumberOfLiteralWords();
 	}
 
 	private final boolean runningHasNext() {
