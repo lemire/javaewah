@@ -1001,7 +1001,7 @@ public void readExternal(ObjectInput in) throws IOException {
   }
 
   /**
-   * set the bit at position i to true, the bits must be set in increasing
+   * Set the bit at position i to true, the bits must be set in (strictly) increasing
    * order. For example, set(15) and then set(7) will fail. You must do set(7)
    * and then set(15).
    * 

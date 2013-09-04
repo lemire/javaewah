@@ -16,6 +16,8 @@ import junit.framework.Assert;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+        
+      
 	
 	@SuppressWarnings("deprecation")
 	@Test
