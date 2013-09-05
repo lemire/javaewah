@@ -70,6 +70,9 @@ public class UniformDataGenerator {
 
         /**
          * generates randomly N distinct integers from 0 to Max.
+         * @param N Number of integers to generate
+         * @param Max Maximum value of the integers
+         * @return array containing random integers
          */
         public int[] generateUniform(int N, int Max) {
                 if(N * 2 > Max) {
@@ -81,7 +84,10 @@ public class UniformDataGenerator {
         }
 
         /**
-         * generates randomly N distinct integers from 0 to Max.
+         * generates randomly N distinct integers from 0 to Max using a bitmap.
+         * @param N Number of integers to generate
+         * @param Max Maximum value of the integers
+         * @return array containing random integers
          */
         int[] generateUniformBitmap(int N, int Max) {
                 if (N > Max)
@@ -90,7 +96,7 @@ public class UniformDataGenerator {
                 BitSet bs = new BitSet(Max);
                 int cardinality = 0;
                 while (cardinality < N) {
-                        int v = rand.nextInt(Max);
+                        int v = this.rand.nextInt(Max);
                         if (!bs.get(v)) {
                                 bs.set(v);
                                 cardinality++;
