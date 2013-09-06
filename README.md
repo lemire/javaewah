@@ -90,7 +90,11 @@ You can also specify the dependency in the Maven "pom.xml" file:
 Naturally, you should replace "version" by the version
 you desire.
 
+Travis (Continuous integration)
+-------------------------------
 
+You can check whether the latest version builds on your favorite version
+of Java using Travis: https://travis-ci.org/lemire/javaewah/builds/11059867 
 
 Clojure 
 -------
