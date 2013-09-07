@@ -1,3 +1,6 @@
+version 0.7.4 (September 7th 2013)
+ - Added a convenience method that allows you to query for the value of a bit (based on code by @zhenjl)
+
 version 0.7.3 (August 8th 2013)
  - Fixed bug that could sometimes arise with the new iterator-based processing (O. Kaser)
 
