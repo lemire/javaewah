@@ -102,3 +102,22 @@ Clojure
 Joel Boehland wrote Clojure wrappers:
 
 https://github.com/jolby/clojure-ewah-bitmap
+
+Frequent questions
+------------------
+
+Question: How do I check the value of a bit?
+
+Answer: If you need to routinely check the value of a given bit quickly, then 
+EWAH might not be the right format. However, if you must do it, you can proceed as
+follows:
+
+          /**
+           * Suppose you have the following bitmap:
+           */
+          EWAHCompressedBitmap b = EWAHCompressedBitmap.bitmapOf(0,2,64,1<<30);
+          /**
+           * We want to know if bit 64 is set:
+           */
+          boolean is64set = (b.and(EWAHCompressedBitmap.bitmapOf(64)).cardinality() == 1);                
+
