@@ -8,7 +8,7 @@ import com.googlecode.javaewah.CloneableIterator;
  * Licensed under APL 2.0.
  */
 /**
- * This class can be used to iterator over blocks of bitmap data.
+ * This class can be used to iterate over blocks of bitmap data.
  * 
  * @author Daniel Lemire
  *
