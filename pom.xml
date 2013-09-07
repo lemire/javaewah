@@ -3,7 +3,7 @@
 
     <groupId>com.googlecode.javaewah</groupId>
     <artifactId>JavaEWAH</artifactId>
-    <version>0.7.4</version>
+    <version>0.7.5-SNAPSHOT</version>
     
     <packaging>bundle</packaging> 
     <properties>
