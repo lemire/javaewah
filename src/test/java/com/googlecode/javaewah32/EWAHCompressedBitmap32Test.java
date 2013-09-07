@@ -18,7 +18,19 @@ import junit.framework.Assert;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
-	@SuppressWarnings("deprecation")
+        
+        
+        @Test
+        public void testGet() {
+                EWAHCompressedBitmap32 x = new EWAHCompressedBitmap32();
+                for(int k = 0; k < 100;++k)
+                        x.set(k*29);
+                for(int k = 0; k < 100*29;++k)
+                        if(x.get(k))
+                                Assert.assertTrue(k/29*29 == 29);
+        }
+        
+	@SuppressWarnings({ "deprecation", "boxing" })
 	@Test
 	public void OKaserBugReportJuly2013() {
 		System.out.println("testing OKaserBugReportJuly2013");

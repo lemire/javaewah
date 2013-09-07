@@ -14,6 +14,7 @@ import org.junit.Test;
  * Tests for utility class. Sketchy for now.
  * 
  */
+@SuppressWarnings("javadoc")
 public class IntIteratorOverIteratingRLWTest32 {
 
         @Test

@@ -999,9 +999,41 @@ public void readExternal(ObjectInput in) throws IOException {
   public int serializedSizeInBytes() {
     return this.sizeInBytes() + 3 * 4;
   }
+  
+  
+        /**
+         * Query the value of a single bit. Relying on this method when speed is
+         * needed is discouraged. The complexity is linear with the size of the
+         * bitmap.
+         * 
+         * (This implementation is based on zhenjl's Go version of JavaEWAH.)
+         * 
+         * @param i
+         *                the bit we are interested in
+         * @return whether the bit is set to true
+         */
+        public boolean get(final int i) {
+                if ((i < 0) || (i > this.sizeinbits))
+                        return false;
+                int bitsChecked = 0;
+                IteratingRLW j = getIteratingRLW();
+
+                while (i < bitsChecked) {
+                        bitsChecked += j.getRunningLength() * wordinbits;
+                        if (i < bitsChecked)
+                                return j.getRunningBit();
+                        if (i < bitsChecked + j.getNumberOfLiteralWords()
+                                * wordinbits) {
+                                long w = j.getLiteralWordAt((i - bitsChecked)
+                                        / wordinbits);
+                                return (w & (1l << i)) != 0;
+                        }
+                }
+                return false;
+        }
 
   /**
-   * set the bit at position i to true, the bits must be set in increasing
+   * Set the bit at position i to true, the bits must be set in (strictly) increasing
    * order. For example, set(15) and then set(7) will fail. You must do set(7)
    * and then set(15).
    * 
