@@ -999,26 +999,27 @@ public void readExternal(ObjectInput in) throws IOException {
    *                the bit we are interested in
    * @return whether the bit is set to true
    */
-  public boolean get(final int i) {
-          if ((i < 0) || (i > this.sizeinbits))
-                  return false;
-          int bitsChecked = 0;
-          IteratingRLW32 j = getIteratingRLW();
-
-          while (i < bitsChecked) {
-                  bitsChecked += j.getRunningLength() * wordinbits;
-                  if (i < bitsChecked)
-                          return j.getRunningBit();
-                  if (i < bitsChecked + j.getNumberOfLiteralWords()
-                          * wordinbits) {
-                          long w = j.getLiteralWordAt((i - bitsChecked)
-                                  / wordinbits);
-                          return (w & (1 << i)) != 0;
-                  }
-          }
-          return false;
-  }
-
+        public boolean get(final int i) {
+                if ((i < 0) || (i > this.sizeinbits))
+                        return false;
+                int WordChecked = 0;
+                final IteratingRLW32 j = getIteratingRLW();
+                final int wordi = i / wordinbits;
+                while (WordChecked <= wordi) {
+                        WordChecked += j.getRunningLength();
+                        if (wordi < WordChecked) {
+                                return j.getRunningBit();
+                        }
+                        if (wordi < WordChecked + j.getNumberOfLiteralWords()) {
+                                final int w = j.getLiteralWordAt(wordi
+                                        - WordChecked);
+                                return (w & (1 << i)) != 0;
+                        }
+                        WordChecked += j.getNumberOfLiteralWords();
+                        j.next();
+                }
+                return false;
+        }
 
   /**
    * Set the bit at position i to true, the bits must be set in (strictly) increasing

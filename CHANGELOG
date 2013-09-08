@@ -1,3 +1,6 @@
+version 0.7.5 (September 7th 2013)
+ - Fixed recently introduced "Get" method. Better unit testing.
+
 version 0.7.4 (September 7th 2013)
  - Added a convenience method that allows you to query for the value of a bit (based on code by @zhenjl)
 

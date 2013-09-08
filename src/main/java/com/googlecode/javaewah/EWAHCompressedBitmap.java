@@ -1015,19 +1015,20 @@ public void readExternal(ObjectInput in) throws IOException {
         public boolean get(final int i) {
                 if ((i < 0) || (i > this.sizeinbits))
                         return false;
-                int bitsChecked = 0;
-                IteratingRLW j = getIteratingRLW();
-
-                while (i < bitsChecked) {
-                        bitsChecked += j.getRunningLength() * wordinbits;
-                        if (i < bitsChecked)
+                int WordChecked = 0;
+                final IteratingRLW j = getIteratingRLW();
+                final int wordi =  i/wordinbits;
+                while (WordChecked <= wordi ) {
+                        WordChecked += j.getRunningLength();
+                        if (wordi < WordChecked) {
                                 return j.getRunningBit();
-                        if (i < bitsChecked + j.getNumberOfLiteralWords()
-                                * wordinbits) {
-                                long w = j.getLiteralWordAt((i - bitsChecked)
-                                        / wordinbits);
+                        }
+                        if (wordi < WordChecked + j.getNumberOfLiteralWords()) {
+                                final long w = j.getLiteralWordAt(wordi - WordChecked);
                                 return (w & (1l << i)) != 0;
                         }
+                        WordChecked += j.getNumberOfLiteralWords();
+                        j.next();
                 }
                 return false;
         }

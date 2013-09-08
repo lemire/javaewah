@@ -22,12 +22,22 @@ public class EWAHCompressedBitmap32Test {
         
         @Test
         public void testGet() {
-                EWAHCompressedBitmap32 x = new EWAHCompressedBitmap32();
-                for(int k = 0; k < 100;++k)
-                        x.set(k*29);
-                for(int k = 0; k < 100*29;++k)
-                        if(x.get(k))
-                                Assert.assertTrue(k/29*29 == 29);
+                for (int gap = 29; gap < 10000; gap *= 10) {
+                        EWAHCompressedBitmap32 x = new EWAHCompressedBitmap32();
+                        for (int k = 0; k < 100; ++k)
+                                x.set(k * gap);
+                        for (int k = 0; k < 100 * gap; ++k)
+                                if (x.get(k)) {
+                                        if (k % gap != 0)
+                                                throw new RuntimeException(
+                                                        "spotted an extra set bit at "
+                                                                + k + " gap = "
+                                                                + gap);
+                                } else if (k % gap == 0)
+                                        throw new RuntimeException(
+                                                "missed a set bit " + k
+                                                        + " gap = " + gap);
+                }
         }
         
 	@SuppressWarnings({ "deprecation", "boxing" })
