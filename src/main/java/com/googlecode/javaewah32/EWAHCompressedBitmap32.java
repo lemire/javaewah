@@ -1000,7 +1000,7 @@ public void readExternal(ObjectInput in) throws IOException {
    * @return whether the bit is set to true
    */
         public boolean get(final int i) {
-                if ((i < 0) || (i > this.sizeinbits))
+                if ((i < 0) || (i >= this.sizeinbits))
                         return false;
                 int WordChecked = 0;
                 final IteratingRLW32 j = getIteratingRLW();
