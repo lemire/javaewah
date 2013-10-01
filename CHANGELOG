@@ -1,5 +1,8 @@
+version 0.7.7 (October 1st 2013)
+ - Resolved an issue with 32-bit EWAH caused by a partial update in version 0.7.6.
+
 version 0.7.6 (September 30th 2013)
- - Fixed a memory leak
+ - Fixed a memory leak 
 
 version 0.7.5 (September 7th 2013)
  - Fixed recently introduced "Get" method. Better unit testing.
