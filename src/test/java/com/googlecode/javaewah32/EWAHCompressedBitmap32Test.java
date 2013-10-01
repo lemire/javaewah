@@ -870,67 +870,6 @@ public class EWAHCompressedBitmap32Test {
 		}
 	}
 
-	/**
-	 * Test running length word.
-	 */
-	@Test
-	public void testRunningLengthWord() {
-		System.out.println("testing RunningLengthWord32");
-		int x[] = new int[1];
-		RunningLengthWord32 rlw = new RunningLengthWord32(x, 0);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(false, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		rlw.setRunningBit(true);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(true, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		rlw.setRunningBit(false);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(false, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		for (int rl = RunningLengthWord32.largestliteralcount; rl >= 0; rl -= 1024) {
-			rlw.setNumberOfLiteralWords(rl);
-			Assert.assertEquals(rl, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-			rlw.setNumberOfLiteralWords(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		for (int rl = 0; rl <= RunningLengthWord32.largestrunninglengthcount; rl += 1024) {
-			rlw.setRunningLength(rl);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(rl, rlw.getRunningLength());
-			rlw.setRunningLength(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		rlw.setRunningBit(true);
-		for (int rl = 0; rl <= RunningLengthWord32.largestrunninglengthcount; rl += 1024) {
-			rlw.setRunningLength(rl);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(rl, rlw.getRunningLength());
-			rlw.setRunningLength(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		for (int rl = 0; rl <= RunningLengthWord32.largestliteralcount; rl += 128) {
-			rlw.setNumberOfLiteralWords(rl);
-			Assert.assertEquals(rl, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-			rlw.setNumberOfLiteralWords(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-	}
 
 	/**
 	 * Test sets and gets.

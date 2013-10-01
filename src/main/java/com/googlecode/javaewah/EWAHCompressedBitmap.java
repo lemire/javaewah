@@ -82,7 +82,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public EWAHCompressedBitmap() {
     this.buffer = new long[defaultbuffersize];
-    this.rlw = new RunningLengthWord(this.buffer, 0);
+    this.rlw = new RunningLengthWord(this, 0);
   }
 
   /**
@@ -95,7 +95,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
    */
   public EWAHCompressedBitmap(final int buffersize) {
     this.buffer = new long[buffersize];
-    this.rlw = new RunningLengthWord(this.buffer, 0);
+    this.rlw = new RunningLengthWord(this, 0);
   }
 
   /**
@@ -488,7 +488,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
    */
   public int cardinality() {
     int counter = 0;
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord localrlw = i.next();
       if (localrlw.getRunningBit()) {
@@ -520,7 +520,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
   public EWAHCompressedBitmap clone() throws java.lang.CloneNotSupportedException {
     final EWAHCompressedBitmap clone = (EWAHCompressedBitmap) super.clone();
     clone.buffer = this.buffer.clone();
-    clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
+    clone.rlw = new RunningLengthWord(clone, this.rlw.position);
     clone.actualsizeinwords = this.actualsizeinwords;
     clone.sizeinbits = this.sizeinbits;
     return clone;
@@ -542,7 +542,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
     }
     for (int k = 0; k < this.actualsizeinwords; ++k)
       this.buffer[k] = in.readLong();
-    this.rlw = new RunningLengthWord(this.buffer, in.readInt());
+    this.rlw = new RunningLengthWord(this, in.readInt());
   }
 
   /**
@@ -614,7 +614,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
    * @return the EWAHIterator
    */
   public EWAHIterator getEWAHIterator() {
-    return new EWAHIterator(this.buffer, this.actualsizeinwords);
+    return new EWAHIterator(this, this.actualsizeinwords);
   }
 
   /**
@@ -631,7 +631,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
    */
   public List<Integer> getPositions() {
     final ArrayList<Integer> v = new ArrayList<Integer>();
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     int pos = 0;
     while (i.hasNext()) {
       RunningLengthWord localrlw = i.next();
@@ -668,7 +668,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
   public int hashCode() {
     int karprabin = 0;
     final int B = 31;
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     while( i.hasNext() ) {
       i.next();
       if (i.rlw.getRunningBit() == true) {
@@ -714,7 +714,7 @@ public EWAHCompressedBitmap andNot(final EWAHCompressedBitmap a) {
    */
   public IntIterator intIterator() {
     return new IntIteratorImpl(
-        new EWAHIterator(this.buffer, this.actualsizeinwords));
+        new EWAHIterator(this, this.actualsizeinwords));
   }
 
   /**
@@ -766,7 +766,7 @@ public Iterator<Integer> iterator() {
       else 
     	  this.buffer = new long[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     for (int k = 0; k < number; ++k)
       this.buffer[this.actualsizeinwords + k] = ~data[start + k];
@@ -783,7 +783,7 @@ public Iterator<Integer> iterator() {
    */
   @Override
 public void not() {
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     if (!i.hasNext())
       return;
  
@@ -918,7 +918,7 @@ public EWAHCompressedBitmap or(final EWAHCompressedBitmap a) {
       else 
     	  this.buffer = new long[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     this.buffer[this.actualsizeinwords++] = data;
   }
@@ -943,7 +943,7 @@ public EWAHCompressedBitmap or(final EWAHCompressedBitmap a) {
       else 
     	  this.buffer = new long[( this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     System.arraycopy(data, start, this.buffer, this.actualsizeinwords, number);
     this.actualsizeinwords += number;
@@ -969,7 +969,7 @@ public void readExternal(ObjectInput in) throws IOException {
       final long oldbuffer[] = this.buffer;
       this.buffer = new long[size];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
       return true;
     }
     return false;
@@ -1155,7 +1155,7 @@ public int sizeInBytes() {
     int[] ans = new int[this.cardinality()];
     int inanspos = 0;
     int pos = 0;
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord localrlw = i.next();
       if (localrlw.getRunningBit()) {
@@ -1197,7 +1197,7 @@ public int sizeInBytes() {
   public String toDebugString() {
     String ans = " EWAHCompressedBitmap, size in bits = " + this.sizeinbits
       + " size in words = " + this.actualsizeinwords + "\n";
-    final EWAHIterator i = new EWAHIterator(this.buffer, this.actualsizeinwords);
+    final EWAHIterator i = new EWAHIterator(this, this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord localrlw = i.next();
       if (localrlw.getRunningBit()) {
@@ -1243,9 +1243,10 @@ public void swap(final EWAHCompressedBitmap other)  {
 	  this.buffer = other.buffer;
 	  other.buffer = tmp;
 	  
-	  RunningLengthWord tmp2 = this.rlw;
-	  this.rlw = other.rlw;
-	  other.rlw = tmp2;
+	  
+	  int tmp2 = this.rlw.position;
+	  this.rlw.position = other.rlw.position;
+	  other.rlw.position = tmp2;
 	  
 	  int tmp3 = this.actualsizeinwords;
 	  this.actualsizeinwords = other.actualsizeinwords;
