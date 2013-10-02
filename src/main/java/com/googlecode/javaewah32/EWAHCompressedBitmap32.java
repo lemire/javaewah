@@ -168,8 +168,8 @@ public void addStreamOfLiteralWords(final int[] data, final int start,
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
 			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-					- NumberOfLiteralWords ? number
+			final int whatwecanadd = leftovernumber < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? leftovernumber
 					: RunningLengthWord32.largestliteralcount
 							- NumberOfLiteralWords;
 			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
@@ -246,8 +246,8 @@ public void addStreamOfNegatedLiteralWords(final int[] data, final int start,
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
 			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-					- NumberOfLiteralWords ? number
+			final int whatwecanadd = leftovernumber < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? leftovernumber
 					: RunningLengthWord32.largestliteralcount
 							- NumberOfLiteralWords;
 			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords

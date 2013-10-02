@@ -194,8 +194,8 @@ public void addStreamOfLiteralWords(final long[] data, final int start,
 	 int leftovernumber = number;
 	 while(leftovernumber > 0) {
 		    final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-		    final int whatwecanadd = number < RunningLengthWord.largestliteralcount
-		      - NumberOfLiteralWords ? number : RunningLengthWord.largestliteralcount
+		    final int whatwecanadd = leftovernumber < RunningLengthWord.largestliteralcount
+		      - NumberOfLiteralWords ? leftovernumber : RunningLengthWord.largestliteralcount
 		      - NumberOfLiteralWords;
 		    this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords + whatwecanadd);
 		    leftovernumber -=  whatwecanadd;
@@ -269,8 +269,8 @@ public void addStreamOfEmptyWords(final boolean v, long number) {
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
 			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-			final int whatwecanadd = number < RunningLengthWord.largestliteralcount
-					- NumberOfLiteralWords ? number
+			final int whatwecanadd = leftovernumber < RunningLengthWord.largestliteralcount
+					- NumberOfLiteralWords ? leftovernumber
 					: RunningLengthWord.largestliteralcount
 							- NumberOfLiteralWords;
 			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
