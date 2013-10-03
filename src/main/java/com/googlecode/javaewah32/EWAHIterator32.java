@@ -22,7 +22,7 @@ public final class EWAHIterator32 implements Cloneable {
    * @param a the array of words
    * @param sizeinwords the number of words that are significant in the array of words
    */
-  public EWAHIterator32(final int[] a, final int sizeinwords) {
+  public EWAHIterator32(final EWAHCompressedBitmap32 a, final int sizeinwords) {
     this.rlw = new RunningLengthWord32(a, 0);
     this.size = sizeinwords;
     this.pointer = 0;
@@ -44,7 +44,7 @@ public final class EWAHIterator32 implements Cloneable {
    * @return the int[]
    */
   public int[] buffer() {
-    return this.rlw.array;
+    return this.rlw.parent.buffer;
   }
   
   /**

@@ -49,14 +49,4 @@ public static void main(final String[] args) throws java.io.IOException {
     System.out.println("bitmap 1 (recovered) : "+ewahBitmap1);
   }
 
-
-
-  public static void checkingTheValueOfABit() {
-          EWAHCompressedBitmap b = EWAHCompressedBitmap.bitmapOf(0,2,64,1<<30);
-          /**
-           * We want to know if bit 64 is set:
-           */
-          EWAHCompressedBitmap test = EWAHCompressedBitmap.bitmapOf(64);
-          boolean is64set = (b.and(test).cardinality() == 1);                
-  }
 }

@@ -19,14 +19,23 @@ public class EWAHCompressedBitmapTest {
         
         @Test
         public void testGet() {
-                EWAHCompressedBitmap x = new EWAHCompressedBitmap();
-                for(int k = 0; k < 100;++k)
-                        x.set(k*29);
-                for(int k = 0; k < 100*29;++k)
-                        if(x.get(k))
-                                Assert.assertTrue(k/29*29 == 29);
+                for (int gap = 29; gap < 10000; gap *= 10) {
+                        EWAHCompressedBitmap x = new EWAHCompressedBitmap();
+                        for (int k = 0; k < 100; ++k)
+                                x.set(k * gap);
+                        for (int k = 0; k < 100 * gap; ++k)
+                                if (x.get(k)) {
+                                        if (k % gap != 0)
+                                                throw new RuntimeException(
+                                                        "spotted an extra set bit at "
+                                                                + k + " gap = "
+                                                                + gap);
+                                } else if (k % gap == 0)
+                                        throw new RuntimeException(
+                                                "missed a set bit " + k
+                                                        + " gap = " + gap);
+                }
         }
-      
 	
 	@SuppressWarnings({ "deprecation", "boxing" })
 	@Test
@@ -738,7 +747,6 @@ public class EWAHCompressedBitmapTest {
 		bitmap2.set(35);
 		bitmap3 = new EWAHCompressedBitmap();
 		bitmap3.set(35);
-
 		assertAndEquals(bitmap1, bitmap2, bitmap3);
 
 		// same number of words for each
@@ -756,6 +764,7 @@ public class EWAHCompressedBitmapTest {
 		// test that result can still be appended to
 		EWAHCompressedBitmap resultBitmap = EWAHCompressedBitmap.and(bitmap1,
 				bitmap2, bitmap3);
+
 		resultBitmap.set(131);
 
 		bitmap1.set(131);
@@ -846,68 +855,6 @@ public class EWAHCompressedBitmapTest {
 
 			Assert.assertEquals(N + 2,
 					bitmap.orCardinality(new EWAHCompressedBitmap()));
-		}
-	}
-
-	/**
-	 * Test running length word.
-	 */
-	@Test
-	public void testRunningLengthWord() {
-		System.out.println("testing RunningLengthWord");
-		long x[] = new long[1];
-		RunningLengthWord rlw = new RunningLengthWord(x, 0);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(false, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		rlw.setRunningBit(true);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(true, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		rlw.setRunningBit(false);
-		Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-		Assert.assertEquals(false, rlw.getRunningBit());
-		Assert.assertEquals(0, rlw.getRunningLength());
-		for (long rl = RunningLengthWord.largestliteralcount; rl >= 0; rl -= 1024) {
-			rlw.setNumberOfLiteralWords(rl);
-			Assert.assertEquals(rl, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-			rlw.setNumberOfLiteralWords(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		for (long rl = 0; rl <= RunningLengthWord.largestrunninglengthcount; rl += 1024) {
-			rlw.setRunningLength(rl);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(rl, rlw.getRunningLength());
-			rlw.setRunningLength(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(false, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		rlw.setRunningBit(true);
-		for (long rl = 0; rl <= RunningLengthWord.largestrunninglengthcount; rl += 1024) {
-			rlw.setRunningLength(rl);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(rl, rlw.getRunningLength());
-			rlw.setRunningLength(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-		}
-		for (long rl = 0; rl <= RunningLengthWord.largestliteralcount; rl += 128) {
-			rlw.setNumberOfLiteralWords(rl);
-			Assert.assertEquals(rl, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
-			rlw.setNumberOfLiteralWords(0);
-			Assert.assertEquals(0, rlw.getNumberOfLiteralWords());
-			Assert.assertEquals(true, rlw.getRunningBit());
-			Assert.assertEquals(0, rlw.getRunningLength());
 		}
 	}
 

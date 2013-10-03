@@ -34,7 +34,7 @@ public final class BufferedRunningLengthWord32 implements Cloneable  {
    * @param rlw the rlw
    */
   public BufferedRunningLengthWord32(final RunningLengthWord32 rlw) {
-    this(rlw.array[rlw.position]);
+    this(rlw.parent.buffer[rlw.position]);
   }
 
   /**
@@ -99,7 +99,7 @@ public final class BufferedRunningLengthWord32 implements Cloneable  {
    * @param rlw the other running length word 
    */
   public void reset(final RunningLengthWord32 rlw) {
-    reset(rlw.array[rlw.position]);
+    reset(rlw.parent.buffer[rlw.position]);
   }
 
   /**

@@ -19,12 +19,6 @@ import com.googlecode.javaewah.LogicalElement;
  * </p>
  * 
  * <p>
- * In contrast witht the 64-bit EWAH scheme (javaewah.EWAHCompressedBitmap), you
- * can expect this class to compress better, but to be slower at processing the
- * data. In effect, there is a trade-off between memory usage and performances.
- * </p>
- * 
- * <p>
  * In contrast with the 64-bit EWAH scheme (javaewah.EWAHCompressedBitmap), you
  * can expect this class to compress better, but to be slower at processing the
  * data. In effect, there is a trade-off between memory usage and performances.
@@ -58,7 +52,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public EWAHCompressedBitmap32() {
     this.buffer = new int[defaultbuffersize];
-    this.rlw = new RunningLengthWord32(this.buffer, 0);
+    this.rlw = new RunningLengthWord32(this, 0);
   }
 
   /**
@@ -71,7 +65,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    */
   public EWAHCompressedBitmap32(final int buffersize) {
     this.buffer = new int[buffersize];
-    this.rlw = new RunningLengthWord32(this.buffer, 0);
+    this.rlw = new RunningLengthWord32(this, 0);
   }
 
   /**
@@ -174,8 +168,8 @@ public void addStreamOfLiteralWords(final int[] data, final int start,
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
 			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-					- NumberOfLiteralWords ? number
+			final int whatwecanadd = leftovernumber < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? leftovernumber
 					: RunningLengthWord32.largestliteralcount
 							- NumberOfLiteralWords;
 			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
@@ -252,8 +246,8 @@ public void addStreamOfNegatedLiteralWords(final int[] data, final int start,
 		int leftovernumber = number;
 		while (leftovernumber > 0) {
 			final int NumberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-			final int whatwecanadd = number < RunningLengthWord32.largestliteralcount
-					- NumberOfLiteralWords ? number
+			final int whatwecanadd = leftovernumber < RunningLengthWord32.largestliteralcount
+					- NumberOfLiteralWords ? leftovernumber
 					: RunningLengthWord32.largestliteralcount
 							- NumberOfLiteralWords;
 			this.rlw.setNumberOfLiteralWords(NumberOfLiteralWords
@@ -482,7 +476,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
    */
   public int cardinality() {
     int counter = 0;
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord32 localrlw = i.next();
@@ -536,7 +530,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
     }
     for (int k = 0; k < this.actualsizeinwords; ++k)
       this.buffer[k] = in.readInt();
-    this.rlw = new RunningLengthWord32(this.buffer, in.readInt());
+    this.rlw = new RunningLengthWord32(this, in.readInt());
   }
 
   /**
@@ -607,7 +601,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
    * @return the EWAHIterator
    */
   public EWAHIterator32 getEWAHIterator() {
-    return new EWAHIterator32(this.buffer, this.actualsizeinwords);
+    return new EWAHIterator32(this, this.actualsizeinwords);
   }
   
   /**
@@ -625,7 +619,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
    */
   public List<Integer> getPositions() {
     final ArrayList<Integer> v = new ArrayList<Integer>();
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     int pos = 0;
     while (i.hasNext()) {
@@ -663,7 +657,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
   public int hashCode() {
     int karprabin = 0;
     final int B = 31;
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     while( i.hasNext() ) {
       i.next();
@@ -706,7 +700,7 @@ public EWAHCompressedBitmap32 andNot(final EWAHCompressedBitmap32 a) {
    */
   public IntIterator intIterator() {
     return new IntIteratorImpl32(
-        new EWAHIterator32(this.buffer, this.actualsizeinwords));
+        new EWAHIterator32(this, this.actualsizeinwords));
   }
 
   /**
@@ -758,7 +752,7 @@ public Iterator<Integer> iterator() {
       else 
     	  this.buffer = new int[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     for (int k = 0; k < number; ++k)
       this.buffer[this.actualsizeinwords + k] = ~data[start + k];
@@ -775,7 +769,7 @@ public Iterator<Integer> iterator() {
    */
   @Override
 public void not() {
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     if (!i.hasNext())
       return;
@@ -906,7 +900,7 @@ public EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32 a) {
       else 
     	  this.buffer = new int[oldbuffer.length * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     this.buffer[this.actualsizeinwords++] = data;
   }
@@ -931,7 +925,7 @@ public EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32 a) {
       else 
     	  this.buffer = new int[(this.actualsizeinwords + number) * 3 / 2];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
     }
     System.arraycopy(data, start, this.buffer, this.actualsizeinwords, number);
     this.actualsizeinwords += number;
@@ -957,7 +951,7 @@ public void readExternal(ObjectInput in) throws IOException {
       final int oldbuffer[] = this.buffer;
       this.buffer = new int[size];
       System.arraycopy(oldbuffer, 0, this.buffer, 0, oldbuffer.length);
-      this.rlw.array = this.buffer;
+      this.rlw.parent.buffer = this.buffer;
       return true;
     }
     return false;
@@ -999,26 +993,27 @@ public void readExternal(ObjectInput in) throws IOException {
    *                the bit we are interested in
    * @return whether the bit is set to true
    */
-  public boolean get(final int i) {
-          if ((i < 0) || (i > this.sizeinbits))
-                  return false;
-          int bitsChecked = 0;
-          IteratingRLW32 j = getIteratingRLW();
-
-          while (i < bitsChecked) {
-                  bitsChecked += j.getRunningLength() * wordinbits;
-                  if (i < bitsChecked)
-                          return j.getRunningBit();
-                  if (i < bitsChecked + j.getNumberOfLiteralWords()
-                          * wordinbits) {
-                          long w = j.getLiteralWordAt((i - bitsChecked)
-                                  / wordinbits);
-                          return (w & (1 << i)) != 0;
-                  }
-          }
-          return false;
-  }
-
+        public boolean get(final int i) {
+                if ((i < 0) || (i >= this.sizeinbits))
+                        return false;
+                int WordChecked = 0;
+                final IteratingRLW32 j = getIteratingRLW();
+                final int wordi = i / wordinbits;
+                while (WordChecked <= wordi) {
+                        WordChecked += j.getRunningLength();
+                        if (wordi < WordChecked) {
+                                return j.getRunningBit();
+                        }
+                        if (wordi < WordChecked + j.getNumberOfLiteralWords()) {
+                                final int w = j.getLiteralWordAt(wordi
+                                        - WordChecked);
+                                return (w & (1 << i)) != 0;
+                        }
+                        WordChecked += j.getNumberOfLiteralWords();
+                        j.next();
+                }
+                return false;
+        }
 
   /**
    * Set the bit at position i to true, the bits must be set in (strictly) increasing
@@ -1071,7 +1066,7 @@ public void readExternal(ObjectInput in) throws IOException {
   @Override
 public void setSizeInBits(final int size) {
     if((size+EWAHCompressedBitmap32.wordinbits-1)/EWAHCompressedBitmap32.wordinbits!= (this.sizeinbits+EWAHCompressedBitmap32.wordinbits-1)/EWAHCompressedBitmap32.wordinbits)
-    	throw new RuntimeException("You can only reduce the size of the bitmap within the scope of the last word. To extend the bitmap, please call setSizeInbits(int,boolean).");
+    	throw new RuntimeException("You can only reduce the size of the bitmap within the scope of the last word. To extend the bitmap, please call setSizeInbits(int,boolean): "+size+" "+this.sizeinbits);
 	this.sizeinbits = size;
   }
 
@@ -1142,7 +1137,7 @@ public int sizeInBytes() {
     int[] ans = new int[this.cardinality()];
     int inanspos = 0;
     int pos = 0;
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord32 localrlw = i.next();
@@ -1185,7 +1180,7 @@ public int sizeInBytes() {
   public String toDebugString() {
     String ans = " EWAHCompressedBitmap, size in bits = " + this.sizeinbits
       + " size in words = " + this.actualsizeinwords + "\n";
-    final EWAHIterator32 i = new EWAHIterator32(this.buffer,
+    final EWAHIterator32 i = new EWAHIterator32(this,
       this.actualsizeinwords);
     while (i.hasNext()) {
       RunningLengthWord32 localrlw = i.next();
@@ -1233,9 +1228,9 @@ public int sizeInBytes() {
 		this.buffer = other.buffer;
 		other.buffer = tmp;
 
-		RunningLengthWord32 tmp2 = this.rlw;
-		this.rlw = other.rlw;
-		other.rlw = tmp2;
+                int tmp2 = this.rlw.position;
+                this.rlw.position = other.rlw.position;
+                other.rlw.position = tmp2;
 
 		int tmp3 = this.actualsizeinwords;
 		this.actualsizeinwords = other.actualsizeinwords;
