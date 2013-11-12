@@ -6,7 +6,7 @@ import com.googlecode.javaewah.IntIterator;
 
 /*
  * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
- * Licensed under APL 2.0.
+ * Licensed under the Apache License, Version 2.0.
  */
 /**
  * Implementation of an IntIterator over an IteratingRLW.

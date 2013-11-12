@@ -2,7 +2,7 @@ package com.googlecode.javaewah32;
 
 /*
  * Copyright 2012, Google Inc.  
- * Licensed under APL 2.0.
+ * Licensed under the Apache License, Version 2.0.
  */
 
 import static com.googlecode.javaewah32.EWAHCompressedBitmap32.wordinbits;

@@ -4,7 +4,7 @@ package com.googlecode.javaewah32;
 
 /*
  * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc. and Veronika Zenz
- * Licensed under APL 2.0.
+ * Licensed under the Apache License, Version 2.0.
  */
 /**
  * BitCounter is a fake bitset data structure. Instead of storing the actual data,

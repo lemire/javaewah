@@ -1,3 +1,6 @@
+version 0.7.9 (November 12th 2013)
+ - Spelled out the license in the source code to avoid any confusion
+
 version 0.7.8 (October 1st 2013)
  - Resolved an issue with addStream... methods.
 
