@@ -1,3 +1,7 @@
+version 0.8.0 (January 2nd 2014)
+ - Introducing package symmetric for symmetric Boolean functions, implemented
+   a fast threshold function.
+
 version 0.7.9 (November 12th 2013)
  - Spelled out the license in the source code to avoid any confusion
 

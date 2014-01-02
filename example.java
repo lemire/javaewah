@@ -1,4 +1,5 @@
 import com.googlecode.javaewah.EWAHCompressedBitmap;
+import com.googlecode.javaewah.symmetric.*;
 import java.io.*;
 
 /**
@@ -12,7 +13,7 @@ public class example {
  * @throws IOException if an IO error occurs
  */
 public static void main(final String[] args) throws java.io.IOException {
-    EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0,2,64,1<<30);
+    EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0,2,55,64,1<<30);
     EWAHCompressedBitmap ewahBitmap2 = EWAHCompressedBitmap.bitmapOf(1,3,64,1<<30);
     System.out.println("bitmap 1: "+ewahBitmap1);
     System.out.println("bitmap 2: "+ewahBitmap2);
@@ -29,7 +30,7 @@ public static void main(final String[] args) throws java.io.IOException {
     System.out.println("bitmap 1 XOR bitmap 2:"+xorbitmap);
     System.out.println("memory usage: " + xorbitmap.sizeInBytes() + " bytes");
     // fast aggregation over many bitmaps
-    EWAHCompressedBitmap ewahBitmap3 = EWAHCompressedBitmap.bitmapOf(55,5,1<<30);
+    EWAHCompressedBitmap ewahBitmap3 = EWAHCompressedBitmap.bitmapOf(5,55,1<<30);
     EWAHCompressedBitmap ewahBitmap4 = EWAHCompressedBitmap.bitmapOf(4,66,1<<30);
     System.out.println("bitmap 3: "+ewahBitmap3);
     System.out.println("bitmap 4: "+ewahBitmap4);
@@ -47,6 +48,17 @@ public static void main(final String[] args) throws java.io.IOException {
     ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
     ewahBitmap1.readExternal(new ObjectInputStream(bis));
     System.out.println("bitmap 1 (recovered) : "+ewahBitmap1);
+    //
+    // support for threshold function (new as of version 0.8.0):
+    // mark as true a bit that occurs at least T times in the source
+    // bitmaps
+    //
+    EWAHCompressedBitmap threshold2 = new EWAHCompressedBitmap();
+    (new RunningBitmapMerge()).symmetric(new ThresholdFuncBitmap(2), threshold2,ewahBitmap1,ewahBitmap2,
+                     ewahBitmap3,ewahBitmap4); 
+    System.out.println("threshold 2 : "+threshold2);
+
+
   }
 
 }
