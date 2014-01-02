@@ -1,19 +1,23 @@
 package com.googlecode.javaewah.symmetric;
 
-/**
- * This is meant to be a crude version of OwenDanielsMerge.java 
- * running on top of JavaEWAH.
- * 
- * 
- * @author lemire
- *
- */
-// import java.util.PriorityQueue;
-import java.util.Comparator;
 
-import com.googlecode.javaewah.*; // see "lib" directory 
+import java.util.Comparator;
+import com.googlecode.javaewah.*;  
 import com.googlecode.javaewah.datastructure.PriorityQ;
 
+/**
+ * This is an implementation of the  RunningBitmapMerge algorithm
+ * running on top of JavaEWAH. It is well suited to computing
+ * symmetric Boolean queries.
+ * 
+ * It is a revised version of an algorithm described in the following
+ * reference: 
+ * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
+ *  bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. 
+ * 
+ * 
+ * @author Daniel Lemire
+ */
 public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
 
         @Override
@@ -59,7 +63,7 @@ public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
                                         if (H.isEmpty())
                                                 break mainloop;
                                 } else {
-                                        H.percolateDown(1); // since we have
+                                        H.percolateDown(); // since we have
                                                             // increased the key
                                 }
                         }

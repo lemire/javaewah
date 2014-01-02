@@ -467,7 +467,8 @@ class ORIt implements CloneableIterator<EWAHIterator32> {
 		this.hardbitmap = new int[bufsize];
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+        @Override
 	public XORIt clone() throws CloneNotSupportedException {
 		XORIt answer = (XORIt) super.clone();
 		answer.buffer = this.buffer.clone();
@@ -513,7 +514,8 @@ class XORIt implements CloneableIterator<EWAHIterator32> {
 
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+        @Override
 	public XORIt clone() throws CloneNotSupportedException {
 		XORIt answer = (XORIt) super.clone();
 		answer.buffer = this.buffer.clone();
@@ -563,7 +565,8 @@ class AndIt implements CloneableIterator<EWAHIterator32> {
 		return !this.ll.isEmpty();
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+        @Override
 	public AndIt clone() throws CloneNotSupportedException {
 		AndIt answer = (AndIt) super.clone();
 		answer.buffer = this.buffer.clone();

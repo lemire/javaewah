@@ -3,9 +3,10 @@ package com.googlecode.javaewah;
 import junit.framework.Assert;
 
 import org.junit.Test;
-
 import com.googlecode.javaewah.symmetric.RunningBitmapMerge;
 import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
+
+@SuppressWarnings("javadoc")
 
 public class ThresholdFuncBitmapTest {
         @Test

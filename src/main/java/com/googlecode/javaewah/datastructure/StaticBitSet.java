@@ -2,83 +2,157 @@ package com.googlecode.javaewah.datastructure;
 
 import java.util.Arrays;
 
+/**
+ * This is an optimized version of Java's BitSet.
+ * 
+ * @author Daniel Lemire
+ * 
+ */
 public class StaticBitSet {
-  long[] data;
+        long[] data;
 
-  public StaticBitSet(int sizeinbits) {
-    data = new long[(sizeinbits + 63) / 64];
-  }
-  
-  public int size() {
-	  return data.length * 64;
-  }
-  
-  public void resize(int sizeinbits) {
-    data = Arrays.copyOf(data, (sizeinbits + 63) / 64);
-  }
-  
-  public void clear() {
-    Arrays.fill(data,0);
-  }
-  
-  public int cardinality() {
-    int sum = 0;
-    for(long l : data)
-      sum += Long.bitCount(l);
-    return sum;
-  }
+        /**
+         * Construct a bitset with the specified number of bits (initially all
+         * false). The number of bits is rounded up to the nearest multiple of
+         * 64.
+         * 
+         * @param sizeinbits the size in bits
+         */
+        public StaticBitSet(final int sizeinbits) {
+                data = new long[(sizeinbits + 63) / 64];
+        }
 
-  public boolean get(int i) {
-    return (data[i / 64] & (1l << (i % 64))) !=0;
-  }
-  public void set(int i) {
-    data[i / 64] |= (1l << (i % 64));
-  }
+        /**
+         * Query the size
+         * 
+         * @return the size in bits.
+         */
+        public int size() {
+                return data.length * 64;
+        }
 
-  public void unset(int i) {
-    data[i / 64] &= ~(1l << (i % 64));
-  }
-  
-  public void set(int i, boolean b) {
-    if(b) set(i); else unset(i);
-  }
+        /**
+         * Resize the bitset
+         * 
+         * @param sizeinbits
+         *                new number of bits
+         */
+        public void resize(int sizeinbits) {
+                data = Arrays.copyOf(data, (sizeinbits + 63) / 64);
+        }
 
+        /**
+         * Reset all bits to false
+         */
+        public void clear() {
+                Arrays.fill(data, 0);
+        }
 
-  // for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) { // operate on
-  // index i here }
-  public int nextSetBit(int i) {
-    int x = i / 64;
-    if(x>=data.length) return -1;
-    long w = data[x];
-    w >>>= (i % 64);
-    if (w != 0) {
-      return i + Long.numberOfTrailingZeros(w);
-    }
-    ++x;
-    for (; x < data.length; ++x) {
-      if (data[x] != 0) {
-        return x * 64 + Long.numberOfTrailingZeros(data[x]);
-      }
-    }
-    return -1;
-  }
+        /**
+         * Compute the number of bits set to 1
+         * 
+         * @return the number of bits
+         */
+        public int cardinality() {
+                int sum = 0;
+                for (long l : data)
+                        sum += Long.bitCount(l);
+                return sum;
+        }
 
+        /**
+         * @param i index
+         * @return value of the bit
+         */
+        public boolean get(final int i) {
+                return (data[i / 64] & (1l << (i % 64))) != 0;
+        }
 
-  public int nextUnsetBit(int i) {
-    int x = i / 64;
-    if(x>=data.length) return -1;
-    long w = ~data[x];
-    w >>>= (i % 64);
-    if (w != 0) {
-      return i + Long.numberOfTrailingZeros(w);
-    }
-    ++x;
-    for (; x < data.length; ++x) {
-      if (data[x] != ~0) {
-        return x * 64 + Long.numberOfTrailingZeros(~data[x]);
-      }
-    }
-    return -1;
-  }
+        /**
+         * Set to true
+         * 
+         * @param i
+         *                index of the bit
+         */
+        public void set(final int i) {
+                data[i / 64] |= (1l << (i % 64));
+        }
+
+        /**
+         * Set to false
+         * 
+         * @param i
+         *                index of the bit
+         */
+        public void unset(final int i) {
+                data[i / 64] &= ~(1l << (i % 64));
+        }
+
+        /**
+         * @param i
+         *                index
+         * @param b
+         *                value of the bit
+         */
+        public void set(final int i, final boolean b) {
+                if (b)
+                        set(i);
+                else
+                        unset(i);
+        }
+
+        /**
+         * Usage: for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) {
+         * operate on index i here }
+         * 
+         * @param i
+         *                current set bit
+         * @return next set bit or -1
+         */
+        public int nextSetBit(final int i) {
+                int x = i / 64;
+                if (x >= data.length)
+                        return -1;
+                long w = data[x];
+                w >>>= (i % 64);
+                if (w != 0) {
+                        return i + Long.numberOfTrailingZeros(w);
+                }
+                ++x;
+                for (; x < data.length; ++x) {
+                        if (data[x] != 0) {
+                                return x * 64
+                                        + Long.numberOfTrailingZeros(data[x]);
+                        }
+                }
+                return -1;
+        }
+        
+        /**
+         * Usage: for(int i=bs.nextUnsetBit(0); i>=0; i=bs.nextUnsetBit(i+1)) {
+         * operate on index i here }
+         * 
+         * @param i
+         *                current unset bit
+         * @return next unset bit or -1
+         */
+        public int nextUnsetBit(final int i) {
+                int x = i / 64;
+                if (x >= data.length)
+                        return -1;
+                long w = ~data[x];
+                w >>>= (i % 64);
+                if (w != 0) {
+                        return i + Long.numberOfTrailingZeros(w);
+                }
+                ++x;
+                for (; x < data.length; ++x) {
+                        if (data[x] != ~0) {
+                                return x * 64
+                                        + Long.numberOfTrailingZeros(~data[x]);
+                        }
+                }
+                return -1;
+        }
 
 }

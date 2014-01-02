@@ -6,7 +6,15 @@ import com.googlecode.javaewah.BitmapStorage;
 
 /**
  * 
- * @author lemire
+ * This is a Java specification for an "updatable" Boolean function meant to
+ * run over EWAH bitmaps.
+ *  
+ *  Reference: 
+ *  
+ *  Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
+ *  bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. 
+ * 
+ * @author Daniel Lemire
  * 
  */
 public abstract class UpdateableBitmapFunction {
@@ -19,12 +27,16 @@ public abstract class UpdateableBitmapFunction {
         UpdateableBitmapFunction() {
         }
         
+        /**
+         * @return the current number of literal words
+         */
         public int getNumberOfLiterals() {
                 return litwlist.cardinality();
         }
 
         /**
          * Goes through the literals.
+         * @return an iterator
          */
         public Iterable<EWAHPointer> getLiterals() {
                 return new Iterable<EWAHPointer>() {
@@ -56,17 +68,20 @@ public abstract class UpdateableBitmapFunction {
                 };
         }
 
-        public void resize(int newsize) {
+        /**
+         * @param newsize the number of inputs
+         */
+        public void resize(final int newsize) {
                 rw = java.util.Arrays.copyOf(rw, newsize);
                 litwlist.resize(newsize);
                 b = java.util.Arrays.copyOf(b, newsize);
         }
 
-        public int size() {
-                return rw.length;
-        }
 
-        public void setLiteral(int pos) {
+        /**
+         * @param pos position of a literal
+         */
+        public void setLiteral(final int pos) {
                 if (!litwlist.get(pos)) {
                         litwlist.set(pos);
                         litWeight++;
@@ -77,7 +92,10 @@ public abstract class UpdateableBitmapFunction {
                 }
         }
 
-        public void clearLiteral(int pos) {
+        /**
+         * @param pos position where a literal was removed
+         */
+        public void clearLiteral(final int pos) {
                 if (litwlist.get(pos)) {
                         // litwlist.unset(pos);
                         litwlist.set(pos, false);
@@ -85,7 +103,10 @@ public abstract class UpdateableBitmapFunction {
                 }
         }
 
-        public void setZero(int pos) {
+        /**
+         * @param pos position where a zero word was added
+         */
+        public void setZero(final int pos) {
                 if (b[pos]) {
                         b[pos] = false;
                         --hammingWeight;
@@ -94,7 +115,10 @@ public abstract class UpdateableBitmapFunction {
                 }
         }
 
-        public void setOne(int pos) {
+        /**
+         * @param pos position were a 11...1 word was added
+         */
+        public void setOne(final int pos) {
                 if (!b[pos]) {
                         clearLiteral(pos);
                         b[pos] = true;
@@ -102,6 +126,13 @@ public abstract class UpdateableBitmapFunction {
                 }
         }
 
+        /**
+         * Writes out the answer.
+         * 
+         * @param out output buffer
+         * @param runbegin beginning of the run
+         * @param runend end of the run
+         */
         public abstract void dispatch(BitmapStorage out, int runbegin,
                 int runend);
 

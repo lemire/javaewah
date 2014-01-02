@@ -1,31 +1,37 @@
 package com.googlecode.javaewah.datastructure;
 
 import java.util.Comparator;
-import java.util.PriorityQueue; // for testing only
-import java.util.List; // for testing only
-import java.util.ArrayList; // for testing only
 
-// special purpose priority queue.
-// does limited error checking
-// supports toss, buildHeap, poll, peek, percolateDown
-// The final operation is the main reason we need this
-// java.util.PriorityQueue was being used by polling and then reinserting
-// the item with a new priority.  This would force a downward percolation
-// and then an upward one.
-
+/**
+ * Special-purpose priority queue.
+ * does limited error checking
+ * and supports toss, buildHeap, poll, peek, percolateDown.
+ * @param <T> object type 
+ * 
+ * @author Owen Kaser
+ */
 public final class PriorityQ<T> {
         T[] a;
         int lastIndex;
         Comparator<T> comp;
 
 
+        /**
+         * Construct a priority queue with a given capacity 
+         * 
+         * @param maxSize capacity
+         * @param c comparator
+         */
         @SuppressWarnings("unchecked")
-        public PriorityQ(int maxSize, Comparator<T> c) {
+        public PriorityQ(final int maxSize, final Comparator<T> c) {
                 a = (T[]) new Object[maxSize + 1];
                 lastIndex = 0;
                 comp = c;
         }
 
+        /**
+         * @return the size of the queue
+         */
         public int size() {
                 return lastIndex;
         }
@@ -34,18 +40,27 @@ public final class PriorityQ<T> {
                 return comp.compare(A, B);
         }
 
-        public void toss(T t) {
+        /**
+         * Add an element at the end of the queue
+         * 
+         * @param t element to be added
+         */
+        public void toss(final T t) {
                 a[++lastIndex] = t;
         }
 
+        /**
+         * Look at the top of the heap
+         * @return the element on top
+         */
         public T peek() {
                 return a[1];
         }
 
-        public T get(int i) {
-                return a[i + 1];
-        }
 
+        /**
+         * build the heap...
+         */
         public void buildHeap() {
                 for (int i = lastIndex / 2; i > 0; --i) {
                         percolateDown(i);
@@ -53,8 +68,15 @@ public final class PriorityQ<T> {
         }
 
 
-        // this operation is used heavily
-        public void percolateDown(int i) {
+        /**
+         * Signals that the element on top of the heap has been updated
+         * 
+         */
+        public void percolateDown() {
+                percolateDown(1);
+        }
+        
+        private void percolateDown(int i) {
                 T ai = a[i];
                 while (true) {
                         int l = 2 * i;
@@ -87,6 +109,11 @@ public final class PriorityQ<T> {
                 }
         }
 
+        /**
+         * Remove the element on top of the heap
+         * 
+         * @return the element being removed
+         */
         public T poll() {
                 T ans = a[1];
                 a[1] = a[lastIndex--];
@@ -94,11 +121,12 @@ public final class PriorityQ<T> {
                 return ans;
         }
 
+        /**
+         * Check whether the heap is empty.
+         * 
+         * @return true if empty
+         */
         public boolean isEmpty() {
                 return lastIndex == 0;
-        }
-
-        private T sneak(int i) {
-                return a[i];
         }
 }

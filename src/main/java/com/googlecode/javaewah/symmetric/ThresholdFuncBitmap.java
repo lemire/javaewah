@@ -3,12 +3,24 @@ package com.googlecode.javaewah.symmetric;
 import java.util.Arrays;
 import com.googlecode.javaewah.BitmapStorage;
 
+/**
+ * A threshold Boolean function returns true if the number of true values exceed a
+ * threshold. It is a symmetric Boolean function.
+ * 
+ * @see <a href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
+ * @author Daniel Lemire
+ *
+ */
 public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         int min;
         long[] buffers;
         int bufferUsed;
 
-        public ThresholdFuncBitmap(int min) {
+        /**
+         * Construction a threshold function with a given threshold 
+         * @param min threshold
+         */
+        public ThresholdFuncBitmap(final int min) {
                 super();
                 this.min = min;
                 buffers = new long[16];
@@ -48,7 +60,7 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         private static int[] bufcounters = new int[64];
         private static final int[] zeroes64 = new int[64];
 
-        public static long threshold2buf(int T, long[] buffers, int bufUsed) {
+        private static long threshold2buf(int T, long[] buffers, int bufUsed) {
                 long result = 0L;
                 int[] counters = bufcounters;
                 System.arraycopy(zeroes64, 0, counters, 0, 64);
@@ -67,7 +79,7 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 return result;
         }
 
-        public static long threshold3(int T, long[] buffers, int bufUsed) {
+        private static long threshold3(int T, long[] buffers, int bufUsed) {
                 if (buffers.length == 0)
                         return 0;
                 long[] v = new long[T];
@@ -84,7 +96,7 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 return v[T - 1];
         }
 
-        public static long threshold4(int T, long[] buffers, int bufUsed) {
+        private static long threshold4(int T, long[] buffers, int bufUsed) {
                 if (T >= 128)
                         return threshold2buf(T, buffers,bufUsed);
                 int B = 0;

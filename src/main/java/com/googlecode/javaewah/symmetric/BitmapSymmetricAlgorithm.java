@@ -3,7 +3,9 @@ package com.googlecode.javaewah.symmetric;
 import com.googlecode.javaewah.*;
 
 /**
- * Generic interface to compute symmetric boolean query.
+ * Generic interface to compute symmetric Boolean functions.
+ * 
+ * @see <a href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
  * @author Daniel Lemire
  *
  */
