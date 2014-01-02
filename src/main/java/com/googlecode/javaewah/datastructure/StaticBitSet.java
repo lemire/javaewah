@@ -6,8 +6,8 @@ import java.util.Arrays;
  * This is an optimized version of Java's BitSet.
  * 
  * @author Daniel Lemire
- * 
- */
+ * @since 0.8.0
+ **/
 public class StaticBitSet {
         long[] data;
 

@@ -7,7 +7,7 @@ import com.googlecode.javaewah.IteratingBufferedRunningLengthWord;
  * RunningBitmapMerge class.
  * 
  * @author Daniel Lemire
- * 
+ * @since 0.8.0
  */
 public final class EWAHPointer implements Comparable<EWAHPointer> {
         private int endrun;

@@ -9,6 +9,7 @@ import java.util.Comparator;
  * @param <T> object type 
  * 
  * @author Owen Kaser
+ * @since 0.8.0
  */
 public final class PriorityQ<T> {
         T[] a;

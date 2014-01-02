@@ -15,7 +15,7 @@ import com.googlecode.javaewah.datastructure.PriorityQ;
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
  *  bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010. 
  * 
- * 
+ * @since 0.8.0
  * @author Daniel Lemire
  */
 public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {

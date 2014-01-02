@@ -7,8 +7,8 @@ import com.googlecode.javaewah.*;
  * 
  * @see <a href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
  * @author Daniel Lemire
- *
- */
+ * @since 0.8.0
+ **/
 public interface BitmapSymmetricAlgorithm {
         /**
          * Compute a Boolean symmetric query.

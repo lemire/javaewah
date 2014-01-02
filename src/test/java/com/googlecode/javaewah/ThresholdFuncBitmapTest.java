@@ -8,9 +8,14 @@ import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
 
 @SuppressWarnings("javadoc")
 
+/**
+ * @since 0.8.0
+ * @author Daniel Lemire
+ */
 public class ThresholdFuncBitmapTest {
         @Test
         public void basictest() {
+                System.out.println("Testing ThresholdFuncBitmap");
                 EWAHCompressedBitmap ewah1 = EWAHCompressedBitmap.bitmapOf(1,53,110,1000, 1201,50000);
                 EWAHCompressedBitmap ewah2 = EWAHCompressedBitmap.bitmapOf(1,100,1000,1100,1200,31416,50001);
                 EWAHCompressedBitmap ewah3 =  EWAHCompressedBitmap.bitmapOf(1,110,1000,1101,1200, 1201,31416, 31417);
