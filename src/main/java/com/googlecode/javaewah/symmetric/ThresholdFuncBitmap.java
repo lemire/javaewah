@@ -38,19 +38,6 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                                                         - R.beginOfRun());
                                 }
                                 long result = threshold4(deficit,buffers,bufferUsed);
-                                // naive position-by-position
-                                /*for (int pos = 0; pos < 64; ++pos) {
-                                        // take current high-order bits
-                                        result <<= 1;
-                                        int count = 0;
-                                        for (int j = 0; j < bufferUsed; ++j) {
-                                                if ((buffers[j] & (1L << 63)) != 0)
-                                                        ++count;
-                                                buffers[j] <<= 1;
-                                        }
-                                        if (count >= deficit)
-                                                result |= 1;
-                                }*/
                                 out.add(result);
                         }
                 }
