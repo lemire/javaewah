@@ -87,10 +87,9 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 v[0] = buffers[0];
                 for (int k = 1; k < bufUsed; ++k) {
                         long c = buffers[k];
-                        for (int j = T - 1; j >= 1; --j) {
-                                long ttemp = c;
-                                ttemp &= v[j - 1];
-                                v[j] |= ttemp;
+                        final int m = Math.min(T-1, k);
+                        for (int j = m; j >= 1; --j) {
+                                v[j] |= (c & v[j - 1]);
                         }
                         v[0] |= c;
                 }
