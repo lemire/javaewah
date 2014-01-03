@@ -28,6 +28,9 @@ is always more efficient storage-wise than an
 uncompressed bitmap (as implemented in the java
 BitSet class by Sun).
 
+JavaEWAH offers competitive speed. In an exhaustive 
+comparison, Guzun et al. (ICDE 2014) found that "EWAH
+offers the best query time for all distributions." 
 
 For better performance, use a 64-bit JVM over
 64-bit CPUs when using the 64-bit scheme (javaewah.EWAHCompressedBitmap).
@@ -83,7 +86,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.7.9</version>
+	     <version>0.8.0</version>
          </dependency>
      </dependencies>
 
