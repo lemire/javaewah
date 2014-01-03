@@ -33,7 +33,7 @@ public abstract class UpdateableBitmapFunction {
         /**
          * @return the current number of literal words
          */
-        public int getNumberOfLiterals() {
+        public  final int getNumberOfLiterals() {
                 return litwlist.cardinality();
         }
        
@@ -42,7 +42,7 @@ public abstract class UpdateableBitmapFunction {
          * Goes through the literals.
          * @return an iterator
          */
-        public Iterable<EWAHPointer> getLiterals() {
+        public  final Iterable<EWAHPointer> getLiterals() {
                 return new Iterable<EWAHPointer>() {
 
                         @Override
@@ -76,7 +76,7 @@ public abstract class UpdateableBitmapFunction {
          * append to the list the literal words as EWAHPointer
          * @param container where we write
          */
-        public void fillWithLiterals(final List<EWAHPointer> container) {
+        public final void fillWithLiterals(final List<EWAHPointer> container) {
                 for(int k = litwlist.nextSetBit(0);k >= 0;k = litwlist.nextSetBit(k + 1)) {
                         container.add(rw[k]);
                 }
@@ -86,7 +86,7 @@ public abstract class UpdateableBitmapFunction {
         /**
          * @param newsize the number of inputs
          */
-        public void resize(final int newsize) {
+        public  final void resize(final int newsize) {
                 rw = java.util.Arrays.copyOf(rw, newsize);
                 litwlist.resize(newsize);
                 b = java.util.Arrays.copyOf(b, newsize);
@@ -121,7 +121,7 @@ public abstract class UpdateableBitmapFunction {
         /**
          * @param pos position where a zero word was added
          */
-        public void setZero(final int pos) {
+        public  final void setZero(final int pos) {
                 if (b[pos]) {
                         b[pos] = false;
                         --hammingWeight;
@@ -133,7 +133,7 @@ public abstract class UpdateableBitmapFunction {
         /**
          * @param pos position were a 11...1 word was added
          */
-        public void setOne(final int pos) {
+        public  final void setOne(final int pos) {
                 if (!b[pos]) {
                         clearLiteral(pos);
                         b[pos] = true;

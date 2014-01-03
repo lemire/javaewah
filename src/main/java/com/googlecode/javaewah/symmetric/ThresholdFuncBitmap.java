@@ -45,51 +45,6 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                         litbuffer.clear();
                         this.fillWithLiterals(litbuffer);
                         bufferUsed = litbuffer.size();
-                        // trivial case where there is just one lit. word (we copy it)
-                        if(bufferUsed == 1) {
-                                EWAHPointer R = this.litbuffer.get(0);
-                                for (int i = 0; i < runlength; ++i) {
-                                        out.add(R.iterator.getLiteralWordAt(i + runbegin
-                                                - R.beginOfRun()));
-                                }       
-                                return;
-                        }
-                        // next if deficit is 1 we need to compute OR, this can be done fast
-                        if(deficit == 1) {
-                                long[] w = new long[runlength];
-                                for (EWAHPointer R : this.litbuffer) {
-                                        for (int i = 0; i < runlength; ++i) {
-                                                w[i] |= R.iterator
-                                                        .getLiteralWordAt(i + runbegin
-                                                                - R.beginOfRun());
-                                        }
-                                }
-                                for (int i = 0; i < runlength; ++i) {
-                                        out.add(w[i]);
-                                }
-                                return;
-                        } 
-                        // next if deficit is bufferUsed, we use AND
-                        if(bufferUsed == deficit) {
-                                long[] w = new long[runlength];
-                                for (int i = 0; i < runlength; ++i) {
-                                        w[i] = litbuffer.get(0).iterator
-                                                .getLiteralWordAt(i + runbegin
-                                                        - litbuffer.get(0).beginOfRun());
-                                }
-                                for(int k = 1; k < litbuffer.size(); ++k) {
-                                        for (int i = 0; i < runlength; ++i) {
-                                                w[i] &= litbuffer.get(k).iterator
-                                                        .getLiteralWordAt(i + runbegin
-                                                                - litbuffer.get(k).beginOfRun());
-                                        }
-                                }
-                                for (int i = 0; i < runlength; ++i) {
-                                        out.add(w[i]);
-                                }
-                                
-                                return;
-                        }
                         // general case
                         if(bufferUsed > buffers.length)
                                 buffers = Arrays.copyOf(
