@@ -8,6 +8,9 @@ package com.googlecode.javaewah;
 import java.util.*;
 import java.io.*;
 
+import com.googlecode.javaewah.symmetric.RunningBitmapMerge;
+import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
+
 
 
 /**
@@ -1130,7 +1133,7 @@ public void setSizeInBits(final int size) {
    * @return the size in bits
    */
   @Override
-public int sizeInBits() {
+  public int sizeInBits() {
     return this.sizeinbits;
   }
 
@@ -1141,9 +1144,43 @@ public int sizeInBits() {
    * @return the size in bytes
    */
   @Override
-public int sizeInBytes() {
+  public int sizeInBytes() {
     return this.actualsizeinwords * (wordinbits / 8);
   }
+  
+  /**
+   * 
+   * Compute a Boolean threshold function: bits are true where at least T bitmaps have
+   * a true bit.
+   * 
+   * @since 0.8.1
+   * @param T the threshold
+   * @param bitmaps input data
+   * @return the aggregated bitmap
+   */
+ public static EWAHCompressedBitmap threshold(final int T, final EWAHCompressedBitmap... bitmaps) {
+          final EWAHCompressedBitmap container = new EWAHCompressedBitmap();
+          thresholdWithContainer(container,T,bitmaps);
+          return container; 
+  }
+  
+
+
+ /**
+  * 
+  * Compute a Boolean threshold function: bits are true where at least T bitmaps have
+  * a true bit.
+  * 
+  * @since 0.8.1
+  * @param T the threshold
+  * @param bitmaps input data
+  * @param container where we writethe aggregated bitmap
+  */
+ public static void thresholdWithContainer(final BitmapStorage container,final int T,
+    final EWAHCompressedBitmap... bitmaps) {
+          (new RunningBitmapMerge()).symmetric(new ThresholdFuncBitmap(T), container,bitmaps); 
+  }
+  
 
   /**
    * Populate an array of (sorted integers) corresponding to the location of the

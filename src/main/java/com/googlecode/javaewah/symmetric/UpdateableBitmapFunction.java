@@ -1,6 +1,8 @@
 package com.googlecode.javaewah.symmetric;
 
 import java.util.Iterator;
+import java.util.List;
+
 import com.googlecode.javaewah.datastructure.StaticBitSet;
 import com.googlecode.javaewah.BitmapStorage;
 
@@ -34,6 +36,7 @@ public abstract class UpdateableBitmapFunction {
         public int getNumberOfLiterals() {
                 return litwlist.cardinality();
         }
+       
 
         /**
          * Goes through the literals.
@@ -69,6 +72,17 @@ public abstract class UpdateableBitmapFunction {
                 };
         }
 
+        /**
+         * append to the list the literal words as EWAHPointer
+         * @param container where we write
+         */
+        public void fillWithLiterals(final List<EWAHPointer> container) {
+                for(int k = litwlist.nextSetBit(0);k >= 0;k = litwlist.nextSetBit(k + 1)) {
+                        container.add(rw[k]);
+                }
+        }
+
+        
         /**
          * @param newsize the number of inputs
          */

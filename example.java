@@ -53,8 +53,7 @@ public static void main(final String[] args) throws java.io.IOException {
     // mark as true a bit that occurs at least T times in the source
     // bitmaps
     //
-    EWAHCompressedBitmap threshold2 = new EWAHCompressedBitmap();
-    (new RunningBitmapMerge()).symmetric(new ThresholdFuncBitmap(2), threshold2,ewahBitmap1,ewahBitmap2,
+    EWAHCompressedBitmap threshold2 = EWAHCompressedBitmap.threshold(2, ewahBitmap1,ewahBitmap2,
                      ewahBitmap3,ewahBitmap4); 
     System.out.println("threshold 2 : "+threshold2);
 
