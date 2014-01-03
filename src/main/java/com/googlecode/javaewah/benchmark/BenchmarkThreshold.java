@@ -24,7 +24,7 @@ public class BenchmarkThreshold {
 		DecimalFormat df = new DecimalFormat("0.###");
 		ClusteredDataGenerator cdg = new ClusteredDataGenerator();
 		for (int sparsity = 1; sparsity < 30 - nbr; sparsity++) {
-			for (int times = 0; times < 2; ++times) {
+			for (int times = 0; times < 5; ++times) {
 				String line = "";
 				long bef, aft;
 				line += sparsity;

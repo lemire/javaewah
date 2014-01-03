@@ -5,25 +5,30 @@ import java.util.Arrays;
 import com.googlecode.javaewah.BitmapStorage;
 
 /**
- * A threshold Boolean function returns true if the number of true values exceed a
- * threshold. It is a symmetric Boolean function.
+ * A threshold Boolean function returns true if the number of true values exceed
+ * a threshold. It is a symmetric Boolean function.
  * 
  * This object is not thread safe: you should use one function per thread.
  * 
- * @see <a href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
+ * @see <a
+ *      href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
  * @author Daniel Lemire
  * @since 0.8.0
- *
+ * 
  */
 public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         int min;
         long[] buffers;
         int bufferUsed;
         ArrayList<EWAHPointer> litbuffer = new ArrayList<EWAHPointer>();
+        private int[] bufcounters = new int[64];
+        private static final int[] zeroes64 = new int[64];
 
         /**
-         * Construction a threshold function with a given threshold 
-         * @param min threshold
+         * Construction a threshold function with a given threshold
+         * 
+         * @param min
+         *                threshold
          */
         public ThresholdFuncBitmap(final int min) {
                 super();
@@ -31,6 +36,7 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 buffers = new long[16];
                 bufferUsed = 0;
         }
+
 
         @Override
         public void dispatch(BitmapStorage out, int runbegin, int runend) {
@@ -41,34 +47,23 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 } else if (litWeight + hammingWeight < min) {
                         out.addStreamOfEmptyWords(false, runlength);
                 } else {
-                        int deficit = min - hammingWeight;
+                        final int deficit = min - hammingWeight;
                         litbuffer.clear();
                         this.fillWithLiterals(litbuffer);
                         bufferUsed = litbuffer.size();
-                        // general case
-                        if(bufferUsed > buffers.length)
-                                buffers = Arrays.copyOf(
-                                        buffers,
-                                        2 * bufferUsed);
-                        for (int i = 0; i < runlength; ++i) {
-                                int p = 0;
-                                for (EWAHPointer R : litbuffer) {
-                                        buffers[p++] = R.iterator
-                                                .getLiteralWordAt(i + runbegin
-                                                        - R.beginOfRun());
-                                }
-                                long result = threshold4(deficit,buffers,bufferUsed);
-                                out.add(result);
+                        if (deficit == 1) {
+                                orLiterals(out, runbegin, runlength);
+                        } else if (bufferUsed == deficit) {
+                                andLiterals(out, runbegin, runlength);
+                        } else {
+                                generalLiterals(deficit, out, runbegin,
+                                        runlength);
                         }
                 }
         }
 
-        
 
-        private  int[] bufcounters = new int[64];
-        private static final int[] zeroes64 = new int[64];
-
-        private  long threshold2buf(int T, long[] buffers, int bufUsed) {
+        private long threshold2buf(final int T, final long[] buffers, final int bufUsed) {
                 long result = 0L;
                 int[] counters = bufcounters;
                 System.arraycopy(zeroes64, 0, counters, 0, 64);
@@ -87,14 +82,14 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 return result;
         }
 
-        private  long threshold3(int T, long[] buffers, int bufUsed) {
+        private long threshold3(final int T, final long[] buffers, final int bufUsed) {
                 if (buffers.length == 0)
                         return 0;
                 long[] v = new long[T];
                 v[0] = buffers[0];
                 for (int k = 1; k < bufUsed; ++k) {
                         long c = buffers[k];
-                        final int m = Math.min(T-1, k);
+                        final int m = Math.min(T - 1, k);
                         for (int j = m; j >= 1; --j) {
                                 v[j] |= (c & v[j - 1]);
                         }
@@ -103,15 +98,64 @@ public class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 return v[T - 1];
         }
 
-        private long threshold4(int T, long[] buffers, int bufUsed) {
+        private long threshold4(final int T, final long[] buffers, final int bufUsed) {
                 if (T >= 128)
-                        return threshold2buf(T, buffers,bufUsed);
+                        return threshold2buf(T, buffers, bufUsed);
                 int B = 0;
                 for (int k = 0; k < bufUsed; ++k)
                         B += Long.bitCount(buffers[k]);
                 if (2 * B >= bufUsed * T)
-                        return threshold3(T, buffers,bufUsed);
+                        return threshold3(T, buffers, bufUsed);
                 else
-                        return threshold2buf(T, buffers,bufUsed);
+                        return threshold2buf(T, buffers, bufUsed);
         }
+
+        @SuppressWarnings("unused")
+        private final void justcopyLiterals(BitmapStorage out, int runbegin,
+                int runlength) {
+                EWAHPointer R = this.litbuffer.get(0);
+                for (int i = 0; i < runlength; ++i) {
+                        out.add(R.iterator.getLiteralWordAt(i + runbegin
+                                - R.beginOfRun()));
+                }
+        }
+
+        private final void orLiterals(final BitmapStorage out, final int runbegin,
+                final int runlength) {
+                for (int i = 0; i < runlength; ++i) {
+                        long w = 0;
+                        for (EWAHPointer R : this.litbuffer) {
+                                w |= R.iterator.getLiteralWordAt(i + runbegin
+                                        - R.beginOfRun());
+                        }
+                        out.add(w);
+                }
+        }
+
+        private final void andLiterals(final BitmapStorage out, final int runbegin,
+                final int runlength) {
+                for (int i = 0; i < runlength; ++i) {
+                        long w = ~0;
+                        for (EWAHPointer R : this.litbuffer) {
+                                w &= R.iterator.getLiteralWordAt(i + runbegin
+                                        - R.beginOfRun());
+                        }
+                        out.add(w);
+                }
+        }
+
+        private final void generalLiterals(final int deficit, final BitmapStorage out,
+                final int runbegin, final int runlength) {
+                if (bufferUsed > buffers.length)
+                        buffers = Arrays.copyOf(buffers, 2 * bufferUsed);
+                for (int i = 0; i < runlength; ++i) {
+                        int p = 0;
+                        for (EWAHPointer R : litbuffer) {
+                                buffers[p++] = R.iterator.getLiteralWordAt(i
+                                        + runbegin - R.beginOfRun());
+                        }
+                        out.add(threshold4(deficit, buffers, bufferUsed));
+                }
+        }
+
 }
