@@ -102,7 +102,7 @@ public class StaticBitSet {
         }
 
         /**
-         * Usage: for(int i=bs.nextSetBit(0); i>=0; i=bs.nextSetBit(i+1)) {
+         * Usage: for(int i=bs.nextSetBit(0); i&gt;=0; i=bs.nextSetBit(i+1)) {
          * operate on index i here }
          * 
          * @param i
@@ -129,7 +129,7 @@ public class StaticBitSet {
         }
         
         /**
-         * Usage: for(int i=bs.nextUnsetBit(0); i>=0; i=bs.nextUnsetBit(i+1)) {
+         * Usage: for(int i=bs.nextUnsetBit(0); i&gt;=0; i=bs.nextUnsetBit(i+1)) {
          * operate on index i here }
          * 
          * @param i
