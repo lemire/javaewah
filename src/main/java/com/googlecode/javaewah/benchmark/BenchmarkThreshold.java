@@ -14,7 +14,7 @@ public class BenchmarkThreshold {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String args[]) {
-		test(10, 18, 1);
+		test(30, 18, 1);
 	}
 
 	@SuppressWarnings({ "javadoc"})
@@ -24,7 +24,7 @@ public class BenchmarkThreshold {
 		DecimalFormat df = new DecimalFormat("0.###");
 		ClusteredDataGenerator cdg = new ClusteredDataGenerator();
 		for (int sparsity = 1; sparsity < 30 - nbr; sparsity++) {
-			for (int times = 0; times < 5; ++times) {
+			for (int times = 0; times < 3; ++times) {
 				String line = "";
 				long bef, aft;
 				line += sparsity;
@@ -62,7 +62,7 @@ public class BenchmarkThreshold {
 
 
 
-				System.out.println(line);
+				if(times >0) System.out.println(line);
 			}
 			System.out.println("# bogus =" + bogus);
 
