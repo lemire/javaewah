@@ -1,7 +1,7 @@
 JavaEWAH
 ==========================================================
 
-(c) 2009-2013
+(c) 2009-2014
 Daniel Lemire (http://lemire.me/en/), 
 Cliff Moon (https://github.com/cliffmoon), 
 David McIntosh (https://github.com/mctofu),
@@ -86,7 +86,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.8.0</version>
+	     <version>0.8.1</version>
          </dependency>
      </dependencies>
 
@@ -109,6 +109,10 @@ https://github.com/jolby/clojure-ewah-bitmap
 Frequent questions
 ------------------
 
+Question: Will JavaEWAH support long values?
+
+Answer: It might, but it does not at the moment. 
+
 Question: How do I check the value of a bit?
 
 Answer: If you need to routinely check the value of a given bit quickly, then 
@@ -122,5 +126,5 @@ follows:
           /**
            * We want to know if bit 64 is set:
            */
-          boolean is64set = (b.and(EWAHCompressedBitmap.bitmapOf(64)).cardinality() == 1);                
+          boolean is64set = b.get(64);
 

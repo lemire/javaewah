@@ -80,7 +80,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                 return result;
         }
 
-        private long threshold3(final int T, final long[] buffers, final int bufUsed) {
+        private static long threshold3(final int T, final long[] buffers, final int bufUsed) {
                 if (buffers.length == 0)
                         return 0;
                 final long[] v = new long[T];

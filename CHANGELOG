@@ -1,3 +1,8 @@
+version 0.8.1 (January 7th 2013)
+ - Optimized threshold function
+ - created a nicer function call for the threshold function
+ - fixed documentation in README 
+
 version 0.8.0 (January 2nd 2014)
  - Introducing package symmetric for symmetric Boolean functions, implemented
    a fast threshold function.
