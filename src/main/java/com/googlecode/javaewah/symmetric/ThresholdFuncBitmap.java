@@ -10,8 +10,7 @@ import com.googlecode.javaewah.BitmapStorage;
  * 
  * This object is not thread safe: you should use one function per thread.
  * 
- * @see <a
- *      href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
  * @author Daniel Lemire
  * @since 0.8.0
  * 

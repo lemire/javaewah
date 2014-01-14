@@ -24,24 +24,27 @@ import com.googlecode.javaewah.LogicalElement;
  * data. In effect, there is a trade-off between memory usage and performances.
  * </p>
  * 
- * @see com.googlecode.javaewah.EWAHCompressedBitmap
  * 
  *      <p>
  *      The objective of this compression type is to provide some compression,
  *      while reducing as much as possible the CPU cycle usage.
  *      </p>
  * 
- * 
+ *   <p>Once constructed,
+ * the bitmap is essentially immutable (unless you call the "set" or "add" methods). Thus,
+ * it can be safely used in multi-threaded programs. 
+ * </p>
  *      <p>
  *      For more details, see the following paper:
  *      </p>
  * 
  *      <ul>
- *      <li>Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves
- *      word-aligned bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages
- *      3-28, 2010. http://arxiv.org/abs/0901.3751</li>
+ *      <li>Daniel Lemire, Owen Kaser, Kamel Aouiche, <a href="http://arxiv.org/abs/0901.3751">Sorting improves
+ *      word-aligned bitmap indexes</a>. Data &amp; Knowledge Engineering 69 (1), pages
+ *      3-28, 2010. </li>
  *      </ul>
  * 
+ * @see com.googlecode.javaewah.EWAHCompressedBitmap EWAHCompressedBitmap
  * @since 0.5.0
  */
 public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
@@ -77,18 +80,20 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
    *  Example: if you add 321, you are have added (in binary notation)
    *  0b101000001, so you have effectively called set(0), set(6), set(8)
    *  in sequence.
+   *  
+   *  Since this modifies the bitmap, this method is not thread-safe.
    * 
    * @param newdata
    *          the word
    */
   @Override
-public void add(final int newdata) {
+  public void add(final int newdata) {
     add(newdata, wordinbits);
   }
 
   /**
    * Adding words directly to the bitmap (for expert use).
-   * 
+   *  Since this modifies the bitmap, this method is not thread-safe.
    * @param newdata
    *          the word
    * @param bitsthatmatter
@@ -1019,6 +1024,8 @@ public void readExternal(ObjectInput in) throws IOException {
    * Set the bit at position i to true, the bits must be set in (strictly) increasing
    * order. For example, set(15) and then set(7) will fail. You must do set(7)
    * and then set(15).
+   * 
+   *  Since this modifies the bitmap, this method is not thread-safe.
    * 
    * @param i
    *          the index

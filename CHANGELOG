@@ -1,3 +1,6 @@
+version 0.8.2 (upcoming)
+ - cleaned up the documentation
+
 version 0.8.1 (January 7th 2013)
  - Optimized threshold function
  - created a nicer function call for the threshold function
