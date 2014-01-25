@@ -1,19 +1,16 @@
 package com.googlecode.javaewah.symmetric;
 
-
 import java.util.Comparator;
-import com.googlecode.javaewah.*;  
+import com.googlecode.javaewah.*;
 import com.googlecode.javaewah.datastructure.PriorityQ;
 
 /**
- * This is an implementation of the  RunningBitmapMerge algorithm
- * running on top of JavaEWAH. It is well suited to computing
- * symmetric Boolean queries.
+ * This is an implementation of the RunningBitmapMerge algorithm running on top
+ * of JavaEWAH. It is well suited to computing symmetric Boolean queries.
  * 
- * It is a revised version of an algorithm described in the following
- * reference: 
+ * It is a revised version of an algorithm described in the following reference:
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
- *  bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010. 
+ * bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010.
  * 
  * @since 0.8.0
  * @author Daniel Lemire
@@ -64,7 +61,7 @@ public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
                                                 break mainloop;
                                 } else {
                                         H.percolateDown(); // since we have
-                                                            // increased the key
+                                                           // increased the key
                                 }
                         }
                 }

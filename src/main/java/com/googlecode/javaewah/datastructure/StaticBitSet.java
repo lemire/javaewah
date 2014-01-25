@@ -16,10 +16,11 @@ public class StaticBitSet {
          * false). The number of bits is rounded up to the nearest multiple of
          * 64.
          * 
-         * @param sizeinbits the size in bits
+         * @param sizeinbits
+         *                the size in bits
          */
         public StaticBitSet(final int sizeinbits) {
-                data = new long[(sizeinbits + 63) / 64];
+                this.data = new long[(sizeinbits + 63) / 64];
         }
 
         /**
@@ -28,7 +29,7 @@ public class StaticBitSet {
          * @return the size in bits.
          */
         public int size() {
-                return data.length * 64;
+                return this.data.length * 64;
         }
 
         /**
@@ -38,14 +39,14 @@ public class StaticBitSet {
          *                new number of bits
          */
         public void resize(int sizeinbits) {
-                data = Arrays.copyOf(data, (sizeinbits + 63) / 64);
+                this.data = Arrays.copyOf(this.data, (sizeinbits + 63) / 64);
         }
 
         /**
          * Reset all bits to false
          */
         public void clear() {
-                Arrays.fill(data, 0);
+                Arrays.fill(this.data, 0);
         }
 
         /**
@@ -55,17 +56,18 @@ public class StaticBitSet {
          */
         public int cardinality() {
                 int sum = 0;
-                for (long l : data)
+                for (long l : this.data)
                         sum += Long.bitCount(l);
                 return sum;
         }
 
         /**
-         * @param i index
+         * @param i
+         *                index
          * @return value of the bit
          */
         public boolean get(final int i) {
-                return (data[i / 64] & (1l << (i % 64))) != 0;
+                return (this.data[i / 64] & (1l << (i % 64))) != 0;
         }
 
         /**
@@ -75,7 +77,7 @@ public class StaticBitSet {
          *                index of the bit
          */
         public void set(final int i) {
-                data[i / 64] |= (1l << (i % 64));
+                this.data[i / 64] |= (1l << (i % 64));
         }
 
         /**
@@ -85,7 +87,7 @@ public class StaticBitSet {
          *                index of the bit
          */
         public void unset(final int i) {
-                data[i / 64] &= ~(1l << (i % 64));
+                this.data[i / 64] &= ~(1l << (i % 64));
         }
 
         /**
@@ -111,26 +113,27 @@ public class StaticBitSet {
          */
         public int nextSetBit(final int i) {
                 int x = i / 64;
-                if (x >= data.length)
+                if (x >= this.data.length)
                         return -1;
-                long w = data[x];
+                long w = this.data[x];
                 w >>>= (i % 64);
                 if (w != 0) {
                         return i + Long.numberOfTrailingZeros(w);
                 }
                 ++x;
-                for (; x < data.length; ++x) {
-                        if (data[x] != 0) {
-                                return x * 64
-                                        + Long.numberOfTrailingZeros(data[x]);
+                for (; x < this.data.length; ++x) {
+                        if (this.data[x] != 0) {
+                                return x
+                                        * 64
+                                        + Long.numberOfTrailingZeros(this.data[x]);
                         }
                 }
                 return -1;
         }
-        
+
         /**
-         * Usage: for(int i=bs.nextUnsetBit(0); i&gt;=0; i=bs.nextUnsetBit(i+1)) {
-         * operate on index i here }
+         * Usage: for(int i=bs.nextUnsetBit(0); i&gt;=0; i=bs.nextUnsetBit(i+1))
+         * { operate on index i here }
          * 
          * @param i
          *                current unset bit
@@ -138,18 +141,19 @@ public class StaticBitSet {
          */
         public int nextUnsetBit(final int i) {
                 int x = i / 64;
-                if (x >= data.length)
+                if (x >= this.data.length)
                         return -1;
-                long w = ~data[x];
+                long w = ~this.data[x];
                 w >>>= (i % 64);
                 if (w != 0) {
                         return i + Long.numberOfTrailingZeros(w);
                 }
                 ++x;
-                for (; x < data.length; ++x) {
-                        if (data[x] != ~0) {
-                                return x * 64
-                                        + Long.numberOfTrailingZeros(~data[x]);
+                for (; x < this.data.length; ++x) {
+                        if (this.data[x] != ~0) {
+                                return x
+                                        * 64
+                                        + Long.numberOfTrailingZeros(~this.data[x]);
                         }
                 }
                 return -1;

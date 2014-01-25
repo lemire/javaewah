@@ -23,9 +23,12 @@ public final class EWAHPointer implements Comparable<EWAHPointer> {
         /**
          * Construct a pointer over an IteratingBufferedRunningLengthWord.
          * 
-         * @param previousendrun word where the previous run ended
-         * @param rw the iterator
-         * @param pos current position (in word)
+         * @param previousendrun
+         *                word where the previous run ended
+         * @param rw
+         *                the iterator
+         * @param pos
+         *                current position (in word)
          */
         public EWAHPointer(final int previousendrun,
                 final IteratingBufferedRunningLengthWord rw, final int pos) {
@@ -34,10 +37,10 @@ public final class EWAHPointer implements Comparable<EWAHPointer> {
                 if (this.iterator.getRunningLength() > 0) {
                         this.endrun = previousendrun
                                 + (int) this.iterator.getRunningLength();
-                        isliteral = false;
-                        value = this.iterator.getRunningBit();
+                        this.isliteral = false;
+                        this.value = this.iterator.getRunningBit();
                 } else if (this.iterator.getNumberOfLiteralWords() > 0) {
-                        isliteral = true;
+                        this.isliteral = true;
                         this.endrun = previousendrun
                                 + this.iterator.getNumberOfLiteralWords();
                 } else {
@@ -70,7 +73,7 @@ public final class EWAHPointer implements Comparable<EWAHPointer> {
                 if ((this.isliteral)
                         || (this.iterator.getNumberOfLiteralWords() == 0)) {
                         // no choice, must load next runs
-                        this.iterator.discardFirstWords(this.iterator.size()); 
+                        this.iterator.discardFirstWords(this.iterator.size());
                         if (this.iterator.getRunningLength() > 0) {
                                 this.endrun += (int) this.iterator
                                         .getRunningLength();
@@ -99,7 +102,8 @@ public final class EWAHPointer implements Comparable<EWAHPointer> {
         }
 
         /**
-         * @param f call the function with the current information
+         * @param f
+         *                call the function with the current information
          */
         public void callbackUpdate(final UpdateableBitmapFunction f) {
                 if (this.dead)
@@ -114,6 +118,6 @@ public final class EWAHPointer implements Comparable<EWAHPointer> {
 
         @Override
         public int compareTo(EWAHPointer other) {
-                return endrun - other.endrun;
+                return this.endrun - other.endrun;
         }
 }

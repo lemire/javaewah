@@ -7,25 +7,25 @@ package com.googlecode.javaewah;
 
 /**
  * 
- * The IntIterator interface is used to  iterate over a stream of integers.
+ * The IntIterator interface is used to iterate over a stream of integers.
  * 
  * @author Daniel Lemire
  * @since 0.2.0
- *
+ * 
  */
 public interface IntIterator {
-  
-  /**
-   * Is there more?
-   *
-   * @return true, if there is more, false otherwise
-   */
-  public boolean hasNext();
 
-  /**
-   * Return the next integer
-   *
-   * @return the integer
-   */
-  public int next();
+        /**
+         * Is there more?
+         * 
+         * @return true, if there is more, false otherwise
+         */
+        public boolean hasNext();
+
+        /**
+         * Return the next integer
+         * 
+         * @return the integer
+         */
+        public int next();
 }

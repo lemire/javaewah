@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-
 /*
  * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
  * Licensed under the Apache License, Version 2.0.
@@ -19,418 +18,492 @@ import java.util.PriorityQueue;
  * 
  */
 public class FastAggregation {
-	/**
-	 * Compute the and aggregate using a temporary uncompressed bitmap.
-	 * @param bitmaps the source bitmaps
-	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
-	 * @return the or aggregate.
-	 */
-	public static EWAHCompressedBitmap bufferedand(final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
-		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedandWithContainer(answer,bufsize, bitmaps);
-		return answer;
-	}
-	/**
-	 * Compute the and aggregate using a temporary uncompressed bitmap.
-	 * 
-	 * @param container where the aggregate is written
-	 * @param bufsize buffer size used during the computation in 64-bit words (per input bitmap)
-	 * @param bitmaps the source bitmaps
-	 */
-	public static void bufferedandWithContainer(final BitmapStorage container,final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
+        /**
+         * Compute the and aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param bitmaps
+         *                the source bitmaps
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words (per input bitmap)
+         * @return the or aggregate.
+         */
+        public static EWAHCompressedBitmap bufferedand(final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
+                EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+                bufferedandWithContainer(answer, bufsize, bitmaps);
+                return answer;
+        }
 
-		java.util.LinkedList<IteratingBufferedRunningLengthWord> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord>();
-		for (EWAHCompressedBitmap bitmap : bitmaps) {
-			al.add(new IteratingBufferedRunningLengthWord(bitmap));
-		}
-		
-		long[] hardbitmap = new long[bufsize*bitmaps.length];
-		
-		for(IteratingRLW i : al) 
-			if (i.size() == 0) {
-				al.clear();
-				break;
-			}
-		
-		while (!al.isEmpty()) {
-			Arrays.fill(hardbitmap, ~0l);
-			long effective = Integer.MAX_VALUE;
-			for(IteratingRLW i : al)  {
-					int eff = IteratorAggregation.inplaceand(hardbitmap, i);
-					if (eff < effective)
-						effective = eff;
-			}
-			for (int k = 0; k < effective; ++k)
-				container.add(hardbitmap[k]);
-			for(IteratingRLW i : al) 
-				if (i.size() == 0) {
-					al.clear();
-					break;
-				}
-		}
-	}
+        /**
+         * Compute the and aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param container
+         *                where the aggregate is written
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words (per input bitmap)
+         * @param bitmaps
+         *                the source bitmaps
+         */
+        public static void bufferedandWithContainer(
+                final BitmapStorage container, final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
 
-	/**
-	 * Compute the or aggregate using a temporary uncompressed bitmap.
-	 * @param bitmaps the source bitmaps
-	 * @param bufsize buffer size used during the computation in 64-bit words
-	 * @return the or aggregate.
-	 */
-	public static EWAHCompressedBitmap bufferedor(final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
-		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedorWithContainer(answer, bufsize, bitmaps);
-		return answer;
-	}
+                java.util.LinkedList<IteratingBufferedRunningLengthWord> al = new java.util.LinkedList<IteratingBufferedRunningLengthWord>();
+                for (EWAHCompressedBitmap bitmap : bitmaps) {
+                        al.add(new IteratingBufferedRunningLengthWord(bitmap));
+                }
 
-	/**
-	 * Compute the or aggregate using a temporary uncompressed bitmap.
-	 * 
-	 * @param container where the aggregate is written
-	 * @param bufsize buffer size used during the computation in 64-bit words
-	 * @param bitmaps the source bitmaps
-	 */
-	public static void bufferedorWithContainer(final BitmapStorage container, final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
-		int range = 0;
-		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
-		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
-			@Override
-			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-				return b.sizeinbits - a.sizeinbits;
-			}
-		});
+                long[] hardbitmap = new long[bufsize * bitmaps.length];
 
-		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
-		for (EWAHCompressedBitmap bitmap : sbitmaps) {
-			if (bitmap.sizeinbits > range)
-				range = bitmap.sizeinbits;
-			al.add(new IteratingBufferedRunningLengthWord(bitmap));
-		}
-		long[] hardbitmap = new long[bufsize];
-		int maxr = al.size();
-		while (maxr > 0) {
-			long effective = 0;
-			for (int k = 0; k < maxr; ++k) {
-				if (al.get(k).size() > 0) {
-					int eff = IteratorAggregation.inplaceor(hardbitmap, al.get(k));
-					if (eff > effective)
-						effective = eff;
-				} else
-					maxr = k;
-			}
-			for (int k = 0; k < effective; ++k)
-				container.add(hardbitmap[k]);
-			Arrays.fill(hardbitmap, 0);
+                for (IteratingRLW i : al)
+                        if (i.size() == 0) {
+                                al.clear();
+                                break;
+                        }
 
-		}
-		container.setSizeInBits(range);
-	}
+                while (!al.isEmpty()) {
+                        Arrays.fill(hardbitmap, ~0l);
+                        long effective = Integer.MAX_VALUE;
+                        for (IteratingRLW i : al) {
+                                int eff = IteratorAggregation.inplaceand(
+                                        hardbitmap, i);
+                                if (eff < effective)
+                                        effective = eff;
+                        }
+                        for (int k = 0; k < effective; ++k)
+                                container.add(hardbitmap[k]);
+                        for (IteratingRLW i : al)
+                                if (i.size() == 0) {
+                                        al.clear();
+                                        break;
+                                }
+                }
+        }
 
-	/**
-	 * Compute the xor aggregate using a temporary uncompressed bitmap.
-	 * @param bitmaps the source bitmaps
-	 * @param bufsize buffer size used during the computation in 64-bit words
-	 * @return the xor aggregate.
-	 */
-	public static EWAHCompressedBitmap bufferedxor(final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
-		EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
-		bufferedxorWithContainer(answer, bufsize,bitmaps);
-		return answer;
-	}
+        /**
+         * Compute the or aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param bitmaps
+         *                the source bitmaps
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words
+         * @return the or aggregate.
+         */
+        public static EWAHCompressedBitmap bufferedor(final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
+                EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+                bufferedorWithContainer(answer, bufsize, bitmaps);
+                return answer;
+        }
 
-	
-	/**
-	 * Compute the xor aggregate using a temporary uncompressed bitmap.
-	 * 
-	 * @param container where the aggregate is written
-	 * @param bufsize buffer size used during the computation in 64-bit words
-	 * @param bitmaps the source bitmaps
-	 */
-	public static void bufferedxorWithContainer(final BitmapStorage container, final int bufsize,
-			final EWAHCompressedBitmap... bitmaps) {
-		int range = 0;
-		EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
-		Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
-			@Override
-			public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-				return b.sizeinbits - a.sizeinbits;
-			}
-		});
+        /**
+         * Compute the or aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param container
+         *                where the aggregate is written
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words
+         * @param bitmaps
+         *                the source bitmaps
+         */
+        public static void bufferedorWithContainer(
+                final BitmapStorage container, final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
+                int range = 0;
+                EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
+                Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+                        @Override
+                        public int compare(EWAHCompressedBitmap a,
+                                EWAHCompressedBitmap b) {
+                                return b.sizeinbits - a.sizeinbits;
+                        }
+                });
 
-		java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
-		for (EWAHCompressedBitmap bitmap : sbitmaps) {
-			if (bitmap.sizeinbits > range)
-				range = bitmap.sizeinbits;
-			al.add(new IteratingBufferedRunningLengthWord(bitmap));
-		}
-		long[] hardbitmap = new long[bufsize];
-		int maxr = al.size();
-		while (maxr > 0) {
-			long effective = 0;
-			for (int k = 0; k < maxr; ++k) {
-				if (al.get(k).size() > 0) {
-					int eff = IteratorAggregation.inplacexor(hardbitmap, al.get(k));
-					if (eff > effective)
-						effective = eff;
-				} else
-					maxr = k;
-			}
-			for (int k = 0; k < effective; ++k)
-				container.add(hardbitmap[k]);
-			Arrays.fill(hardbitmap, 0);
-		}
-		container.setSizeInBits(range);
-	}
+                java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
+                for (EWAHCompressedBitmap bitmap : sbitmaps) {
+                        if (bitmap.sizeinbits > range)
+                                range = bitmap.sizeinbits;
+                        al.add(new IteratingBufferedRunningLengthWord(bitmap));
+                }
+                long[] hardbitmap = new long[bufsize];
+                int maxr = al.size();
+                while (maxr > 0) {
+                        long effective = 0;
+                        for (int k = 0; k < maxr; ++k) {
+                                if (al.get(k).size() > 0) {
+                                        int eff = IteratorAggregation
+                                                .inplaceor(hardbitmap,
+                                                        al.get(k));
+                                        if (eff > effective)
+                                                effective = eff;
+                                } else
+                                        maxr = k;
+                        }
+                        for (int k = 0; k < effective; ++k)
+                                container.add(hardbitmap[k]);
+                        Arrays.fill(hardbitmap, 0);
 
-	/**
-	 * Uses a priority queue to compute the or aggregate.
-	 * @param <T> a class extending LogicalElement (like a compressed bitmap) 
-	 * @param bitmaps
-	 *            bitmaps to be aggregated
-	 * @return the or aggregate
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends LogicalElement> T or(T... bitmaps) {
-		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
-				new Comparator<T>() {
-					@Override
-					public int compare(T a, T b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (T x : bitmaps) {
-			pq.add(x);
-		}
-		while (pq.size() > 1) {
-			T x1 = pq.poll();
-			T x2 = pq.poll();
-			pq.add((T) x1.or(x2));
-		}
-		return pq.poll();
-	}
-	/**
-	 * Uses a priority queue to compute the or aggregate.
-	 * @param container where we write the result
-	 * @param bitmaps to be aggregated
-	 */
-	public static void orToContainer(final BitmapStorage container, 
-			final EWAHCompressedBitmap ... bitmaps) {
-		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
-		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
-				new Comparator<EWAHCompressedBitmap>() {
-					@Override
-					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (EWAHCompressedBitmap x : bitmaps) {
-			pq.add(x);
-		}
-		while (pq.size() > 2) {
-			EWAHCompressedBitmap x1 = pq.poll();
-			EWAHCompressedBitmap x2 = pq.poll();
-			pq.add(x1.or(x2));
-		}
-		pq.poll().orToContainer(pq.poll(), container);
-	}
+                }
+                container.setSizeInBits(range);
+        }
 
-	
-	/**
-	 * Uses a priority queue to compute the xor aggregate.
-	 * 
-	 * @param <T> a class extending LogicalElement (like a compressed bitmap) 
-	 * @param bitmaps
-	 *            bitmaps to be aggregated
-	 * @return the xor aggregate
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends LogicalElement> T xor(T... bitmaps) {
-		PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
-				new Comparator<T>() {
+        /**
+         * Compute the xor aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param bitmaps
+         *                the source bitmaps
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words
+         * @return the xor aggregate.
+         */
+        public static EWAHCompressedBitmap bufferedxor(final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
+                EWAHCompressedBitmap answer = new EWAHCompressedBitmap();
+                bufferedxorWithContainer(answer, bufsize, bitmaps);
+                return answer;
+        }
 
-					@Override
-					public int compare(T a, T b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (T x : bitmaps)
-			pq.add(x);
-		while (pq.size() > 1) {
-			T x1 = pq.poll();
-			T x2 = pq.poll();
-			pq.add((T) x1.xor(x2));
-		}
-		return pq.poll();
-	}
-	
-	/**
-	 * Uses a priority queue to compute the xor aggregate.
-	 * @param container where we write the result
-	 * @param bitmaps to be aggregated
-	 */
-	public static void xorToContainer(final BitmapStorage container, 
-			final EWAHCompressedBitmap ... bitmaps) {
-		if(bitmaps.length < 2) throw new IllegalArgumentException("We need at least two bitmaps");
-		PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
-				new Comparator<EWAHCompressedBitmap>() {
-					@Override
-					public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-						return a.sizeInBytes() - b.sizeInBytes();
-					}
-				});
-		for (EWAHCompressedBitmap x : bitmaps) {
-			pq.add(x);
-		}
-		while (pq.size() > 2) {
-			EWAHCompressedBitmap x1 = pq.poll();
-			EWAHCompressedBitmap x2 = pq.poll();
-			pq.add(x1.xor(x2));
-		}
-		pq.poll().xorToContainer(pq.poll(), container);
-	}
+        /**
+         * Compute the xor aggregate using a temporary uncompressed bitmap.
+         * 
+         * @param container
+         *                where the aggregate is written
+         * @param bufsize
+         *                buffer size used during the computation in 64-bit
+         *                words
+         * @param bitmaps
+         *                the source bitmaps
+         */
+        public static void bufferedxorWithContainer(
+                final BitmapStorage container, final int bufsize,
+                final EWAHCompressedBitmap... bitmaps) {
+                int range = 0;
+                EWAHCompressedBitmap[] sbitmaps = bitmaps.clone();
+                Arrays.sort(sbitmaps, new Comparator<EWAHCompressedBitmap>() {
+                        @Override
+                        public int compare(EWAHCompressedBitmap a,
+                                EWAHCompressedBitmap b) {
+                                return b.sizeinbits - a.sizeinbits;
+                        }
+                });
 
-	  /**
-	   * For internal use. Computes the bitwise or of the provided bitmaps and
-	   * stores the result in the container. (This used to be the default.)
-	   * 
-	   * @deprecated use EWAHCompressedBitmap.or instead
-	   * @since 0.4.0
-	   * @param container where store the result
-	   * @param bitmaps to be aggregated
-	   */
-	  @Deprecated
-	public static void legacy_orWithContainer(final BitmapStorage container,
-	    final EWAHCompressedBitmap... bitmaps) {
-	    if (bitmaps.length == 2) {
-	      // should be more efficient
-	      bitmaps[0].orToContainer(bitmaps[1], container);
-	      return;
-	    }
+                java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
+                for (EWAHCompressedBitmap bitmap : sbitmaps) {
+                        if (bitmap.sizeinbits > range)
+                                range = bitmap.sizeinbits;
+                        al.add(new IteratingBufferedRunningLengthWord(bitmap));
+                }
+                long[] hardbitmap = new long[bufsize];
+                int maxr = al.size();
+                while (maxr > 0) {
+                        long effective = 0;
+                        for (int k = 0; k < maxr; ++k) {
+                                if (al.get(k).size() > 0) {
+                                        int eff = IteratorAggregation
+                                                .inplacexor(hardbitmap,
+                                                        al.get(k));
+                                        if (eff > effective)
+                                                effective = eff;
+                                } else
+                                        maxr = k;
+                        }
+                        for (int k = 0; k < effective; ++k)
+                                container.add(hardbitmap[k]);
+                        Arrays.fill(hardbitmap, 0);
+                }
+                container.setSizeInBits(range);
+        }
 
-	    // Sort the bitmaps in descending order by sizeinbits. We will exhaust the
-	    // sorted bitmaps from right to left.
-	    final EWAHCompressedBitmap[] sortedBitmaps = bitmaps.clone();
-	    Arrays.sort(sortedBitmaps, new Comparator<EWAHCompressedBitmap>() {
-	      @Override
-		public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
-	        return a.sizeinbits < b.sizeinbits ? 1
-	          : a.sizeinbits == b.sizeinbits ? 0 : -1;
-	      }
-	    });
+        /**
+         * Uses a priority queue to compute the or aggregate.
+         * 
+         * @param <T>
+         *                a class extending LogicalElement (like a compressed
+         *                bitmap)
+         * @param bitmaps
+         *                bitmaps to be aggregated
+         * @return the or aggregate
+         */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public static <T extends LogicalElement> T or(T... bitmaps) {
+                PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
+                        new Comparator<T>() {
+                                @Override
+                                public int compare(T a, T b) {
+                                        return a.sizeInBytes()
+                                                - b.sizeInBytes();
+                                }
+                        });
+                for (T x : bitmaps) {
+                        pq.add(x);
+                }
+                while (pq.size() > 1) {
+                        T x1 = pq.poll();
+                        T x2 = pq.poll();
+                        pq.add((T) x1.or(x2));
+                }
+                return pq.poll();
+        }
 
-	    final IteratingBufferedRunningLengthWord[] rlws = new IteratingBufferedRunningLengthWord[bitmaps.length];
-	    int maxAvailablePos = 0;
-	    for (EWAHCompressedBitmap bitmap : sortedBitmaps) {
-	      EWAHIterator iterator = bitmap.getEWAHIterator();
-	      if (iterator.hasNext()) {
-	        rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord(
-	          iterator);
-	      }
-	    }
+        /**
+         * Uses a priority queue to compute the or aggregate.
+         * 
+         * @param container
+         *                where we write the result
+         * @param bitmaps
+         *                to be aggregated
+         */
+        public static void orToContainer(final BitmapStorage container,
+                final EWAHCompressedBitmap... bitmaps) {
+                if (bitmaps.length < 2)
+                        throw new IllegalArgumentException(
+                                "We need at least two bitmaps");
+                PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(
+                        bitmaps.length, new Comparator<EWAHCompressedBitmap>() {
+                                @Override
+                                public int compare(EWAHCompressedBitmap a,
+                                        EWAHCompressedBitmap b) {
+                                        return a.sizeInBytes()
+                                                - b.sizeInBytes();
+                                }
+                        });
+                for (EWAHCompressedBitmap x : bitmaps) {
+                        pq.add(x);
+                }
+                while (pq.size() > 2) {
+                        EWAHCompressedBitmap x1 = pq.poll();
+                        EWAHCompressedBitmap x2 = pq.poll();
+                        pq.add(x1.or(x2));
+                }
+                pq.poll().orToContainer(pq.poll(), container);
+        }
 
-	    if (maxAvailablePos == 0) { // this never happens...
-	      container.setSizeInBits(0);
-	      return;
-	    }
+        /**
+         * Uses a priority queue to compute the xor aggregate.
+         * 
+         * @param <T>
+         *                a class extending LogicalElement (like a compressed
+         *                bitmap)
+         * @param bitmaps
+         *                bitmaps to be aggregated
+         * @return the xor aggregate
+         */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public static <T extends LogicalElement> T xor(T... bitmaps) {
+                PriorityQueue<T> pq = new PriorityQueue<T>(bitmaps.length,
+                        new Comparator<T>() {
 
-	    int maxSize = sortedBitmaps[0].sizeinbits;
+                                @Override
+                                public int compare(T a, T b) {
+                                        return a.sizeInBytes()
+                                                - b.sizeInBytes();
+                                }
+                        });
+                for (T x : bitmaps)
+                        pq.add(x);
+                while (pq.size() > 1) {
+                        T x1 = pq.poll();
+                        T x2 = pq.poll();
+                        pq.add((T) x1.xor(x2));
+                }
+                return pq.poll();
+        }
 
-	    while (true) {
-	      long maxOneRl = 0;
-	      long minZeroRl = Long.MAX_VALUE;
-	      long minSize = Long.MAX_VALUE;
-	      int numEmptyRl = 0;
-	      for (int i = 0; i < maxAvailablePos; i++) {
-	        IteratingBufferedRunningLengthWord rlw = rlws[i];
-	        long size = rlw.size();
-	        if (size == 0) {
-	          maxAvailablePos = i;
-	          break;
-	        }
-	        minSize = Math.min(minSize, size);
+        /**
+         * Uses a priority queue to compute the xor aggregate.
+         * 
+         * @param container
+         *                where we write the result
+         * @param bitmaps
+         *                to be aggregated
+         */
+        public static void xorToContainer(final BitmapStorage container,
+                final EWAHCompressedBitmap... bitmaps) {
+                if (bitmaps.length < 2)
+                        throw new IllegalArgumentException(
+                                "We need at least two bitmaps");
+                PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(
+                        bitmaps.length, new Comparator<EWAHCompressedBitmap>() {
+                                @Override
+                                public int compare(EWAHCompressedBitmap a,
+                                        EWAHCompressedBitmap b) {
+                                        return a.sizeInBytes()
+                                                - b.sizeInBytes();
+                                }
+                        });
+                for (EWAHCompressedBitmap x : bitmaps) {
+                        pq.add(x);
+                }
+                while (pq.size() > 2) {
+                        EWAHCompressedBitmap x1 = pq.poll();
+                        EWAHCompressedBitmap x2 = pq.poll();
+                        pq.add(x1.xor(x2));
+                }
+                pq.poll().xorToContainer(pq.poll(), container);
+        }
 
-	        if (rlw.getRunningBit()) {
-	          long rl = rlw.getRunningLength();
-	          maxOneRl = Math.max(maxOneRl, rl);
-	          minZeroRl = 0;
-	          if (rl == 0 && size > 0) {
-	            numEmptyRl++;
-	          }
-	        } else {
-	          long rl = rlw.getRunningLength();
-	          minZeroRl = Math.min(minZeroRl, rl);
-	          if (rl == 0 && size > 0) {
-	            numEmptyRl++;
-	          }
-	        }
-	      }
+        /**
+         * For internal use. Computes the bitwise or of the provided bitmaps and
+         * stores the result in the container. (This used to be the default.)
+         * 
+         * @deprecated use EWAHCompressedBitmap.or instead
+         * @since 0.4.0
+         * @param container
+         *                where store the result
+         * @param bitmaps
+         *                to be aggregated
+         */
+        @Deprecated
+        public static void legacy_orWithContainer(
+                final BitmapStorage container,
+                final EWAHCompressedBitmap... bitmaps) {
+                if (bitmaps.length == 2) {
+                        // should be more efficient
+                        bitmaps[0].orToContainer(bitmaps[1], container);
+                        return;
+                }
 
-	      if (maxAvailablePos == 0) {
-	        break;
-	      } else if (maxAvailablePos == 1) {
-	        // only one bitmap is left so just write the rest of it out
-	        rlws[0].discharge(container);
-	        break;
-	      }
+                // Sort the bitmaps in descending order by sizeinbits. We will
+                // exhaust the
+                // sorted bitmaps from right to left.
+                final EWAHCompressedBitmap[] sortedBitmaps = bitmaps.clone();
+                Arrays.sort(sortedBitmaps,
+                        new Comparator<EWAHCompressedBitmap>() {
+                                @Override
+                                public int compare(EWAHCompressedBitmap a,
+                                        EWAHCompressedBitmap b) {
+                                        return a.sizeinbits < b.sizeinbits ? 1
+                                                : a.sizeinbits == b.sizeinbits ? 0
+                                                        : -1;
+                                }
+                        });
 
-	      if (maxOneRl > 0) {
-	        container.addStreamOfEmptyWords(true, maxOneRl);
-	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
-	          rlw.discardFirstWords(maxOneRl);
-	        }
-	      } else if (minZeroRl > 0) {
-	        container.addStreamOfEmptyWords(false, minZeroRl);
-	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
-	          rlw.discardFirstWords(minZeroRl);
-	        }
-	      } else {
-	        int index = 0;
+                final IteratingBufferedRunningLengthWord[] rlws = new IteratingBufferedRunningLengthWord[bitmaps.length];
+                int maxAvailablePos = 0;
+                for (EWAHCompressedBitmap bitmap : sortedBitmaps) {
+                        EWAHIterator iterator = bitmap.getEWAHIterator();
+                        if (iterator.hasNext()) {
+                                rlws[maxAvailablePos++] = new IteratingBufferedRunningLengthWord(
+                                        iterator);
+                        }
+                }
 
-	        if (numEmptyRl == 1) {
-	          // if one rlw has literal words to process and the rest have a run of
-	          // 0's we can write them out here
-	          IteratingBufferedRunningLengthWord emptyRl = null;
-	          long minNonEmptyRl = Long.MAX_VALUE;
-	          for (int i = 0; i < maxAvailablePos; i++) {
-	            IteratingBufferedRunningLengthWord rlw = rlws[i];
-	            long rl = rlw.getRunningLength();
-	            if (rl == 0) {
-	              assert emptyRl == null;
-	              emptyRl = rlw;
-	            } else {
-	              minNonEmptyRl = Math.min(minNonEmptyRl, rl);
-	            }
-	          }
-	          long wordsToWrite = minNonEmptyRl > minSize ? minSize : minNonEmptyRl;
-	          if (emptyRl != null)
-	            emptyRl.writeLiteralWords((int) wordsToWrite, container);
-	          index += wordsToWrite;
-	        }
+                if (maxAvailablePos == 0) { // this never happens...
+                        container.setSizeInBits(0);
+                        return;
+                }
 
-	        while (index < minSize) {
-	          long word = 0;
-	          for (int i = 0; i < maxAvailablePos; i++) {
-	            IteratingBufferedRunningLengthWord rlw = rlws[i];
-	            if (rlw.getRunningLength() <= index) {
-	              word |= rlw.getLiteralWordAt(index - (int) rlw.getRunningLength());
-	            }
-	          }
-	          container.add(word);
-	          index++;
-	        }
-	        for (int i = 0; i < maxAvailablePos; i++) {
-	          IteratingBufferedRunningLengthWord rlw = rlws[i];
-	          rlw.discardFirstWords(minSize);
-	        }
-	      }
-	    }
-	    container.setSizeInBits(maxSize);
-	  }
-	
+                int maxSize = sortedBitmaps[0].sizeinbits;
+
+                while (true) {
+                        long maxOneRl = 0;
+                        long minZeroRl = Long.MAX_VALUE;
+                        long minSize = Long.MAX_VALUE;
+                        int numEmptyRl = 0;
+                        for (int i = 0; i < maxAvailablePos; i++) {
+                                IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                long size = rlw.size();
+                                if (size == 0) {
+                                        maxAvailablePos = i;
+                                        break;
+                                }
+                                minSize = Math.min(minSize, size);
+
+                                if (rlw.getRunningBit()) {
+                                        long rl = rlw.getRunningLength();
+                                        maxOneRl = Math.max(maxOneRl, rl);
+                                        minZeroRl = 0;
+                                        if (rl == 0 && size > 0) {
+                                                numEmptyRl++;
+                                        }
+                                } else {
+                                        long rl = rlw.getRunningLength();
+                                        minZeroRl = Math.min(minZeroRl, rl);
+                                        if (rl == 0 && size > 0) {
+                                                numEmptyRl++;
+                                        }
+                                }
+                        }
+
+                        if (maxAvailablePos == 0) {
+                                break;
+                        } else if (maxAvailablePos == 1) {
+                                // only one bitmap is left so just write the
+                                // rest of it out
+                                rlws[0].discharge(container);
+                                break;
+                        }
+
+                        if (maxOneRl > 0) {
+                                container.addStreamOfEmptyWords(true, maxOneRl);
+                                for (int i = 0; i < maxAvailablePos; i++) {
+                                        IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                        rlw.discardFirstWords(maxOneRl);
+                                }
+                        } else if (minZeroRl > 0) {
+                                container.addStreamOfEmptyWords(false,
+                                        minZeroRl);
+                                for (int i = 0; i < maxAvailablePos; i++) {
+                                        IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                        rlw.discardFirstWords(minZeroRl);
+                                }
+                        } else {
+                                int index = 0;
+
+                                if (numEmptyRl == 1) {
+                                        // if one rlw has literal words to
+                                        // process and the rest have a run of
+                                        // 0's we can write them out here
+                                        IteratingBufferedRunningLengthWord emptyRl = null;
+                                        long minNonEmptyRl = Long.MAX_VALUE;
+                                        for (int i = 0; i < maxAvailablePos; i++) {
+                                                IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                                long rl = rlw
+                                                        .getRunningLength();
+                                                if (rl == 0) {
+                                                        assert emptyRl == null;
+                                                        emptyRl = rlw;
+                                                } else {
+                                                        minNonEmptyRl = Math
+                                                                .min(minNonEmptyRl,
+                                                                        rl);
+                                                }
+                                        }
+                                        long wordsToWrite = minNonEmptyRl > minSize ? minSize
+                                                : minNonEmptyRl;
+                                        if (emptyRl != null)
+                                                emptyRl.writeLiteralWords(
+                                                        (int) wordsToWrite,
+                                                        container);
+                                        index += wordsToWrite;
+                                }
+
+                                while (index < minSize) {
+                                        long word = 0;
+                                        for (int i = 0; i < maxAvailablePos; i++) {
+                                                IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                                if (rlw.getRunningLength() <= index) {
+                                                        word |= rlw
+                                                                .getLiteralWordAt(index
+                                                                        - (int) rlw
+                                                                                .getRunningLength());
+                                                }
+                                        }
+                                        container.add(word);
+                                        index++;
+                                }
+                                for (int i = 0; i < maxAvailablePos; i++) {
+                                        IteratingBufferedRunningLengthWord rlw = rlws[i];
+                                        rlw.discardFirstWords(minSize);
+                                }
+                        }
+                }
+                container.setSizeInBits(maxSize);
+        }
+
 }

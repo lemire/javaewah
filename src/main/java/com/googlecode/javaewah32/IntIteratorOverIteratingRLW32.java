@@ -11,7 +11,7 @@ import com.googlecode.javaewah.IntIterator;
 /**
  * Implementation of an IntIterator over an IteratingRLW.
  * 
- *
+ * 
  */
 public class IntIteratorOverIteratingRLW32 implements IntIterator {
         IteratingRLW32 parent;
@@ -24,25 +24,28 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
         private boolean hasnext;
 
         /**
-         * @param p iterator we wish to iterate over
+         * @param p
+         *                iterator we wish to iterate over
          */
         public IntIteratorOverIteratingRLW32(final IteratingRLW32 p) {
                 this.parent = p;
                 this.position = 0;
                 setupForCurrentRunningLengthWord();
-                this.hasnext = moveToNext(); 
+                this.hasnext = moveToNext();
         }
 
         /**
-         * @return whether we could find another set bit; don't move if there is an unprocessed value
+         * @return whether we could find another set bit; don't move if there is
+         *         an unprocessed value
          */
         private final boolean moveToNext() {
-            while (!runningHasNext() && !literalHasNext()) {
-                if (this.parent.next())
-                    setupForCurrentRunningLengthWord();
-                else return false;
-            }
-            return true;
+                while (!runningHasNext() && !literalHasNext()) {
+                        if (this.parent.next())
+                                setupForCurrentRunningLengthWord();
+                        else
+                                return false;
+                }
+                return true;
         }
 
         @Override
@@ -65,13 +68,13 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
         }
 
         private final void setupForCurrentRunningLengthWord() {
-                this.runningLength = wordinbits * this.parent.getRunningLength()
-                                + this.position;
+                this.runningLength = wordinbits
+                        * this.parent.getRunningLength() + this.position;
 
                 if (!this.parent.getRunningBit()) {
                         this.position = this.runningLength;
                 }
-                this.wordPosition = 0;  
+                this.wordPosition = 0;
                 this.wordLength = this.parent.getNumberOfLiteralWords();
         }
 
@@ -81,11 +84,11 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
 
         private final boolean literalHasNext() {
                 while (this.word == 0 && this.wordPosition < this.wordLength) {
-                        this.word = this.parent.getLiteralWordAt(this.wordPosition++);
+                        this.word = this.parent
+                                .getLiteralWordAt(this.wordPosition++);
                         this.literalPosition = this.position;
                         this.position += wordinbits;
                 }
                 return this.word != 0;
         }
 }
-
