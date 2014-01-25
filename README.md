@@ -10,6 +10,7 @@ Colby Ranger (https://github.com/crangeratgoogle)
 Veronika Zenz (https://github.com/veronikazenz)
 and Owen Kaser (https://github.com/owenkaser)
 
+Special thanks to  Shen Liang  for optimization advice.
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
 (GPL 2.0 derivatives are allowed.)

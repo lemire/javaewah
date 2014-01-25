@@ -525,8 +525,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public int cardinality() {
                 int counter = 0;
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 while (i.hasNext()) {
                         RunningLengthWord32 localrlw = i.next();
                         if (localrlw.getRunningBit()) {
@@ -676,8 +675,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public List<Integer> getPositions() {
                 final ArrayList<Integer> v = new ArrayList<Integer>();
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 int pos = 0;
                 while (i.hasNext()) {
                         RunningLengthWord32 localrlw = i.next();
@@ -692,10 +690,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                         for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
                                 int data = i.buffer()[i.literalWords() + j];
                                 while (data != 0) {
-                                        final int ntz = Integer
-                                                .numberOfTrailingZeros(data);
-                                        data ^= (1 << ntz);
-                                        v.add(new Integer(ntz + pos));
+                                        final int T = data & -data;
+                                        v.add(new Integer(Integer.bitCount(T - 1)
+                                                + pos));
+                                        data ^= T;
                                 }
                                 pos += wordinbits;
                         }
@@ -715,8 +713,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         public int hashCode() {
                 int karprabin = 0;
                 final int B = 31;
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 while (i.hasNext()) {
                         i.next();
                         if (i.rlw.getRunningBit() == true) {
@@ -759,8 +756,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * @return the int iterator
          */
         public IntIterator intIterator() {
-                return new IntIteratorImpl32(new EWAHIterator32(this,
-                        this.actualsizeinwords));
+                return new IntIteratorImpl32(this.getEWAHIterator());
         }
 
         /**
@@ -834,8 +830,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         @Override
         public void not() {
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 if (!i.hasNext())
                         return;
                 while (true) {
@@ -1241,8 +1236,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 int[] ans = new int[this.cardinality()];
                 int inanspos = 0;
                 int pos = 0;
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 while (i.hasNext()) {
                         RunningLengthWord32 localrlw = i.next();
                         if (localrlw.getRunningBit()) {
@@ -1256,22 +1250,14 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                         }
                         for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
                                 int data = i.buffer()[i.literalWords() + j];
-                                if (!usetrailingzeros) {
-                                        for (int c = 0; c < wordinbits; ++c) {
-                                                if ((data & (1 << c)) != 0)
-                                                        ans[inanspos++] = c
-                                                                + pos;
-                                        }
-                                        pos += wordinbits;
-                                } else {
+                                
                                         while (data != 0) {
-                                                final int ntz = Integer
-                                                        .numberOfTrailingZeros(data);
-                                                data ^= (1l << ntz);
-                                                ans[inanspos++] = ntz + pos;
+                                                final int T = data & -data;
+                                                ans[inanspos++] = Integer.bitCount(T-1) + pos;
+                                                data ^= T;
                                         }
                                         pos += wordinbits;
-                                }
+                                
                         }
                 }
                 return ans;
@@ -1287,8 +1273,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 String ans = " EWAHCompressedBitmap, size in bits = "
                         + this.sizeinbits + " size in words = "
                         + this.actualsizeinwords + "\n";
-                final EWAHIterator32 i = new EWAHIterator32(this,
-                        this.actualsizeinwords);
+                final EWAHIterator32 i = this.getEWAHIterator();
                 while (i.hasNext()) {
                         RunningLengthWord32 localrlw = i.next();
                         if (localrlw.getRunningBit()) {
@@ -1743,8 +1728,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         static final int defaultbuffersize = 4;
 
-        /** optimization option **/
-        public static final boolean usetrailingzeros = true;
 
         /** whether we adjust after some aggregation by adding in zeroes **/
         public static final boolean adjustContainerSizeWhenAggregating = true;

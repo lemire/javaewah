@@ -84,7 +84,7 @@ public class IteratorUtil32 {
                                 answer += i.getRunningLength()
                                         * EWAHCompressedBitmap32.wordinbits;
                         for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
-                                answer += Long.bitCount(i.getLiteralWordAt(k));
+                                answer += Integer.bitCount(i.getLiteralWordAt(k));
                         if (!i.next())
                                 break;
                 }

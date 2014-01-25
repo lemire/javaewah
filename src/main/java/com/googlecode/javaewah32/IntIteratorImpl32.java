@@ -56,9 +56,9 @@ final class IntIteratorImpl32 implements IntIterator {
                 if (runningHasNext()) {
                         answer = this.position++;
                 } else {
-                        final int bit = Long.numberOfTrailingZeros(this.word);
-                        this.word ^= (1l << bit);
-                        answer = this.literalPosition + bit;
+                        final int T = this.word & -this.word;
+                        answer = this.literalPosition + Integer.bitCount(T - 1);
+                        this.word ^= T;
                 }
                 this.hasnext = this.moveToNext();
                 return answer;
