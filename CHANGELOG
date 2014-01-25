@@ -1,8 +1,8 @@
-version 0.8.2 (upcoming)
+version 0.8.2 
  - removed the benchmark code 
  - cleaned up the documentation
  - code reformatting
- - optimized the extraction of the set bits
+ - optimized the extraction of the set bits (Shen Liang)
  - added threshold function for 32-bit EWAH
 
 version 0.8.1 (January 7th 2013)
