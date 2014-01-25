@@ -23,17 +23,15 @@ public class IntIteratorOverIteratingRLWTest32 {
                 System.out
                         .println("testing int iteration, 2 consec clean runs starting with zeros");
                 EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
-                //for (int i = 0; i < 128; ++i)
-                //        e.set(i);
-                e.set(128);
+                for (int i = 0; i < 128; ++i)
+                        e.set(i);
                 IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(
                         e.getIteratingRLW());
                 assertTrue(ii.hasNext());
                 int ctr = 0;
                 while (ii.hasNext()) {
                         ++ctr;
-                        //ii.next();
-                        System.out.println(ii.next());
+                        ii.next();
                 }
                 assertEquals(64, ctr);
         }
