@@ -1,5 +1,7 @@
 version 0.8.2 (upcoming)
+ - removed the benchmark code 
  - cleaned up the documentation
+ - code reformatting
 
 version 0.8.1 (January 7th 2013)
  - Optimized threshold function
