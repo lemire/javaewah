@@ -57,9 +57,9 @@ public class IntIteratorOverIteratingRLW implements IntIterator {
                 if (runningHasNext()) {
                         answer = this.position++;
                 } else {
-                        final int bit = Long.numberOfTrailingZeros(this.word);
-                        this.word ^= (1l << bit);
-                        answer = this.literalPosition + bit;
+                        final long T = this.word & -this.word;
+                        answer = this.literalPosition + Long.bitCount(T-1);
+                        this.word ^= T;
                 }
                 this.hasnext = this.moveToNext();
                 return answer;
