@@ -10,6 +10,8 @@ import java.io.*;
 
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
+import com.googlecode.javaewah32.symmetric.RunningBitmapMerge32;
+import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
 
 /**
  * <p>
@@ -1226,6 +1228,47 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 return this.actualsizeinwords * (wordinbits / 8);
         }
 
+
+        /**
+         * 
+         * Compute a Boolean threshold function: bits are true where at least T
+         * bitmaps have a true bit.
+         * 
+         * @since 0.8.2
+         * @param T
+         *                the threshold
+         * @param bitmaps
+         *                input data
+         * @return the aggregated bitmap
+         */
+        public static EWAHCompressedBitmap32 threshold(final int T,
+                final EWAHCompressedBitmap32... bitmaps) {
+                final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
+                thresholdWithContainer(container, T, bitmaps);
+                return container;
+        }
+
+        /**
+         * 
+         * Compute a Boolean threshold function: bits are true where at least T
+         * bitmaps have a true bit.
+         * 
+         * @since 0.8.2
+         * @param T
+         *                the threshold
+         * @param bitmaps
+         *                input data
+         * @param container
+         *                where we write the aggregated bitmap
+         */
+        public static void thresholdWithContainer(
+                final BitmapStorage32 container, final int T,
+                final EWAHCompressedBitmap32... bitmaps) {
+                (new RunningBitmapMerge32()).symmetric(
+                        new ThresholdFuncBitmap32(T), container, bitmaps);
+        }
+        
+        
         /**
          * Populate an array of (sorted integers) corresponding to the location
          * of the set bits.

@@ -1281,7 +1281,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
          * @param bitmaps
          *                input data
          * @param container
-         *                where we writethe aggregated bitmap
+         *                where we write the aggregated bitmap
          */
         public static void thresholdWithContainer(
                 final BitmapStorage container, final int T,
