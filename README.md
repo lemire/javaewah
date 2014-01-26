@@ -1,4 +1,4 @@
-JavaEWAH
+JavaEWAH [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
 ==========================================================
 
 (c) 2009-2014
