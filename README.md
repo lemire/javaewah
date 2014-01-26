@@ -128,6 +128,10 @@ follows:
            */
           boolean is64set = b.get(64);
 
+API Documentation
+-----------------
+
+http://lemire.me/docs/javaewah/
 
 Acknowledgement
 ---------------
