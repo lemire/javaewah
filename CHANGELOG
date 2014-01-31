@@ -1,3 +1,6 @@
+version 0.8.3 (upcoming)
+ - improved BitSet class
+
 version 0.8.2 
  - removed the benchmark code 
  - cleaned up the documentation

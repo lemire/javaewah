@@ -2,7 +2,7 @@ package com.googlecode.javaewah32.symmetric;
 
 import java.util.Iterator;
 import java.util.List;
-import com.googlecode.javaewah.datastructure.StaticBitSet;
+import com.googlecode.javaewah.datastructure.BitSet;
 import com.googlecode.javaewah32.BitmapStorage32;
 
 /**
@@ -24,7 +24,7 @@ public abstract class UpdateableBitmapFunction32 {
         int hammingWeight = 0;
         int litWeight = 0;
         boolean[] b = new boolean[0];
-        final StaticBitSet litwlist = new StaticBitSet(0);
+        final BitSet litwlist = new BitSet(0);
 
         UpdateableBitmapFunction32() {
         }

@@ -3,7 +3,7 @@ package com.googlecode.javaewah.symmetric;
 import java.util.Iterator;
 import java.util.List;
 
-import com.googlecode.javaewah.datastructure.StaticBitSet;
+import com.googlecode.javaewah.datastructure.BitSet;
 import com.googlecode.javaewah.BitmapStorage;
 
 /**
@@ -25,7 +25,7 @@ public abstract class UpdateableBitmapFunction {
         int hammingWeight = 0;
         int litWeight = 0;
         boolean[] b = new boolean[0];
-        final StaticBitSet litwlist = new StaticBitSet(0);
+        final BitSet litwlist = new BitSet(0);
 
         UpdateableBitmapFunction() {
         }
