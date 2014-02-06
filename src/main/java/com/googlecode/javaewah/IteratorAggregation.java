@@ -57,6 +57,11 @@ public class IteratorAggregation {
                         public void discardFirstWords(long y) {
                                 x.discardFirstWords(y);
                         }
+                        
+                        @Override
+                        public void discardRunningWords() {
+                                x.discardRunningWords();
+                        }
 
                         @Override
                         public IteratingRLW clone()

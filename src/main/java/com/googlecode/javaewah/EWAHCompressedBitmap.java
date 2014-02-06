@@ -358,8 +358,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                                                 predator.getRunningLength());
                                         prey.discardFirstWords(predator
                                                 .getRunningLength());
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 } else {
                                         final long index = prey.discharge(
                                                 container,
@@ -367,9 +365,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                                         container.addStreamOfEmptyWords(false,
                                                 predator.getRunningLength()
                                                         - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 }
+                                predator.discardRunningWords();
                         }
                         final int nbre_literal = Math.min(
                                 rlwi.getNumberOfLiteralWords(),
@@ -470,26 +467,21 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                                                 predator.getRunningLength());
                                         prey.discardFirstWords(predator
                                                 .getRunningLength());
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 } else if (i_is_prey) {
-                                        long index = prey.discharge(container,
+                                        final long index = prey.discharge(container,
                                                 predator.getRunningLength());
                                         container.addStreamOfEmptyWords(false,
                                                 predator.getRunningLength()
                                                         - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 } else {
-                                        long index = prey.dischargeNegated(
+                                        final long index = prey.dischargeNegated(
                                                 container,
                                                 predator.getRunningLength());
                                         container.addStreamOfEmptyWords(true,
                                                 predator.getRunningLength()
                                                         - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 }
+                                predator.discardRunningWords();
                         }
                         final int nbre_literal = Math.min(
                                 rlwi.getNumberOfLiteralWords(),
@@ -943,17 +935,14 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                                                 predator.getRunningLength());
                                         prey.discardFirstWords(predator
                                                 .getRunningLength());
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 } else {
-                                        long index = prey.discharge(container,
+                                        final long index = prey.discharge(container,
                                                 predator.getRunningLength());
                                         container.addStreamOfEmptyWords(false,
                                                 predator.getRunningLength()
                                                         - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
                                 }
+                                predator.discardRunningWords();
                         }
                         final int nbre_literal = Math.min(
                                 rlwi.getNumberOfLiteralWords(),
@@ -1468,24 +1457,15 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                                         : rlwj;
                                 final IteratingBufferedRunningLengthWord predator = i_is_prey ? rlwj
                                         : rlwi;
-                                if (predator.getRunningBit() == false) {
-                                        long index = prey.discharge(container,
+                                final long index = (predator.getRunningBit() == false) ? prey
+                                        .discharge(container,
+                                                predator.getRunningLength())
+                                        : prey.dischargeNegated(container,
                                                 predator.getRunningLength());
-                                        container.addStreamOfEmptyWords(false,
-                                                predator.getRunningLength()
-                                                        - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
-                                } else {
-                                        long index = prey.dischargeNegated(
-                                                container,
-                                                predator.getRunningLength());
-                                        container.addStreamOfEmptyWords(true,
-                                                predator.getRunningLength()
-                                                        - index);
-                                        predator.discardFirstWords(predator
-                                                .getRunningLength());
-                                }
+                                container.addStreamOfEmptyWords(
+                                        predator.getRunningBit(),
+                                        predator.getRunningLength() - index);
+                                predator.discardRunningWords();
                         }
                         final int nbre_literal = Math.min(
                                 rlwi.getNumberOfLiteralWords(),

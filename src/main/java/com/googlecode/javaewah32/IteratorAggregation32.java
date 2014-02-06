@@ -59,6 +59,15 @@ public class IteratorAggregation32 {
                                 x.discardFirstWords(y);
                         }
 
+                        @Override
+                        public void discardRunningWords() {
+                                x.discardRunningWords();
+                        }
+                        @Override
+                        public IteratingRLW32 clone()
+                                throws CloneNotSupportedException {
+                                throw new CloneNotSupportedException();
+                        }
                 };
         }
 

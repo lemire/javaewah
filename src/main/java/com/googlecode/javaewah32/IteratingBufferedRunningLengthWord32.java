@@ -77,6 +77,13 @@ public final class IteratingBufferedRunningLengthWord32 implements
                         }
                 }
         }
+        
+        @Override
+        public void discardRunningWords() {
+                this.brlw.RunningLength = 0;
+                if(this.brlw.getNumberOfLiteralWords() == 0)
+                        this.next();
+        }
 
         /**
          * Write out up to max words, returns how many were written
@@ -312,4 +319,5 @@ public final class IteratingBufferedRunningLengthWord32 implements
         private int[] buffer;
         private int literalWordStartPosition;
         private EWAHIterator32 iterator;
+
 }

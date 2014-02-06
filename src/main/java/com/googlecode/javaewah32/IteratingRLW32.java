@@ -47,4 +47,17 @@ public interface IteratingRLW32 {
          *                the number of words to discard
          */
         public void discardFirstWords(int x);
+        
+        /**
+         * Discard all running words
+         */
+        public void discardRunningWords();
+        
+        /**
+         * @return a copy of the iterator
+         * @throws CloneNotSupportedException
+         *                 this should not be thrown in theory
+         */
+        public IteratingRLW32 clone() throws CloneNotSupportedException;
+
 }

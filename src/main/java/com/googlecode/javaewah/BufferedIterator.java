@@ -58,7 +58,12 @@ public class BufferedIterator implements IteratingRLW {
                         }
                 }
         }
-
+        @Override
+        public void discardRunningWords() {
+                this.brlw.RunningLength = 0;
+                if(this.brlw.getNumberOfLiteralWords() == 0)
+                        this.next();
+        }
         /**
          * Move to the next RunningLengthWord
          * 

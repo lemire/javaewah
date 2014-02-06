@@ -49,6 +49,10 @@ public interface IteratingRLW {
         public void discardFirstWords(long x);
 
         /**
+         * Discard all running words
+         */
+        public void discardRunningWords();
+        /**
          * @return a copy of the iterator
          * @throws CloneNotSupportedException
          *                 this should not be thrown in theory

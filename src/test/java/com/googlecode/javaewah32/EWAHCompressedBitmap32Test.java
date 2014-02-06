@@ -951,7 +951,6 @@ public class EWAHCompressedBitmap32Test {
                 PolizziTest(64);
                 PolizziTest(128);
                 PolizziTest(256);
-                PolizziTest(2048);
                 System.out.println("Your code is probably ok.");
         }
 

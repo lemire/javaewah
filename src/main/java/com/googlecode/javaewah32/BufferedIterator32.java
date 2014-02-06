@@ -61,7 +61,13 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
                         }
                 }
         }
-
+        @Override
+        public void discardRunningWords() {
+                this.brlw.RunningLength = 0;
+                if(this.brlw.getNumberOfLiteralWords() == 0)
+                        this.next();
+        }
+        
         /**
          * Move to the next RunningLengthWord
          * 
@@ -160,4 +166,5 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
         private int literalWordStartPosition;
         private EWAHIterator32 iterator;
         private CloneableIterator<EWAHIterator32> masteriterator;
+       
 }
