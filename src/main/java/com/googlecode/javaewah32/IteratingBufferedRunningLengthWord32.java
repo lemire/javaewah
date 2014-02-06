@@ -71,9 +71,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
                                 }
                                 this.brlw.reset(this.iterator.next());
                                 this.literalWordStartPosition = this.iterator
-                                        .literalWords(); // +
-                                                         // this.brlw.literalwordoffset
-                                                         // == 0;
+                                        .literalWords();
                         }
                 }
         }
