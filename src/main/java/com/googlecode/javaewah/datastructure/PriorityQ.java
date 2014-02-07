@@ -3,8 +3,9 @@ package com.googlecode.javaewah.datastructure;
 import java.util.Comparator;
 
 /**
- * Special-purpose priority queue. does limited error checking and supports
- * toss, buildHeap, poll, peek, percolateDown.
+ * Special-purpose priority queue. Does limited error checking and supports
+ * toss, buildHeap, poll, peek, percolateDown. It is faster than the equivalent
+ * class from java.util.
  * 
  * @param <T>
  *                object type

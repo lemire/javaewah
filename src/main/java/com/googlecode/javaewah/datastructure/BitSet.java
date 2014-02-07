@@ -6,8 +6,18 @@ import com.googlecode.javaewah.IntIterator;
 
 /**
  * This is an optimized version of Java's BitSet. In many cases, it can be used
- * as a drop-in replacement. The implementation is simpler in part because it
- * assumes that all BitSet have the same size.
+ * as a drop-in replacement. 
+ * 
+ * It differs from the basic Java BitSet class in the following ways:
+ * <ul>
+ * <li>It only aggregate BitSets having the same number of bits. This is 
+ * the desired behavior in many cases where BitSets are supposed to span
+ * the same number of bits and differences are indicative of a programming
+ * issue. You can always resize your BitSets.</li>
+ * <li>You can iterate over set bits using a simpler syntax <code>for(int bs: mybitset)</code>.</li>
+ * <li>You can compute the cardinality of an intersection and union without writing it out
+ * or modifying your BitSets (see methods such as andcardinality).</li>
+ * </ul>
  * 
  * @author Daniel Lemire
  * @since 0.8.0

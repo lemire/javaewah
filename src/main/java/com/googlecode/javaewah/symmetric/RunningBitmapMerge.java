@@ -9,8 +9,10 @@ import com.googlecode.javaewah.datastructure.PriorityQ;
  * of JavaEWAH. It is well suited to computing symmetric Boolean queries.
  * 
  * It is a revised version of an algorithm described in the following reference:
+ * <ul><li>
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
  * bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010.
+ * </ul></li>
  * 
  * @since 0.8.0
  * @author Daniel Lemire

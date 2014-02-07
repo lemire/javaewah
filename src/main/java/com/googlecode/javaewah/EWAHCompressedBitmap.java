@@ -35,6 +35,36 @@ import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
  * fast. There is also a 32-bit version of this code in the class
  * javaewah32.EWAHCompressedBitmap32.
  * </p>
+ * 
+ * <p>
+ * Here is a code sample to illustrate usage:
+ * </p>
+ * 
+ * <pre>
+ * EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0, 2, 55, 64,
+ *         1 &lt;&lt; 30);
+ * EWAHCompressedBitmap ewahBitmap2 = EWAHCompressedBitmap.bitmapOf(1, 3, 64,
+ *         1 &lt;&lt; 30);
+ * EWAHCompressedBitmap ewahBitmap3 = EWAHCompressedBitmap
+ *         .bitmapOf(5, 55, 1 &lt;&lt; 30);
+ * EWAHCompressedBitmap ewahBitmap4 = EWAHCompressedBitmap
+ *         .bitmapOf(4, 66, 1 &lt;&lt; 30);
+ * EWAHCompressedBitmap orbitmap = ewahBitmap1.or(ewahBitmap2);
+ * EWAHCompressedBitmap andbitmap = ewahBitmap1.and(ewahBitmap2);
+ * EWAHCompressedBitmap xorbitmap = ewahBitmap1.xor(ewahBitmap2);
+ * andbitmap = EWAHCompressedBitmap.and(ewahBitmap1, ewahBitmap2, ewahBitmap3,
+ *         ewahBitmap4);
+ * ByteArrayOutputStream bos = new ByteArrayOutputStream();
+ * ObjectOutputStream oo = new ObjectOutputStream(bos);
+ * ewahBitmap1.writeExternal(oo);
+ * oo.close();
+ * ewahBitmap1 = null;
+ * ewahBitmap1 = new EWAHCompressedBitmap();
+ * ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+ * ewahBitmap1.readExternal(new ObjectInputStream(bis));
+ * EWAHCompressedBitmap threshold2 = EWAHCompressedBitmap.threshold(2,
+ *         ewahBitmap1, ewahBitmap2, ewahBitmap3, ewahBitmap4);
+ * </pre>
  * <p>
  * For more details, see the following paper:
  * </p>
@@ -103,8 +133,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         /**
          * Adding words directly to the bitmap (for expert use).
          * 
-         * This is normally how you add data to the array. So you add bits in
-         * streams of 8*8 bits.
+         * This method adds bits in words of 4*8 bits. It is not to 
+         * be confused with the set method which sets individual bits.
+         * 
+         * Most users will want the set method.
          * 
          * Example: if you add 321, you are have added (in binary notation)
          * 0b101000001, so you have effectively called set(0), set(6), set(8) in

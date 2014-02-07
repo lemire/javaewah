@@ -25,7 +25,33 @@ import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
  * data. In effect, there is a trade-off between memory usage and performances.
  * </p>
  * 
- * 
+ * <p>Here is a code sample to illustrate usage:</p>
+ * <pre>
+ * EWAHCompressedBitmap32 ewahBitmap1 = EWAHCompressedBitmap32.bitmapOf(0, 2, 55, 64,
+ *         1 &lt;&lt; 30);
+ * EWAHCompressedBitmap32 ewahBitmap2 = EWAHCompressedBitmap32.bitmapOf(1, 3, 64,
+ *         1 &lt;&lt; 30);
+ * EWAHCompressedBitmap32 ewahBitmap3 = EWAHCompressedBitmap32
+ *         .bitmapOf(5, 55, 1 &lt;&lt; 30);
+ * EWAHCompressedBitmap32 ewahBitmap4 = EWAHCompressedBitmap32
+ *         .bitmapOf(4, 66, 1 &lt;&lt; 30);
+ * EWAHCompressedBitmap32 orbitmap = ewahBitmap1.or(ewahBitmap2);
+ * EWAHCompressedBitmap32 andbitmap = ewahBitmap1.and(ewahBitmap2);
+ * EWAHCompressedBitmap32 xorbitmap = ewahBitmap1.xor(ewahBitmap2);
+ * andbitmap = EWAHCompressedBitmap32.and(ewahBitmap1, ewahBitmap2, ewahBitmap3,
+ *         ewahBitmap4);
+ * ByteArrayOutputStream bos = new ByteArrayOutputStream();
+ * ObjectOutputStream oo = new ObjectOutputStream(bos);
+ * ewahBitmap1.writeExternal(oo);
+ * oo.close();
+ * ewahBitmap1 = null;
+ * ewahBitmap1 = new EWAHCompressedBitmap32();
+ * ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+ * ewahBitmap1.readExternal(new ObjectInputStream(bis));
+ * EWAHCompressedBitmap32 threshold2 = EWAHCompressedBitmap32.threshold(2,
+ *         ewahBitmap1, ewahBitmap2, ewahBitmap3, ewahBitmap4);
+ * </pre>
+
  * <p>
  * The objective of this compression type is to provide some compression, while
  * reducing as much as possible the CPU cycle usage.
@@ -78,8 +104,10 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         /**
          * Adding words directly to the bitmap (for expert use).
          * 
-         * This is normally how you add data to the array. So you add bits in
-         * streams of 4*8 bits.
+         * This method adds bits in words of 4*8 bits. It is not to 
+         * be confused with the set method which sets individual bits.
+         * 
+         * Most users will want the set method.
          * 
          * Example: if you add 321, you are have added (in binary notation)
          * 0b101000001, so you have effectively called set(0), set(6), set(8) in
