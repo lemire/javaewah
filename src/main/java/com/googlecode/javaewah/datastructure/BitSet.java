@@ -124,10 +124,15 @@ public class BitSet implements Cloneable, Iterable<Integer> {
         }
 
         @Override
-        public Object clone() throws java.lang.CloneNotSupportedException {
-                BitSet b = (BitSet) super.clone();
-                b.data = Arrays.copyOf(this.data, this.data.length);
-                return b;
+        public BitSet clone()  {
+                BitSet b;
+                try {
+                        b = (BitSet) super.clone();
+                        b.data = Arrays.copyOf(this.data, this.data.length);
+                        return b;
+                } catch (CloneNotSupportedException e) {
+                        return null;
+                }
         }
 
         @Override
