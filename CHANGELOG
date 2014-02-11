@@ -1,6 +1,5 @@
 version 0.8.3 (upcoming)
  - improved BitSet class
- - added serialVersionUID to serializable classes (this may break backward compatibility)
 
 version 0.8.2 
  - removed the benchmark code 
