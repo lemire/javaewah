@@ -1,5 +1,9 @@
 package com.googlecode.javaewah.datastructure;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Arrays;
 import java.util.Iterator;
 import com.googlecode.javaewah.IntIterator;
@@ -22,7 +26,7 @@ import com.googlecode.javaewah.IntIterator;
  * @author Daniel Lemire
  * @since 0.8.0
  **/
-public class BitSet implements Cloneable, Iterable<Integer> {
+public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         /**
          * Construct a bitset with the specified number of bits (initially all
          * false). The number of bits is rounded up to the nearest multiple of
@@ -299,6 +303,15 @@ public class BitSet implements Cloneable, Iterable<Integer> {
                 return sum;
         }
 
+        @Override
+        public void readExternal(ObjectInput in) throws IOException,
+                ClassNotFoundException {
+                int length = in.readInt();
+                this.data = new long[length];
+                for(int k = 0; k < length; ++k)
+                        this.data[k] = in.readLong();
+        }
+
         /**
          * Resize the bitset
          * 
@@ -377,6 +390,13 @@ public class BitSet implements Cloneable, Iterable<Integer> {
                 };
         }
 
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+                out.writeInt(this.data.length);
+                for(long w: this.data)
+                        out.writeLong(w);
+        }
+
         /**
          * Compute bitwise XOR, assumes that both bitsets have the same length.
          * 
@@ -391,7 +411,7 @@ public class BitSet implements Cloneable, Iterable<Integer> {
                         this.data[k] ^= bs.data[k];
                 }
         }
-
+        
         /**
          * Compute cardinality of bitwise XOR, assumes that both bitsets have
          * the same length.
@@ -412,5 +432,7 @@ public class BitSet implements Cloneable, Iterable<Integer> {
         }
 
         long[] data;
+
+        static final long serialVersionUID = 7997698588986878753L;
 
 }

@@ -1785,5 +1785,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 
         /** The Constant wordinbits represents the number of bits in a int. */
         public static final int wordinbits = 32;
+        
+        static final long serialVersionUID = 1L;// new as of version 0.8.3
 
 }
