@@ -22,7 +22,7 @@ public interface BitmapStorage32 {
          * @param newdata
          *                the word
          */
-        public void add(final int newdata);
+        public void addWord(final int newdata);
 
         /**
          * if you have several literal words to copy over, this might be faster.

@@ -1,5 +1,8 @@
-version 0.8.3 (upcoming)
+version 0.8.3 (February 20th 2013) 
  - improved BitSet class
+ - renamed add to addWord (deprecation)
+ - renamed getPositions to toList (deprecation)
+ - clone no longer reports throwing an exception
 
 version 0.8.2 
  - removed the benchmark code 

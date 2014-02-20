@@ -36,10 +36,10 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
          * If the word to be added is non-zero, a NonEmptyException exception is
          * thrown.
          * 
-         * @see com.googlecode.javaewah.BitmapStorage#add(long)
+         * @see com.googlecode.javaewah.BitmapStorage#addWord(long)
          */
         @Override
-        public void add(long newdata) {
+        public void addWord(long newdata) {
                 if (newdata != 0)
                         throw nonEmptyException;
                 return;

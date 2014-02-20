@@ -22,7 +22,7 @@ public final class BitCounter32 implements BitmapStorage32 {
          */
         // @Override : causes problems with Java 1.5
         @Override
-        public void add(final int newdata) {
+        public void addWord(final int newdata) {
                 this.oneBits += Integer.bitCount(newdata);
         }
 
@@ -40,7 +40,7 @@ public final class BitCounter32 implements BitmapStorage32 {
         @Override
         public void addStreamOfLiteralWords(int[] data, int start, int number) {
                 for (int i = start; i < start + number; i++) {
-                        add(data[i]);
+                        addWord(data[i]);
                 }
         }
 
@@ -76,7 +76,7 @@ public final class BitCounter32 implements BitmapStorage32 {
         public void addStreamOfNegatedLiteralWords(int[] data, int start,
                 int number) {
                 for (int i = start; i < start + number; i++) {
-                        add(~data[i]);
+                        addWord(~data[i]);
                 }
         }
 

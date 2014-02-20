@@ -14,13 +14,10 @@ import com.googlecode.javaewah.IntIterator;
  * 
  * It differs from the basic Java BitSet class in the following ways:
  * <ul>
- * <li>It only aggregate BitSets having the same number of bits. This is 
- * the desired behavior in many cases where BitSets are supposed to span
- * the same number of bits and differences are indicative of a programming
- * issue. You can always resize your BitSets.</li>
  * <li>You can iterate over set bits using a simpler syntax <code>for(int bs: mybitset)</code>.</li>
  * <li>You can compute the cardinality of an intersection and union without writing it out
  * or modifying your BitSets (see methods such as andcardinality).</li>
+ * <li>You can recover wasted memory with trim().</li>
  * </ul>
  * 
  * @author Daniel Lemire
@@ -40,69 +37,60 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         }
 
         /**
-         * Compute bitwise AND, assumes that both bitsets have the same length.
+         * Compute bitwise AND.
          * 
          * @param bs
          *                other bitset
          */
         public void and(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         this.data[k] &= bs.data[k];
                 }
         }
 
         /**
-         * Compute cardinality of bitwise AND, assumes that both bitsets have
-         * the same length.
+         * Compute cardinality of bitwise AND.
+         * 
+         * The current bitmap is modified. Consider calling trim()
+         * to recover wasted memory afterward.
          * 
          * @param bs
          *                other bitset
          * @return cardinality
          */
         public int andcardinality(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
                 int sum = 0;
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         sum += Long.bitCount(this.data[k] & bs.data[k]);
                 }
                 return sum;
         }
 
         /**
-         * Compute bitwise AND NOT, assumes that both bitsets have the same
-         * length.
+         * Compute bitwise AND NOT.
+         * 
+         * The current bitmap is modified. Consider calling trim()
+         * to recover wasted memory afterward.
          * 
          * @param bs
          *                other bitset
          */
         public void andNot(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         this.data[k] &= ~bs.data[k];
                 }
         }
 
         /**
-         * Compute cardinality of bitwise AND NOT, assumes that both bitsets
-         * have the same length.
+         * Compute cardinality of bitwise AND NOT.
          * 
          * @param bs
          *                other bitset
          * @return cardinality
          */
         public int andNotcardinality(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
                 int sum = 0;
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         sum += Long.bitCount(this.data[k] & (~bs.data[k]));
                 }
                 return sum;
@@ -121,7 +109,8 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         }
 
         /**
-         * Reset all bits to false
+         * Reset all bits to false. This might be wasteful: a better
+         * approach is to create a new empty bitmap.
          */
         public void clear() {
                 Arrays.fill(this.data, 0);
@@ -143,7 +132,25 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         public boolean equals(Object o) {
                 if (!(o instanceof BitSet))
                         return false;
-                return Arrays.equals(this.data, ((BitSet) o).data);
+                BitSet bs = (BitSet)o;
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
+                        if(this.data[k] != bs.data[k]) return false;
+                }
+                BitSet longer = bs.size() < this.size() ? this : bs;
+                for (int k = Math.min(this.data.length, bs.data.length); k < Math
+                        .max(this.data.length, bs.data.length); ++k) {
+                        if(longer.data[k] != 0) return false;
+                }
+                return true;
+        }
+        /**
+         * Check whether a bitset contains a set bit.
+         * @return true if no set bit is found
+         */
+        public boolean empty() {
+                for (long l : this.data)
+                        if(l != 0) return false;
+                return true;
         }
 
         /**
@@ -157,7 +164,16 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
         @Override
         public int hashCode() {
-                return Arrays.hashCode(this.data);
+                int B = 31;
+                int hash1 = 0;
+                int hash2 = 0;
+                for (int k = 0; k < this.data.length; ++k) {
+                        if (this.data[k] != 0) {
+                                hash1 = hash1 * B + (int) this.data[k];
+                                hash2 = hash2 * B + (int) (this.data[k] >>> 32);
+                        }
+                }
+                return hash1 ^ hash2;
         }
 
         /**
@@ -211,6 +227,20 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
                         int j;
 
                 };
+        }
+        
+        
+        /**
+         * Checks whether two bitsets intersect.
+         * 
+         * @param bs other bitset
+         * @return true if they have a non-empty intersection (result of AND)
+         */
+        public boolean intersects(BitSet bs) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
+                        if((this.data[k] & bs.data[k]) != 0) return true;
+                }
+                return false;
         }
 
         /**
@@ -270,35 +300,40 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         }
 
         /**
-         * Compute bitwise OR, assumes that both bitsets have the same length.
+         * Compute bitwise OR.
+         * 
+         * The current bitmap is modified. Consider calling trim()
+         * to recover wasted memory afterward.
          * 
          * @param bs
          *                other bitset
          */
         public void or(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
+                if(this.size() < bs.size())
+                  this.resize(bs.size());
                 for (int k = 0; k < this.data.length; ++k) {
                         this.data[k] |= bs.data[k];
                 }
         }
 
         /**
-         * Compute cardinality of bitwise OR, assumes that both bitsets have the
-         * same length.
+         * Compute cardinality of bitwise OR.
+         * 
+         * BitSets are not modified.
          * 
          * @param bs
          *                other bitset
          * @return cardinality
          */
         public int orcardinality(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
                 int sum = 0;
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         sum += Long.bitCount(this.data[k] | bs.data[k]);
+                }
+                BitSet longer = bs.size() < this.size() ? this : bs;
+                for (int k = Math.min(this.data.length, bs.data.length); k < Math
+                        .max(this.data.length, bs.data.length); ++k) {
+                        sum += Long.bitCount(longer.data[k]);
                 }
                 return sum;
         }
@@ -353,7 +388,19 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         public int size() {
                 return this.data.length * 64;
         }
-
+        /**
+         * Recovers wasted memory
+         * 
+         */
+        public void trim() {
+                for(int k = this.data.length - 1; k >= 0; --k)
+                        if(this.data[k] != 0) {
+                                if(k + 1 < this.data.length)
+                                        this.data = Arrays.copyOf(this.data, k+1);
+                                return;
+                        }
+                this.data = new long[0];
+        }
         /**
          * Set to false
          * 
@@ -398,36 +445,42 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         }
 
         /**
-         * Compute bitwise XOR, assumes that both bitsets have the same length.
+         * Compute bitwise XOR.
+         * 
+         * The current bitmap is modified. Consider calling trim()
+         * to recover wasted memory afterward.
          * 
          * @param bs
          *                other bitset
          */
         public void xor(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
+                if(this.size() < bs.size())
+                        this.resize(bs.size());
                 for (int k = 0; k < this.data.length; ++k) {
                         this.data[k] ^= bs.data[k];
                 }
         }
         
         /**
-         * Compute cardinality of bitwise XOR, assumes that both bitsets have
-         * the same length.
+         * Compute cardinality of bitwise XOR.
+         * 
+         * BitSets are not modified.
          * 
          * @param bs
          *                other bitset
          * @return cardinality
          */
         public int xorcardinality(BitSet bs) {
-                if (this.data.length != bs.data.length)
-                        throw new IllegalArgumentException(
-                                "incompatible bitsets");
                 int sum = 0;
-                for (int k = 0; k < this.data.length; ++k) {
+                for (int k = 0; k < Math.min(this.data.length,bs.data.length); ++k) {
                         sum += Long.bitCount(this.data[k] ^ bs.data[k]);
                 }
+                BitSet longer = bs.size() < this.size() ? this : bs;
+                for (int k = Math.min(this.data.length, bs.data.length); k < Math
+                        .max(this.data.length, bs.data.length); ++k) {
+                        sum += Long.bitCount(longer.data[k]);
+                }
+
                 return sum;
         }
 

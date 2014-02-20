@@ -37,7 +37,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
          * thrown.
          */
         @Override
-        public void add(int newdata) {
+        public void addWord(int newdata) {
                 if (newdata != 0)
                         throw nonEmptyException;
         }

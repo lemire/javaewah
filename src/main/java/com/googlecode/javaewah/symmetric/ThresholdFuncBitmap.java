@@ -120,7 +120,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                                 w |= R.iterator.getLiteralWordAt(i + runbegin
                                         - R.beginOfRun());
                         }
-                        out.add(w);
+                        out.addWord(w);
                 }
         }
 
@@ -132,7 +132,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                                 w &= R.iterator.getLiteralWordAt(i + runbegin
                                         - R.beginOfRun());
                         }
-                        out.add(w);
+                        out.addWord(w);
                 }
         }
 
@@ -148,7 +148,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
                                         .getLiteralWordAt(i + runbegin
                                                 - R.beginOfRun());
                         }
-                        out.add(threshold4(deficit, this.buffers,
+                        out.addWord(threshold4(deficit, this.buffers,
                                 this.bufferUsed));
                 }
         }

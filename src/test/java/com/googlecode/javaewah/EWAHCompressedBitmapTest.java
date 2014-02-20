@@ -167,7 +167,7 @@ public class EWAHCompressedBitmapTest {
 
                 b.setSizeInBits(6, true);
 
-                List<Integer> positions = b.getPositions();
+                List<Integer> positions = b.toList();
 
                 Assert.assertEquals(2, positions.size());
                 Assert.assertEquals(Integer.valueOf(4), positions.get(0));
@@ -200,7 +200,7 @@ public class EWAHCompressedBitmapTest {
                         bitmap.set(i);
                 }
                 IntIterator iterator = bitmap.intIterator();
-                List<Integer> v = bitmap.getPositions();
+                List<Integer> v = bitmap.toList();
                 int[] array = bitmap.toArray();
                 for (int k = 0; k < v.size(); ++k) {
                         Assert.assertTrue(array[k] == v.get(k).intValue());
@@ -261,11 +261,11 @@ public class EWAHCompressedBitmapTest {
                         39992, 39993, 39994, 39995, 39996, 39997, 39998, 39999,
                         270000);
                 LinkedHashSet<Integer> aPositions = new LinkedHashSet<Integer>(
-                        a.getPositions());
+                        a.toList());
                 int intersection = 0;
                 EWAHCompressedBitmap inter = new EWAHCompressedBitmap();
                 LinkedHashSet<Integer> bPositions = new LinkedHashSet<Integer>(
-                        b.getPositions());
+                        b.toList());
                 for (Integer integer : bPositions) {
                         if (aPositions.contains(integer)) {
                                 inter.set(integer.intValue());
@@ -306,14 +306,10 @@ public class EWAHCompressedBitmapTest {
                 equal(ab, bitsetab);
                 EWAHCompressedBitmap bb = aa.or(ab);
                 EWAHCompressedBitmap bbAnd = aa.and(ab);
-                try {
-                        EWAHCompressedBitmap abnot = ab.clone();
-                        abnot.not();
-                        EWAHCompressedBitmap bbAnd2 = aa.andNot(abnot);
-                        assertEquals(bbAnd2, bbAnd);
-                } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                }
+                EWAHCompressedBitmap abnot = ab.clone();
+                abnot.not();
+                EWAHCompressedBitmap bbAnd2 = aa.andNot(abnot);
+                assertEquals(bbAnd2, bbAnd);
                 BitSet bitsetbb = (BitSet) bitsetaa.clone();
                 bitsetbb.or(bitsetab);
                 BitSet bitsetbbAnd = (BitSet) bitsetaa.clone();
@@ -361,16 +357,16 @@ public class EWAHCompressedBitmapTest {
                 bitmap.clear();
                 bitmap.set(7);
                 Assert.assertTrue(1 == bitmap.cardinality());
-                Assert.assertTrue(1 == bitmap.getPositions().size());
+                Assert.assertTrue(1 == bitmap.toList().size());
                 Assert.assertTrue(1 == bitmap.toArray().length);
-                Assert.assertTrue(7 == bitmap.getPositions().get(0).intValue());
+                Assert.assertTrue(7 == bitmap.toList().get(0).intValue());
                 Assert.assertTrue(7 == bitmap.toArray()[0]);
                 bitmap.clear();
                 bitmap.set(5000);
                 Assert.assertTrue(1 == bitmap.cardinality());
-                Assert.assertTrue(1 == bitmap.getPositions().size());
+                Assert.assertTrue(1 == bitmap.toList().size());
                 Assert.assertTrue(1 == bitmap.toArray().length);
-                Assert.assertTrue(5000 == bitmap.getPositions().get(0)
+                Assert.assertTrue(5000 == bitmap.toList().get(0)
                         .intValue());
                 bitmap.set(5001);
                 bitmap.set(5005);
@@ -382,7 +378,7 @@ public class EWAHCompressedBitmapTest {
                 bitmap.set(1000);
                 bitmap.set(1001);
                 Assert.assertTrue(4 == bitmap.cardinality());
-                List<Integer> positions = bitmap.getPositions();
+                List<Integer> positions = bitmap.toList();
                 Assert.assertTrue(4 == positions.size());
                 Assert.assertTrue(5 == positions.get(0).intValue());
                 Assert.assertTrue(7 == positions.get(1).intValue());
@@ -400,25 +396,25 @@ public class EWAHCompressedBitmapTest {
                 long specialval = 1l | (1l << 4) | (1l << 63);
                 long notzero = ~zero;
                 EWAHCompressedBitmap myarray1 = new EWAHCompressedBitmap();
-                myarray1.add(zero);
-                myarray1.add(zero);
-                myarray1.add(zero);
-                myarray1.add(specialval);
-                myarray1.add(specialval);
-                myarray1.add(notzero);
-                myarray1.add(zero);
-                Assert.assertEquals(myarray1.getPositions().size(), 6 + 64);
+                myarray1.addWord(zero);
+                myarray1.addWord(zero);
+                myarray1.addWord(zero);
+                myarray1.addWord(specialval);
+                myarray1.addWord(specialval);
+                myarray1.addWord(notzero);
+                myarray1.addWord(zero);
+                Assert.assertEquals(myarray1.toList().size(), 6 + 64);
                 EWAHCompressedBitmap myarray2 = new EWAHCompressedBitmap();
-                myarray2.add(zero);
-                myarray2.add(specialval);
-                myarray2.add(specialval);
-                myarray2.add(notzero);
-                myarray2.add(zero);
-                myarray2.add(zero);
-                myarray2.add(zero);
-                Assert.assertEquals(myarray2.getPositions().size(), 6 + 64);
-                List<Integer> data1 = myarray1.getPositions();
-                List<Integer> data2 = myarray2.getPositions();
+                myarray2.addWord(zero);
+                myarray2.addWord(specialval);
+                myarray2.addWord(specialval);
+                myarray2.addWord(notzero);
+                myarray2.addWord(zero);
+                myarray2.addWord(zero);
+                myarray2.addWord(zero);
+                Assert.assertEquals(myarray2.toList().size(), 6 + 64);
+                List<Integer> data1 = myarray1.toList();
+                List<Integer> data2 = myarray2.toList();
                 Vector<Integer> logicalor = new Vector<Integer>();
                 {
                         HashSet<Integer> tmp = new HashSet<Integer>();
@@ -432,37 +428,37 @@ public class EWAHCompressedBitmapTest {
                 logicaland.retainAll(data2);
                 Collections.sort(logicaland);
                 EWAHCompressedBitmap arrayand = myarray1.and(myarray2);
-                Assert.assertTrue(arrayand.getPositions().equals(logicaland));
+                Assert.assertTrue(arrayand.toList().equals(logicaland));
                 EWAHCompressedBitmap arrayor = myarray1.or(myarray2);
-                Assert.assertTrue(arrayor.getPositions().equals(logicalor));
+                Assert.assertTrue(arrayor.toList().equals(logicalor));
                 EWAHCompressedBitmap arrayandbis = myarray2.and(myarray1);
-                Assert.assertTrue(arrayandbis.getPositions().equals(logicaland));
+                Assert.assertTrue(arrayandbis.toList().equals(logicaland));
                 EWAHCompressedBitmap arrayorbis = myarray2.or(myarray1);
-                Assert.assertTrue(arrayorbis.getPositions().equals(logicalor));
+                Assert.assertTrue(arrayorbis.toList().equals(logicalor));
                 EWAHCompressedBitmap x = new EWAHCompressedBitmap();
-                for (Integer i : myarray1.getPositions()) {
+                for (Integer i : myarray1.toList()) {
                         x.set(i.intValue());
                 }
-                Assert.assertTrue(x.getPositions().equals(
-                        myarray1.getPositions()));
+                Assert.assertTrue(x.toList().equals(
+                        myarray1.toList()));
                 x = new EWAHCompressedBitmap();
-                for (Integer i : myarray2.getPositions()) {
+                for (Integer i : myarray2.toList()) {
                         x.set(i.intValue());
                 }
-                Assert.assertTrue(x.getPositions().equals(
-                        myarray2.getPositions()));
+                Assert.assertTrue(x.toList().equals(
+                        myarray2.toList()));
                 x = new EWAHCompressedBitmap();
                 for (Iterator<Integer> k = myarray1.iterator(); k.hasNext();) {
                         x.set(extracted(k).intValue());
                 }
-                Assert.assertTrue(x.getPositions().equals(
-                        myarray1.getPositions()));
+                Assert.assertTrue(x.toList().equals(
+                        myarray1.toList()));
                 x = new EWAHCompressedBitmap();
                 for (Iterator<Integer> k = myarray2.iterator(); k.hasNext();) {
                         x.set(extracted(k).intValue());
                 }
-                Assert.assertTrue(x.getPositions().equals(
-                        myarray2.getPositions()));
+                Assert.assertTrue(x.toList().equals(
+                        myarray2.toList()));
         }
 
         /**
@@ -488,7 +484,7 @@ public class EWAHCompressedBitmapTest {
                 ByteArrayInputStream bis = new ByteArrayInputStream(
                         bos.toByteArray());
                 ewcb.readExternal(new ObjectInputStream(bis));
-                List<Integer> result = ewcb.getPositions();
+                List<Integer> result = ewcb.toList();
                 Assert.assertTrue(val.length == result.size());
                 for (int k = 0; k < val.length; ++k) {
                         Assert.assertTrue(result.get(k).intValue() == val[k]);
@@ -598,10 +594,10 @@ public class EWAHCompressedBitmapTest {
                 for (int k = 1; k < ewah.length; ++k)
                         answer = answer.and(ewah[k]);
                 // result should be empty
-                if (answer.getPositions().size() != 0)
+                if (answer.toList().size() != 0)
                         System.out.println(answer.toDebugString());
-                Assert.assertTrue(answer.getPositions().size() == 0);
-                Assert.assertTrue(EWAHCompressedBitmap.and(ewah).getPositions()
+                Assert.assertTrue(answer.toList().size() == 0);
+                Assert.assertTrue(EWAHCompressedBitmap.and(ewah).toList()
                         .size() == 0);
         }
 
@@ -623,14 +619,10 @@ public class EWAHCompressedBitmapTest {
                 for (int k = 1; k < ewah.length; ++k) {
                         answer = answer.andNot(ewah[k]);
                         EWAHCompressedBitmap copy = null;
-                        try {
-                                copy = ewah[k].clone();
-                                copy.not();
-                                answer2.and(copy);
-                                assertEqualsPositions(answer, answer2);
-                        } catch (CloneNotSupportedException e) {
-                                e.printStackTrace();
-                        }
+                        copy = ewah[k].clone();
+                        copy.not();
+                        answer2.and(copy);
+                        assertEqualsPositions(answer, answer2);
                 }
         }
 
@@ -884,7 +876,7 @@ public class EWAHCompressedBitmapTest {
                 for (int k = 0; k < val.length; ++k) {
                         ewcb.set(val[k]);
                 }
-                List<Integer> result = ewcb.getPositions();
+                List<Integer> result = ewcb.toList();
                 Assert.assertTrue(val.length == result.size());
                 for (int k = 0; k < val.length; ++k) {
                         Assert.assertEquals(result.get(k).intValue(), val[k]);
@@ -899,6 +891,12 @@ public class EWAHCompressedBitmapTest {
                 Assert.assertEquals(EWAHCompressedBitmap.bitmapOf(50), ewcb);
                 Assert.assertEquals(EWAHCompressedBitmap.bitmapOf(50)
                         .hashCode(), ewcb.hashCode());
+                ewcb.addWord(~0l);
+                EWAHCompressedBitmap ewcb2 = ewcb.clone();
+                ewcb2.addWord(0);
+                Assert.assertEquals(ewcb
+                        .hashCode(), ewcb2.hashCode());
+
         }
 
         @Test
@@ -1027,8 +1025,7 @@ public class EWAHCompressedBitmapTest {
         }
 
         @Test
-        public void TestCloneEwahCompressedBitArray()
-                throws CloneNotSupportedException {
+        public void TestCloneEwahCompressedBitArray() {
                 System.out.println("testing EWAH clone");
                 EWAHCompressedBitmap a = new EWAHCompressedBitmap();
                 a.set(410018);
@@ -1396,7 +1393,7 @@ public class EWAHCompressedBitmapTest {
          */
         static void assertEqualsPositions(BitSet jdkBitmap,
                 EWAHCompressedBitmap ewahBitmap) {
-                final List<Integer> positions = ewahBitmap.getPositions();
+                final List<Integer> positions = ewahBitmap.toList();
                 for (int position : positions) {
                         if (!jdkBitmap.get(position)) {
                                 throw new RuntimeException(
@@ -1440,8 +1437,8 @@ public class EWAHCompressedBitmapTest {
          */
         static void assertEqualsPositions(EWAHCompressedBitmap ewahBitmap1,
                 EWAHCompressedBitmap ewahBitmap2) {
-                final List<Integer> positions1 = ewahBitmap1.getPositions();
-                final List<Integer> positions2 = ewahBitmap2.getPositions();
+                final List<Integer> positions1 = ewahBitmap1.toList();
+                final List<Integer> positions2 = ewahBitmap2.toList();
                 if (!positions1.equals(positions2))
                         throw new RuntimeException(
                                 "positions: alternative got different bits (two bitmaps)");
@@ -1452,7 +1449,7 @@ public class EWAHCompressedBitmapTest {
                 assertEquals(fastpositions2, positions2);
                 if (!Arrays.equals(fastpositions1, fastpositions2))
                         throw new RuntimeException(
-                                "positions: alternative got different bits with toArray but not with getPositions (two bitmaps)");
+                                "positions: alternative got different bits with toArray but not with toList (two bitmaps)");
         }
 
         /**
@@ -1466,7 +1463,7 @@ public class EWAHCompressedBitmapTest {
          */
         static void equal(EWAHCompressedBitmap x, BitSet y) {
                 Assert.assertEquals(x.cardinality(), y.cardinality());
-                for (int i : x.getPositions())
+                for (int i : x.toList())
                         Assert.assertTrue(y.get(i));
         }
 

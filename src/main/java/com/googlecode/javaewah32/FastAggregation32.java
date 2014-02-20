@@ -68,7 +68,7 @@ public class FastAggregation32 {
                                         effective = eff;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         for (IteratingRLW32 i : al)
                                 if (i.size() == 0) {
                                         al.clear();
@@ -139,7 +139,7 @@ public class FastAggregation32 {
                                         maxr = k;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         Arrays.fill(hardbitmap, 0);
 
                 }
@@ -208,7 +208,7 @@ public class FastAggregation32 {
                                         maxr = k;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         Arrays.fill(hardbitmap, 0);
                 }
                 container.setSizeInBits(range);
@@ -426,7 +426,7 @@ public class FastAggregation32 {
                                                                         - rlw.getRunningLength());
                                                 }
                                         }
-                                        container.add(word);
+                                        container.addWord(word);
                                         index++;
                                 }
                                 for (int i = 0; i < maxAvailablePos; i++) {

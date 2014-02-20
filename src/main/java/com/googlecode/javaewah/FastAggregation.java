@@ -73,7 +73,7 @@ public class FastAggregation {
                                         effective = eff;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         for (IteratingRLW i : al)
                                 if (i.size() == 0) {
                                         al.clear();
@@ -144,7 +144,7 @@ public class FastAggregation {
                                         maxr = k;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         Arrays.fill(hardbitmap, 0);
 
                 }
@@ -213,7 +213,7 @@ public class FastAggregation {
                                         maxr = k;
                         }
                         for (int k = 0; k < effective; ++k)
-                                container.add(hardbitmap[k]);
+                                container.addWord(hardbitmap[k]);
                         Arrays.fill(hardbitmap, 0);
                 }
                 container.setSizeInBits(range);
@@ -494,7 +494,7 @@ public class FastAggregation {
                                                                                 .getRunningLength());
                                                 }
                                         }
-                                        container.add(word);
+                                        container.addWord(word);
                                         index++;
                                 }
                                 for (int i = 0; i < maxAvailablePos; i++) {

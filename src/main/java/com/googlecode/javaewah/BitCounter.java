@@ -21,7 +21,7 @@ public final class BitCounter implements BitmapStorage {
          *                the word
          */
         @Override
-        public void add(final long newdata) {
+        public void addWord(final long newdata) {
                 this.oneBits += Long.bitCount(newdata);
                 return;
         }
@@ -39,7 +39,7 @@ public final class BitCounter implements BitmapStorage {
         @Override
         public void addStreamOfLiteralWords(long[] data, int start, int number) {
                 for (int i = start; i < start + number; i++) {
-                        add(data[i]);
+                        addWord(data[i]);
                 }
                 return;
         }
@@ -76,7 +76,7 @@ public final class BitCounter implements BitmapStorage {
         public void addStreamOfNegatedLiteralWords(long[] data, int start,
                 int number) {
                 for (int i = start; i < start + number; i++) {
-                        add(~data[i]);
+                        addWord(~data[i]);
                 }
                 return;
         }
