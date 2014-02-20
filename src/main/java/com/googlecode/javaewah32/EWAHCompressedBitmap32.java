@@ -63,13 +63,15 @@ import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
  * programs.
  * </p>
  * <p>
- * For more details, see the following paper:
+ * For more details, see the following papers:
  * </p>
  * 
  * <ul>
  * <li>Daniel Lemire, Owen Kaser, Kamel Aouiche, <a
  * href="http://arxiv.org/abs/0901.3751">Sorting improves word-aligned bitmap
  * indexes</a>. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010.</li>
+ * <li> Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections
+ * <a href="http://arxiv.org/abs/1402.4466">http://arxiv.org/abs/1402.4466</a></li>
  * </ul>
  * 
  * @see com.googlecode.javaewah.EWAHCompressedBitmap EWAHCompressedBitmap

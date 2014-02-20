@@ -7,7 +7,12 @@ import com.googlecode.javaewah32.BitmapStorage32;
  * A threshold Boolean function returns true if the number of true values exceed
  * a threshold. It is a symmetric Boolean function.
  * 
- * This object is not thread safe: you should use one function per thread.
+ * This class implements an algorithm described in the following paper:
+ * 
+ * Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections
+ * <a href="http://arxiv.org/abs/1402.4466">http://arxiv.org/abs/1402.4466</a>
+ * 
+ * It is not thread safe: you should use one object per thread.
  * 
  * @see <a
  *      href="http://en.wikipedia.org/wiki/Symmetric_Boolean_function">http://en.wikipedia.org/wiki/Symmetric_Boolean_function</a>
