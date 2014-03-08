@@ -890,7 +890,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
          * @return the int iterator
          */
         public IntIterator clearIntIterator() {
-            throw new UnsupportedOperationException();
+            return new ClearIntIterator(this.getEWAHIterator(), this.sizeinbits);
         }
 
         /**
