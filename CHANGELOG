@@ -1,3 +1,6 @@
+version 0.8.4 (March 17th 2013)
+ - we can now iterate over "clear" bits
+
 version 0.8.3 (February 20th 2013) 
  - improved BitSet class
  - renamed add to addWord (deprecation)

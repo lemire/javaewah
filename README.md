@@ -8,7 +8,8 @@ David McIntosh (https://github.com/mctofu),
 Robert Becho (https://github.com/RBecho),
 Colby Ranger (https://github.com/crangeratgoogle)
 Veronika Zenz (https://github.com/veronikazenz)
-and Owen Kaser (https://github.com/owenkaser)
+Owen Kaser (https://github.com/owenkaser)
+and gssiyankai (https://github.com/gssiyankai)
 
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
@@ -86,7 +87,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.8.3</version>
+	     <version>0.8.4</version>
          </dependency>
      </dependencies>
 

@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+/*
+ * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, gssiyankai
+ * Licensed under the Apache License, Version 2.0.
+ */
+
 /**
  * Fast algorithms to aggregate many bitmaps. These algorithms are just given as
  * reference. They may not be faster than the corresponding methods in the

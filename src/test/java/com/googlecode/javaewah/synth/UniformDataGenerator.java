@@ -1,10 +1,9 @@
 package com.googlecode.javaewah.synth;
 
 /*
- * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, gssiyankai
  * Licensed under the Apache License, Version 2.0.
  */
-
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;

@@ -2,6 +2,21 @@ package com.googlecode.javaewah;
 
 import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
 
+/*
+ * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, gssiyankai
+ * Licensed under the Apache License, Version 2.0.
+ */
+
+/**
+ * 
+ * This class is equivalent to IntIteratorImpl, except that it allows
+ * use to iterate over "clear" bits (bits set to 0).
+ * 
+ * 
+ * 
+ * @author gssiyankai
+ *
+ */
 final class ClearIntIterator implements IntIterator {
 
         private final EWAHIterator ewahIter;
@@ -70,8 +85,8 @@ final class ClearIntIterator implements IntIterator {
         private final boolean literalHasNext() {
                 while (this.word == 0 && this.wordPosition < this.wordLength) {
                         this.word = ~this.ewahBuffer[this.wordPosition++];
-                        if(this.wordPosition == this.wordLength && !ewahIter.hasNext()) {
-                            final int usedbitsinlast = sizeinbits % wordinbits;
+                        if(this.wordPosition == this.wordLength && !this.ewahIter.hasNext()) {
+                            final int usedbitsinlast = this.sizeinbits % wordinbits;
                             if (usedbitsinlast > 0) {
                                 this.word &= ((~0l) >>> (wordinbits - usedbitsinlast));
                             }

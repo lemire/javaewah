@@ -7,11 +7,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /*
- * Copyright 2009-2013, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz and Owen Kaser
+ * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, gssiyankai
  * Licensed under the Apache License, Version 2.0.
  */
 /**
- * Tests for utility class. Sketchy for now.
+ * Tests for utility class. 
  * 
  */
 @SuppressWarnings("javadoc")
