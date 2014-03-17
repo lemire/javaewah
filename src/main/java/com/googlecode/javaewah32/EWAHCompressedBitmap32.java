@@ -839,6 +839,18 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         }
 
         /**
+         * Iterator over the clear bits. The location of the clear bits is
+         * returned, in increasing order.
+         *
+         * The current bitmap is not modified.
+         *
+         * @return the int iterator
+         */
+        public IntIterator clearIntIterator() {
+            return new ClearIntIterator32(this.getEWAHIterator(), this.sizeinbits);
+        }
+
+        /**
          * Iterates over the positions of the true values. This is similar to
          * intIterator(), but it uses Java generics.
          * 

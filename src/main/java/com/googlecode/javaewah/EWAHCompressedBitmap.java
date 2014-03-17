@@ -882,6 +882,18 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
 
         /**
+         * Iterator over the clear bits. The location of the clear bits is
+         * returned, in increasing order.
+         *
+         * The current bitmap is not modified.
+         *
+         * @return the int iterator
+         */
+        public IntIterator clearIntIterator() {
+            return new ClearIntIterator(this.getEWAHIterator(), this.sizeinbits);
+        }
+
+        /**
          * Iterates over the positions of the true values. This is similar to
          * intIterator(), but it uses Java generics.
          * 
@@ -1916,7 +1928,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
         /** The Constant wordinbits represents the number of bits in a long. */
         public static final int wordinbits = 64;
-        
+
         //static final long serialVersionUID = 1L;// omitted for backward compatibility
 
 }

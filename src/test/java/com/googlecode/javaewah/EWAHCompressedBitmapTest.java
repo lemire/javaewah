@@ -18,6 +18,21 @@ import junit.framework.Assert;
 public class EWAHCompressedBitmapTest {
 
         @Test
+        public void testClearIntIterator() {
+            EWAHCompressedBitmap x = EWAHCompressedBitmap.bitmapOf(1, 3, 7, 8, 10);
+            x.setSizeInBits(500, true);
+            x.setSizeInBits(501, false);
+            x.setSizeInBits(1000, true);
+            x.set(1001);
+            IntIterator iterator = x.clearIntIterator();
+            for(int i : Arrays.asList(0, 2, 4, 5, 6, 9, 500, 1000)) {
+                Assert.assertTrue(iterator.hasNext());
+                Assert.assertEquals(i, iterator.next());
+            }
+            Assert.assertFalse(iterator.hasNext());
+        }
+
+        @Test
         public void testGet() {
                 for (int gap = 29; gap < 10000; gap *= 10) {
                         EWAHCompressedBitmap x = new EWAHCompressedBitmap();
