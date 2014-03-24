@@ -62,6 +62,11 @@ public interface BitmapStorage32 {
                 final int number);
 
         /**
+         * Empties the container.
+         */
+        public void clear();
+
+        /**
          * directly set the sizeinbits field
          * 
          * @param bits

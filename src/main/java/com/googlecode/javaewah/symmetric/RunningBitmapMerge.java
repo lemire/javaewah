@@ -22,6 +22,7 @@ public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
         @Override
         public void symmetric(UpdateableBitmapFunction f, BitmapStorage out,
                 EWAHCompressedBitmap... set) {
+                out.clear();
                 final PriorityQ<EWAHPointer> H = new PriorityQ<EWAHPointer>(
                         set.length, new Comparator<EWAHPointer>() {
                                 @Override

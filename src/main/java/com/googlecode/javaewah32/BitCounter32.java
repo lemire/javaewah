@@ -80,6 +80,12 @@ public final class BitCounter32 implements BitmapStorage32 {
                 }
         }
 
+        @Override
+        public void clear() {
+                this.oneBits = 0;
+        }
+        
+        
         /**
          * As you act on this class, it records the number of set (true) bits.
          * 

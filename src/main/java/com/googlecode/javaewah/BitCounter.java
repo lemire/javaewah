@@ -79,7 +79,12 @@ public final class BitCounter implements BitmapStorage {
                 }
                 return;
         }
-
+        
+        @Override
+        public void clear() {
+                this.oneBits = 0;
+        }
+        
         /**
          * As you act on this class, it records the number of set (true) bits.
          * 
@@ -103,5 +108,7 @@ public final class BitCounter implements BitmapStorage {
         }
 
         private int oneBits;
+
+
 
 }

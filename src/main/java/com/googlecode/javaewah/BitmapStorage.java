@@ -60,6 +60,11 @@ public interface BitmapStorage {
          */
         public void addStreamOfNegatedLiteralWords(long[] data,
                 final int start, final int number);
+        
+        /**
+         * Empties the container.
+         */
+        public void clear();
 
         /**
          * directly set the sizeinbits field

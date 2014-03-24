@@ -87,7 +87,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.8.4</version>
+	     <version>0.8.5</version>
          </dependency>
      </dependencies>
 

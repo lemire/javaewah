@@ -1,3 +1,6 @@
+version 0.8.5 (March 24th 2013)
+- methods of type "ToContainer" will now clear the container before starting, for convenience
+
 version 0.8.4 (March 17th 2013)
  - we can now iterate over "clear" bits
 

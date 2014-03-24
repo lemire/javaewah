@@ -82,6 +82,11 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
                 }
         }
 
+        @Override
+        public void clear() {
+        }
+        
+        
         /**
          * Does nothing.
          * 
@@ -90,5 +95,6 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
         @Override
         public void setSizeInBits(int bits) {
         }
+
 
 }

@@ -75,6 +75,10 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
                         throw nonEmptyException;
                 }
         }
+        
+        @Override
+        public void clear() {
+        }
 
         /**
          * Does nothing.

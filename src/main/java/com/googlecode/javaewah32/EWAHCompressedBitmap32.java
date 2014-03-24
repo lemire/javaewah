@@ -373,6 +373,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * The running time is proportional to the sum of the compressed sizes
          * (as reported by sizeInBytes()).
          * 
+         * The content of the container is overwritten.
+         * 
          * @since 0.4.0
          * @param a
          *                the other bitmap  (it will not be modified)
@@ -381,6 +383,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public void andToContainer(final EWAHCompressedBitmap32 a,
                 final BitmapStorage32 container) {
+                container.clear();
                 final EWAHIterator32 i = a.getEWAHIterator();
                 final EWAHIterator32 j = getEWAHIterator();
                 final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(
@@ -482,6 +485,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * The running time is proportional to the sum of the compressed sizes
          * (as reported by sizeInBytes()).
          * 
+         * The content of the container is overwritten.
+         * 
          * @param a
          *                the other bitmap  (it will not be modified)
          * @param container
@@ -489,6 +494,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public void andNotToContainer(final EWAHCompressedBitmap32 a,
                 final BitmapStorage32 container) {
+                container.clear();
                 final EWAHIterator32 i = getEWAHIterator();
                 final EWAHIterator32 j = a.getEWAHIterator();
                 final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(
@@ -593,6 +599,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         /**
          * Clear any set bits and set size in bits back to 0
          */
+        @Override
         public void clear() {
                 this.sizeinbits = 0;
                 this.actualsizeinwords = 1;
@@ -989,6 +996,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * 
          * The current bitmap is not modified.
          * 
+         * The content of the container is overwritten.
+         * 
          * @param a
          *                the other bitmap (it will not be modified)
          * @param container
@@ -996,6 +1005,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public void orToContainer(final EWAHCompressedBitmap32 a,
                 final BitmapStorage32 container) {
+                container.clear();
                 final EWAHIterator32 i = a.getEWAHIterator();
                 final EWAHIterator32 j = getEWAHIterator();
                 final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(
@@ -1360,6 +1370,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * Compute a Boolean threshold function: bits are true where at least T
          * bitmaps have a true bit.
          * 
+         * The content of the container is overwritten.
+         * 
          * @since 0.8.2
          * @param T
          *                the threshold
@@ -1535,6 +1547,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * 
          * The current bitmap is not modified.
          * 
+         * The content of the container is overwritten.
+         * 
          * @param a
          *                the other bitmap (it will not be modified)
          * @param container
@@ -1542,6 +1556,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          */
         public void xorToContainer(final EWAHCompressedBitmap32 a,
                 final BitmapStorage32 container) {
+                container.clear();
                 final EWAHIterator32 i = a.getEWAHIterator();
                 final EWAHIterator32 j = getEWAHIterator();
                 final IteratingBufferedRunningLengthWord32 rlwi = new IteratingBufferedRunningLengthWord32(
@@ -1605,6 +1620,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         /**
          * For internal use. Computes the bitwise and of the provided bitmaps
          * and stores the result in the container.
+         * 
+         * The content of the container is overwritten.
          * 
          * @param container
          *                where the result is stored
@@ -1725,6 +1742,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
          * For internal use. Computes the bitwise or of the provided bitmaps and
          * stores the result in the container.
          * 
+         * The content of the container is overwritten.
+         * 
          * @param container
          *                where store the result
          * @param bitmaps
@@ -1754,6 +1773,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         /**
          * For internal use. Computes the bitwise xor of the provided bitmaps
          * and stores the result in the container.
+         * 
+         * The content of the container is overwritten.
          * 
          * @param container
          *                where store the result
