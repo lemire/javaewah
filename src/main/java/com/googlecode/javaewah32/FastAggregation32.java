@@ -222,6 +222,8 @@ public class FastAggregation32 {
         /**
          * Uses a priority queue to compute the or aggregate.
          * 
+         * The content of the container is overwritten.
+         * 
          * @param container
          *                where we write the result
          * @param bitmaps
@@ -255,6 +257,8 @@ public class FastAggregation32 {
 
         /**
          * Uses a priority queue to compute the xor aggregate.
+         * 
+         * The content of the container is overwritten.
          * 
          * @param container
          *                where we write the result
