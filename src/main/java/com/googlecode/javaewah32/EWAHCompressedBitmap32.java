@@ -1171,7 +1171,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         }
 
         /**
-         * Report the size required to serialize this bitmap.
+         * Report the number of bytes required to serialize this bitmap.
          * 
          * The current bitmap is not modified.
          * 
