@@ -7,57 +7,52 @@ package com.googlecode.javaewah32;
 
 /**
  * High-level iterator over a compressed bitmap.
- * 
  */
 public interface IteratingRLW32 {
-        /**
-         * @return whether there is more
-         */
-        public boolean next();
+    /**
+     * @return whether there is more
+     */
+    boolean next();
 
-        /**
-         * @param index
-         *                where the literal word is
-         * @return the literal word at the given index.
-         */
-        public int getLiteralWordAt(int index);
+    /**
+     * @param index where the literal word is
+     * @return the literal word at the given index.
+     */
+    int getLiteralWordAt(int index);
 
-        /**
-         * @return the number of literal (non-fill) words
-         */
-        public int getNumberOfLiteralWords();
+    /**
+     * @return the number of literal (non-fill) words
+     */
+    int getNumberOfLiteralWords();
 
-        /**
-         * @return the bit used for the fill bits
-         */
-        public boolean getRunningBit();
+    /**
+     * @return the bit used for the fill bits
+     */
+    boolean getRunningBit();
 
-        /**
-         * @return sum of getRunningLength() and getNumberOfLiteralWords()
-         */
-        public int size();
+    /**
+     * @return sum of getRunningLength() and getNumberOfLiteralWords()
+     */
+    int size();
 
-        /**
-         * @return length of the run of fill words
-         */
-        public int getRunningLength();
+    /**
+     * @return length of the run of fill words
+     */
+    int getRunningLength();
 
-        /**
-         * @param x
-         *                the number of words to discard
-         */
-        public void discardFirstWords(int x);
-        
-        /**
-         * Discard all running words
-         */
-        public void discardRunningWords();
-        
-        /**
-         * @return a copy of the iterator
-         * @throws CloneNotSupportedException
-         *                 this should not be thrown in theory
-         */
-        public IteratingRLW32 clone() throws CloneNotSupportedException;
+    /**
+     * @param x the number of words to discard
+     */
+    void discardFirstWords(int x);
 
+    /**
+     * Discard all running words
+     */
+    void discardRunningWords();
+
+    /**
+     * @return a copy of the iterator
+     * @throws CloneNotSupportedException this should not be thrown in theory
+     */
+    IteratingRLW32 clone() throws CloneNotSupportedException;
 }

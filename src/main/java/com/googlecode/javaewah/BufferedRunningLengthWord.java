@@ -8,174 +8,170 @@ package com.googlecode.javaewah;
 /**
  * Mostly for internal use. Similar to RunningLengthWord, but can be modified
  * without access to the array, and has faster access.
- * 
+ *
  * @author Daniel Lemire
  * @since 0.1.0
- * 
  */
 public final class BufferedRunningLengthWord implements Cloneable {
 
-        /**
-         * Instantiates a new buffered running length word.
-         * 
-         * @param a
-         *                the word
-         */
-        public BufferedRunningLengthWord(final long a) {
-                this.NumberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runninglengthbits));
-                this.RunningBit = (a & 1) != 0;
-                this.RunningLength = (int) ((a >>> 1) & RunningLengthWord.largestrunninglengthcount);
+    /**
+     * Instantiates a new buffered running length word.
+     *
+     * @param a the word
+     */
+    public BufferedRunningLengthWord(final long a) {
+        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runningLengthBits));
+        this.runningBit = (a & 1) != 0;
+        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.largestRunningLengthCount);
+    }
+
+    /**
+     * Instantiates a new buffered running length word.
+     *
+     * @param rlw the rlw
+     */
+    public BufferedRunningLengthWord(final RunningLengthWord rlw) {
+        this(rlw.parent.buffer[rlw.position]);
+    }
+
+    /**
+     * Discard first words.
+     *
+     * @param x the x
+     */
+    public void discardFirstWords(long x) {
+        if (this.runningLength >= x) {
+            this.runningLength -= x;
+            return;
         }
+        x -= this.runningLength;
+        this.runningLength = 0;
+        this.literalWordOffset += x;
+        this.numberOfLiteralWords -= x;
+    }
 
-        /**
-         * Instantiates a new buffered running length word.
-         * 
-         * @param rlw
-         *                the rlw
-         */
-        public BufferedRunningLengthWord(final RunningLengthWord rlw) {
-                this(rlw.parent.buffer[rlw.position]);
-        }
+    /**
+     * Gets the number of literal words.
+     *
+     * @return the number of literal words
+     */
+    public int getNumberOfLiteralWords() {
+        return this.numberOfLiteralWords;
+    }
 
-        /**
-         * Discard first words.
-         * 
-         * @param x
-         *                the x
-         */
-        public void discardFirstWords(long x) {
-                if (this.RunningLength >= x) {
-                        this.RunningLength -= x;
-                        return;
-                }
-                x -= this.RunningLength;
-                this.RunningLength = 0;
-                this.literalwordoffset += x;
-                this.NumberOfLiteralWords -= x;
-        }
+    /**
+     * Gets the running bit.
+     *
+     * @return the running bit
+     */
+    public boolean getRunningBit() {
+        return this.runningBit;
+    }
 
-        /**
-         * Gets the number of literal words.
-         * 
-         * @return the number of literal words
-         */
-        public int getNumberOfLiteralWords() {
-                return this.NumberOfLiteralWords;
-        }
+    /**
+     * Gets the running length.
+     *
+     * @return the running length
+     */
+    public long getRunningLength() {
+        return this.runningLength;
+    }
 
-        /**
-         * Gets the running bit.
-         * 
-         * @return the running bit
-         */
-        public boolean getRunningBit() {
-                return this.RunningBit;
-        }
+    /**
+     * Reset the values using the provided word.
+     *
+     * @param a the word
+     */
+    public void reset(final long a) {
+        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runningLengthBits));
+        this.runningBit = (a & 1) != 0;
+        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.largestRunningLengthCount);
+        this.literalWordOffset = 0;
+    }
 
-        /**
-         * Gets the running length.
-         * 
-         * @return the running length
-         */
-        public long getRunningLength() {
-                return this.RunningLength;
-        }
+    /**
+     * Reset the values of this running length word so that it has the same
+     * values as the other running length word.
+     *
+     * @param rlw the other running length word
+     */
+    public void reset(final RunningLengthWord rlw) {
+        reset(rlw.parent.buffer[rlw.position]);
+    }
 
-        /**
-         * Reset the values using the provided word.
-         * 
-         * @param a
-         *                the word
-         */
-        public void reset(final long a) {
-                this.NumberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runninglengthbits));
-                this.RunningBit = (a & 1) != 0;
-                this.RunningLength = (int) ((a >>> 1) & RunningLengthWord.largestrunninglengthcount);
-                this.literalwordoffset = 0;
-        }
+    /**
+     * Sets the number of literal words.
+     *
+     * @param number the new number of literal words
+     */
+    public void setNumberOfLiteralWords(final int number) {
+        this.numberOfLiteralWords = number;
+    }
 
-        /**
-         * Reset the values of this running length word so that it has the same
-         * values as the other running length word.
-         * 
-         * @param rlw
-         *                the other running length word
-         */
-        public void reset(final RunningLengthWord rlw) {
-                reset(rlw.parent.buffer[rlw.position]);
-        }
+    /**
+     * Sets the running bit.
+     *
+     * @param b the new running bit
+     */
+    public void setRunningBit(final boolean b) {
+        this.runningBit = b;
+    }
 
-        /**
-         * Sets the number of literal words.
-         * 
-         * @param number
-         *                the new number of literal words
-         */
-        public void setNumberOfLiteralWords(final int number) {
-                this.NumberOfLiteralWords = number;
-        }
+    /**
+     * Sets the running length.
+     *
+     * @param number the new running length
+     */
+    public void setRunningLength(final long number) {
+        this.runningLength = number;
+    }
 
-        /**
-         * Sets the running bit.
-         * 
-         * @param b
-         *                the new running bit
-         */
-        public void setRunningBit(final boolean b) {
-                this.RunningBit = b;
-        }
+    /**
+     * Size in uncompressed words.
+     *
+     * @return the long
+     */
+    public long size() {
+        return this.runningLength + this.numberOfLiteralWords;
+    }
 
-        /**
-         * Sets the running length.
-         * 
-         * @param number
-         *                the new running length
-         */
-        public void setRunningLength(final long number) {
-                this.RunningLength = number;
-        }
+    /*
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "running bit = " + getRunningBit() +
+               " running length = " + getRunningLength() +
+               " number of lit. words " + getNumberOfLiteralWords();
+    }
 
-        /**
-         * Size in uncompressed words.
-         * 
-         * @return the long
-         */
-        public long size() {
-                return this.RunningLength + this.NumberOfLiteralWords;
-        }
+    @Override
+    public BufferedRunningLengthWord clone() throws CloneNotSupportedException {
+        BufferedRunningLengthWord answer = (BufferedRunningLengthWord) super.clone();
+        answer.literalWordOffset = this.literalWordOffset;
+        answer.numberOfLiteralWords = this.numberOfLiteralWords;
+        answer.runningBit = this.runningBit;
+        answer.runningLength = this.runningLength;
+        return answer;
+    }
 
-        /*
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString() {
-                return "running bit = " + getRunningBit()
-                        + " running length = " + getRunningLength()
-                        + " number of lit. words " + getNumberOfLiteralWords();
-        }
+    /**
+     * how many literal words have we read so far?
+     */
+    protected int literalWordOffset = 0;
 
-        @Override
-        public BufferedRunningLengthWord clone()
-                throws CloneNotSupportedException {
-                BufferedRunningLengthWord answer = (BufferedRunningLengthWord) super
-                        .clone();
-                answer.literalwordoffset = this.literalwordoffset;
-                answer.NumberOfLiteralWords = this.NumberOfLiteralWords;
-                answer.RunningBit = this.RunningBit;
-                answer.RunningLength = this.RunningLength;
-                return answer;
-        }
+    /**
+     * The Number of literal words.
+     */
+    protected int numberOfLiteralWords;
 
-        /** how many literal words have we read so far? */
-        public int literalwordoffset = 0;
+    /**
+     * The Running bit.
+     */
+    protected boolean runningBit;
 
-        /** The Number of literal words. */
-        public int NumberOfLiteralWords;
-
-        /** The Running bit. */
-        public boolean RunningBit;
-
-        /** The Running length. */
-        public long RunningLength;
-
+    /**
+     * The Running length.
+     */
+    protected long runningLength;
 }

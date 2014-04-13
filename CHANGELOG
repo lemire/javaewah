@@ -92,7 +92,7 @@ version 0.6.7 (February 15, 2013)
 
 
 version 0.6.6 (December 12, 2012)
- - Fixed an off-by-one bug in setSizeInBits(final int size, final boolean defaultvalue). 
+ - Fixed an off-by-one bug in setSizeInBits(final int size, final boolean defaultValue).
  - Added corresponding unit test.
 
 version 0.6.5 (November 26, 2012)
