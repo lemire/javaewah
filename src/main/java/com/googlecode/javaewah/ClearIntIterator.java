@@ -1,6 +1,6 @@
 package com.googlecode.javaewah;
 
-import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
+import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 
 /*
  * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, gssiyankai
@@ -8,92 +8,86 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.wordinbits;
  */
 
 /**
- * 
  * This class is equivalent to IntIteratorImpl, except that it allows
  * use to iterate over "clear" bits (bits set to 0).
- * 
- * 
- * 
- * @author gssiyankai
  *
+ * @author gssiyankai
  */
 final class ClearIntIterator implements IntIterator {
 
-        private final EWAHIterator ewahIter;
-        private final int sizeinbits;
-        private final long[] ewahBuffer;
-        private int position;
-        private int runningLength;
-        private long word;
-        private int wordPosition;
-        private int wordLength;
-        private int literalPosition;
-        private boolean hasnext;
+    private final EWAHIterator ewahIter;
+    private final int sizeInBits;
+    private final long[] ewahBuffer;
+    private int position;
+    private int runningLength;
+    private long word;
+    private int wordPosition;
+    private int wordLength;
+    private int literalPosition;
+    private boolean hasNext;
 
-        ClearIntIterator(EWAHIterator ewahIter, int sizeinbits) {
-                this.ewahIter = ewahIter;
-                this.sizeinbits = sizeinbits;
-                this.ewahBuffer = ewahIter.buffer();
-                this.hasnext = this.moveToNext();
+    ClearIntIterator(EWAHIterator ewahIter, int sizeInBits) {
+        this.ewahIter = ewahIter;
+        this.sizeInBits = sizeInBits;
+        this.ewahBuffer = ewahIter.buffer();
+        this.hasNext = this.moveToNext();
+    }
+
+    public boolean moveToNext() {
+        while (!runningHasNext() && !literalHasNext()) {
+            if (!this.ewahIter.hasNext()) {
+                return false;
+            }
+            setRunningLengthWord(this.ewahIter.next());
+        }
+        return true;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.hasNext;
+    }
+
+    @Override
+    public int next() {
+        final int answer;
+        if (runningHasNext()) {
+            answer = this.position++;
+        } else {
+            final long t = this.word & -this.word;
+            answer = this.literalPosition + Long.bitCount(t - 1);
+            this.word ^= t;
+        }
+        this.hasNext = this.moveToNext();
+        return answer;
+    }
+
+    private void setRunningLengthWord(RunningLengthWord rlw) {
+        this.runningLength = WORD_IN_BITS * (int) rlw.getRunningLength() + this.position;
+        if (rlw.getRunningBit()) {
+            this.position = this.runningLength;
         }
 
-        public final boolean moveToNext() {
-                while (!runningHasNext() && !literalHasNext()) {
-                        if (!this.ewahIter.hasNext()) {
-                                return false;
-                        }
-                        setRunningLengthWord(this.ewahIter.next());
+        this.wordPosition = this.ewahIter.literalWords();
+        this.wordLength = this.wordPosition + rlw.getNumberOfLiteralWords();
+    }
+
+    private boolean runningHasNext() {
+        return this.position < this.runningLength;
+    }
+
+    private boolean literalHasNext() {
+        while (this.word == 0 && this.wordPosition < this.wordLength) {
+            this.word = ~this.ewahBuffer[this.wordPosition++];
+            if (this.wordPosition == this.wordLength && !this.ewahIter.hasNext()) {
+                final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
+                if (usedBitsInLast > 0) {
+                    this.word &= ((~0l) >>> (WORD_IN_BITS - usedBitsInLast));
                 }
-                return true;
+            }
+            this.literalPosition = this.position;
+            this.position += WORD_IN_BITS;
         }
-
-        @Override
-        public boolean hasNext() {
-                return this.hasnext;
-        }
-
-        @Override
-        public final int next() {
-                final int answer;
-                if (runningHasNext()) {
-                        answer = this.position++;
-                } else {
-                        final long T = this.word & -this.word;
-                        answer = this.literalPosition + Long.bitCount(T-1);
-                        this.word ^= T;
-                }
-                this.hasnext = this.moveToNext();
-                return answer;
-        }
-
-        private final void setRunningLengthWord(RunningLengthWord rlw) {
-                this.runningLength = wordinbits * (int) rlw.getRunningLength()
-                        + this.position;
-                if (rlw.getRunningBit()) {
-                        this.position = this.runningLength;
-                }
-
-                this.wordPosition = this.ewahIter.literalWords();
-                this.wordLength = this.wordPosition
-                        + rlw.getNumberOfLiteralWords();
-        }
-
-        private final boolean runningHasNext() {
-                return this.position < this.runningLength;
-        }
-
-        private final boolean literalHasNext() {
-                while (this.word == 0 && this.wordPosition < this.wordLength) {
-                        this.word = ~this.ewahBuffer[this.wordPosition++];
-                        if(this.wordPosition == this.wordLength && !this.ewahIter.hasNext()) {
-                            final int usedbitsinlast = this.sizeinbits % wordinbits;
-                            if (usedbitsinlast > 0) {
-                                this.word &= ((~0l) >>> (wordinbits - usedbitsinlast));
-                            }
-                        }
-                        this.literalPosition = this.position;
-                        this.position += wordinbits;
-                }
-                return this.word != 0;
-        }
+        return this.word != 0;
+    }
 }
