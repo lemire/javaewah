@@ -9,7 +9,8 @@ Robert Becho (https://github.com/RBecho),
 Colby Ranger (https://github.com/crangeratgoogle)
 Veronika Zenz (https://github.com/veronikazenz)
 Owen Kaser (https://github.com/owenkaser)
-and gssiyankai (https://github.com/gssiyankai)
+Gregory Ssi-Yan-Kai (https://github.com/gssiyankai)
+and Rory Graves (https://github.com/rorygraves)
 
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
