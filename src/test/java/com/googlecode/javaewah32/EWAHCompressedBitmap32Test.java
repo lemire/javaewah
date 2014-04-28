@@ -7,7 +7,7 @@ package com.googlecode.javaewah32;
 
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;

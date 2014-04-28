@@ -1,6 +1,6 @@
 package com.googlecode.javaewah32;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings("javadoc")
