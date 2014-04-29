@@ -15,7 +15,7 @@ import java.util.Comparator;
  * <ul><li>
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
  * bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010.
- * </ul></li>
+ * </li></ul>
  *
  * @author Daniel Lemire
  * @since 0.8.0
