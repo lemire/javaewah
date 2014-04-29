@@ -7,12 +7,12 @@ import java.util.Arrays;
 /**
  * A threshold Boolean function returns true if the number of true values exceed
  * a threshold. It is a symmetric Boolean function.
- * <p/>
+ * 
  * This class implements an algorithm described in the following paper:
- * <p/>
+ * 
  * Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections
  * <a href="http://arxiv.org/abs/1402.4466">http://arxiv.org/abs/1402.4466</a>
- * <p/>
+ * 
  * It is not thread safe: you should use one object per thread.
  *
  * @author Daniel Lemire

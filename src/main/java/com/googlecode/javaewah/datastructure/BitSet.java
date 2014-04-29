@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * This is an optimized version of Java's BitSet. In many cases, it can be used
- * as a drop-in replacement.
- * <p/>
- * It differs from the basic Java BitSet class in the following ways:
+ * <p>This is an optimized version of Java's BitSet. In many cases, it can be used
+ * as a drop-in replacement.</p>
+ * 
+ * <p>It differs from the basic Java BitSet class in the following ways:</p>
  * <ul>
  * <li>You can iterate over set bits using a simpler syntax <code>for(int bs: myBitset)</code>.</li>
  * <li>You can compute the cardinality of an intersection and union without writing it out
@@ -49,7 +49,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute cardinality of bitwise AND.
-     * <p/>
+     * 
      * The current bitmap is modified. Consider calling trim()
      * to recover wasted memory afterward.
      *
@@ -66,7 +66,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute bitwise AND NOT.
-     * <p/>
+     * 
      * The current bitmap is modified. Consider calling trim()
      * to recover wasted memory afterward.
      *
@@ -294,7 +294,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute bitwise OR.
-     * <p/>
+     * 
      * The current bitmap is modified. Consider calling trim()
      * to recover wasted memory afterward.
      *
@@ -310,7 +310,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute cardinality of bitwise OR.
-     * <p/>
+     * 
      * BitSets are not modified.
      *
      * @param bs other bitset
@@ -432,7 +432,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute bitwise XOR.
-     * <p/>
+     * 
      * The current bitmap is modified. Consider calling trim()
      * to recover wasted memory afterward.
      *
@@ -448,7 +448,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     /**
      * Compute cardinality of bitwise XOR.
-     * <p/>
+     * 
      * BitSets are not modified.
      *
      * @param bs other bitset

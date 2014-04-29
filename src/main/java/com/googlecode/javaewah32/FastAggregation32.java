@@ -209,7 +209,7 @@ public final class FastAggregation32 {
 
     /**
      * Uses a priority queue to compute the or aggregate.
-     * <p/>
+     * 
      * The content of the container is overwritten.
      *
      * @param container where we write the result
@@ -242,7 +242,7 @@ public final class FastAggregation32 {
 
     /**
      * Uses a priority queue to compute the xor aggregate.
-     * <p/>
+     * 
      * The content of the container is overwritten.
      *
      * @param container where we write the result

@@ -15,7 +15,7 @@ public interface BitmapStorage32 {
 
     /**
      * Adding words directly to the bitmap (for expert use).
-     * <p/>
+     * 
      * This is normally how you add data to the array. So you add bits in
      * streams of 8*8 bits.
      *

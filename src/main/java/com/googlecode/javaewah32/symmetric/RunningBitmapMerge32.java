@@ -10,7 +10,7 @@ import java.util.Comparator;
 /**
  * This is an implementation of the RunningBitmapMerge algorithm running on top
  * of JavaEWAH. It is well suited to computing symmetric Boolean queries.
- * <p/>
+ * 
  * It is a revised version of an algorithm described in the following reference:
  * <ul><li>
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned

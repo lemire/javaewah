@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * This is a Java specification for an "updatable" Boolean function meant to run
  * over EWAH bitmaps.
- * <p/>
+ * 
  * Reference:
- * <p/>
+ * 
  * Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned
  * bitmap indexes. Data &amp; Knowledge Engineering 69 (1), pages 3-28, 2010.
  *
