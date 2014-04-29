@@ -21,7 +21,7 @@ public class EWAHCompressedBitmap32Test {
 
     @Test
 	public void testAstesana() {
-		for (int k = 5; k < 128; ++k) {
+		for (int k = 5; k < 256; ++k) {
 			EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
 			bm.set(1);
 			bm.setSizeInBits(k, false);
@@ -35,6 +35,31 @@ public class EWAHCompressedBitmap32Test {
 			Assert.assertEquals(x.cardinality(),0);
 			x = bm1.or(bm1);
 			Assert.assertEquals(x.cardinality(),k-1);
+		}
+	}
+    
+    @Test
+	public void testAstesana2() {
+		for (int k = 1; k < 256; ++k) {
+
+			// Create two equivalent bitmaps
+			EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+			bm.set(0);
+			bm.setSizeInBits(k, false);
+			EWAHCompressedBitmap32 bm3 = new EWAHCompressedBitmap32();
+			bm3.set(0);
+			bm3.setSizeInBits(k, false);
+
+			// Perform two negation 
+			// -> should change nothing
+			bm.not();
+			bm.not();
+
+			// Verify it changes nothing
+
+			Assert.assertArrayEquals(bm.toArray(), bm3.toArray());
+			Assert.assertEquals(bm.sizeInBits(), bm3.sizeInBits());
+			Assert.assertTrue(bm.equals(bm3));
 		}
 	}
 

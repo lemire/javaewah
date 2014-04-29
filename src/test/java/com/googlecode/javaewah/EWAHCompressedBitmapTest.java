@@ -7,6 +7,8 @@ package com.googlecode.javaewah;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+
 import java.io.*;
 import java.util.*;
 
@@ -17,7 +19,7 @@ import java.util.*;
 public class EWAHCompressedBitmapTest {
     @Test
     public void testAstesana() {
-    	for(int k = 5; k < 128; ++k) {
+    	for(int k = 5; k < 256; ++k) {
 			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
 			bm.set(1);
 			bm.setSizeInBits(k, false);
@@ -33,7 +35,27 @@ public class EWAHCompressedBitmapTest {
 			Assert.assertEquals(x.cardinality(), k-1);
     	}
     }
+    @Test
+    public void testAstesana2() {
+		for (int k = 1; k < 256; ++k) {
+			// Create two equivalent bitmaps
+			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+			bm.set(0);
+			bm.setSizeInBits(k, false);
+			EWAHCompressedBitmap bm3 = new EWAHCompressedBitmap();
+			bm3.set(0);
+			bm3.setSizeInBits(k, false);
+			// Perform two negation ->
+			// should change nothing
+			bm.not();
+			bm.not();
+			// Verify it changes nothing
+			Assert.assertArrayEquals(bm.toArray(), bm3.toArray());
+			Assert.assertEquals(bm.sizeInBits(), bm3.sizeInBits());
 
+			Assert.assertTrue(bm.equals(bm3)); 
+		}
+    }
     @Test
     public void testClearIntIterator() {
         EWAHCompressedBitmap x = EWAHCompressedBitmap.bitmapOf(1, 3, 7, 8, 10);
