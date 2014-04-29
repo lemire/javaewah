@@ -7,7 +7,6 @@ package com.googlecode.javaewah;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.io.*;
 import java.util.*;
 
@@ -16,6 +15,24 @@ import java.util.*;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+    @Test
+    public void testAstesana() {
+    	for(int k = 5; k < 128; ++k) {
+			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+			bm.set(1);
+			bm.setSizeInBits(k, false);
+			EWAHCompressedBitmap bm1 = bm.clone();
+			bm1.not();
+			EWAHCompressedBitmap x = bm1.and(bm1);
+			Assert.assertEquals(x.cardinality(), k-1);
+			x = bm1.andNot(bm1);
+			Assert.assertEquals(x.cardinality(), 0);
+			x = bm1.xor(bm1);
+			Assert.assertEquals(x.cardinality(), 0);
+			x = bm1.or(bm1);
+			Assert.assertEquals(x.cardinality(), k-1);
+    	}
+    }
 
     @Test
     public void testClearIntIterator() {

@@ -20,6 +20,25 @@ import java.util.*;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+	public void testAstesana() {
+		for (int k = 5; k < 128; ++k) {
+			EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+			bm.set(1);
+			bm.setSizeInBits(k, false);
+			EWAHCompressedBitmap32 bm1 = bm.clone();
+			bm1.not();
+		    EWAHCompressedBitmap32 x = bm1.and(bm1);
+			Assert.assertEquals(x.cardinality(),k-1);
+			x = bm1.andNot(bm1);
+			Assert.assertEquals(x.cardinality(),0);
+			x = bm1.xor(bm1);
+			Assert.assertEquals(x.cardinality(),0);
+			x = bm1.or(bm1);
+			Assert.assertEquals(x.cardinality(),k-1);
+		}
+	}
+
+    @Test
     public void testClearIntIterator() {
         EWAHCompressedBitmap32 x = EWAHCompressedBitmap32.bitmapOf(1, 3, 7, 8, 10);
         x.setSizeInBits(500, true);
