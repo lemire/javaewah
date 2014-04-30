@@ -577,8 +577,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         try {
             clone = (EWAHCompressedBitmap) super.clone();
             clone.buffer = this.buffer.clone();
-            clone.rlw = new RunningLengthWord(clone,
-                    this.rlw.position);
             clone.actualSizeInWords = this.actualSizeInWords;
             clone.sizeInBits = this.sizeInBits;
             clone.rlw = new RunningLengthWord(clone,this.rlw.position);
