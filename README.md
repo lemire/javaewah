@@ -34,13 +34,21 @@ JavaEWAH offers competitive speed. In an exhaustive
 comparison, Guzun et al. (ICDE 2014) found that "EWAH
 offers the best query time for all distributions." 
 
+
 For better performance, use a 64-bit JVM over
 64-bit CPUs when using the 64-bit scheme (javaewah.EWAHCompressedBitmap).
-
 The 32-bit version (javaewah32.EWAHCompressedBitmap32) should
 compress better but be comparatively slower.
 
 Java 6 or better is required.
+
+Real-world usage
+----------------
+
+JavaEWAH is part of Apache Hive, Apache Spark and Eclipse JGit. It has been used in production systems for many years.
+
+Data format
+------------
 
 For more details regarding the compression format, please
 see Section 3 of the following paper:
