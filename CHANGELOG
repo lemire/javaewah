@@ -1,3 +1,6 @@
+upcoming
+ - added isEmpty methods
+
 version 0.8.6 (April 29th 2013)
  - fixed bug in clone methods (Jean-Marc Astesana, issue 30)
  - fixed bug in not methods (Jean-Marc Astesana, issue 31)

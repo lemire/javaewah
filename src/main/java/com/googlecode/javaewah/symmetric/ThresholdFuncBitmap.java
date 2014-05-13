@@ -103,8 +103,8 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         for (int k = 0; k < bufUsed; ++k)
             B += Long.bitCount(buf[k]);
         if (2 * B >= bufUsed * T)
-            return threshold3(T, buf, bufUsed);
-        return threshold2buf(T, buf, bufUsed);
+            return threshold3(T, buf, bufUsed);//looped
+        return threshold2buf(T, buf, bufUsed);//scancount
     }
 
     private void orLiterals(final BitmapStorage out, final int runBegin, final int runLength) {

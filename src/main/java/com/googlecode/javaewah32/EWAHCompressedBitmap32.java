@@ -817,6 +817,16 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     public IntIterator intIterator() {
         return new IntIteratorImpl32(this.getEWAHIterator());
     }
+    
+    /**
+     * Checks whether this bitmap is empty (has a cardinality of zero).
+     * 
+     * @return true if no bit is set
+     */
+    public boolean isEmpty() {
+    	return !intIterator().hasNext();
+    }
+
 
     /**
      * Iterator over the clear bits. The location of the clear bits is
