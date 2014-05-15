@@ -1,30 +1,30 @@
 upcoming
  - added isEmpty methods
 
-version 0.8.6 (April 29th 2013)
+version 0.8.6 (April 29th 2014)
  - fixed bug in clone methods (Jean-Marc Astesana, issue 30)
  - fixed bug in not methods (Jean-Marc Astesana, issue 31)
 
-version 0.8.5 (March 24th 2013)
+version 0.8.5 (March 24th 2014)
  - methods of type "ToContainer" will now clear the container before starting, for convenience
 
-version 0.8.4 (March 17th 2013)
+version 0.8.4 (March 17th 2014)
  - we can now iterate over "clear" bits
 
-version 0.8.3 (February 20th 2013) 
+version 0.8.3 (February 20th 2014) 
  - improved BitSet class
  - renamed add to addWord (deprecation)
  - renamed getPositions to toList (deprecation)
  - clone no longer reports throwing an exception
 
-version 0.8.2 
+version 0.8.2 (February 1st 2014)
  - removed the benchmark code 
  - cleaned up the documentation
  - code reformatting
  - optimized the extraction of the set bits (Shen Liang)
  - added threshold function for 32-bit EWAH
 
-version 0.8.1 (January 7th 2013)
+version 0.8.1 (January 7th 2014)
  - Optimized threshold function
  - created a nicer function call for the threshold function
  - fixed documentation in README 
