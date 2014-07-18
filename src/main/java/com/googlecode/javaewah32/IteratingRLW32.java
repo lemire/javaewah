@@ -7,6 +7,7 @@ package com.googlecode.javaewah32;
 
 /**
  * High-level iterator over a compressed bitmap.
+ * 
  */
 public interface IteratingRLW32 {
     /**

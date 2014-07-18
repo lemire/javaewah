@@ -80,7 +80,7 @@ public final class IteratorUtil32 {
         while (true) {
             if (i.getRunningBit())
                 answer += i.getRunningLength()
-                        * EWAHCompressedBitmap32.wordinbits;
+                        * EWAHCompressedBitmap32.WORD_IN_BITS;
             for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
                 answer += Integer.bitCount(i.getLiteralWordAt(k));
             if (!i.next())
@@ -134,6 +134,15 @@ public final class IteratorUtil32 {
 
     /**
      * Turn an iterator into a bitmap
+     * 
+     * 
+     * This can be used to effectively clone a bitmap in the following
+     * manner:
+     * 
+     *  <code>
+     *  EWAHCompressedBitmap32 n = IteratorUtil32.materialize(bitmap.getIteratingRLW()));
+     *  n.setSizeInBitsWithinLastWord(bitmap.sizeInBits());
+     *  </code>
      *
      * @param i iterator we wish to materialize
      * @return materialized version of the iterator

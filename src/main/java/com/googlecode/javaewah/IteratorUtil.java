@@ -49,7 +49,9 @@ public final class IteratorUtil {
     }
 
     /**
-     * Generate a bitmap from an iterator
+     * Generate a bitmap from an iterator.
+     * 
+     * 
      *
      * @param i iterator we wish to materialize
      * @param c where we write
@@ -130,7 +132,15 @@ public final class IteratorUtil {
     }
 
     /**
-     * Turn an iterator into a bitmap
+     * Turn an iterator into a bitmap.
+     * 
+     * This can be used to effectively clone a bitmap in the following
+     * manner:
+     * 
+     *  <code>
+     *  EWAHCompressedBitmap n = IteratorUtil.materialize(bitmap.getIteratingRLW()));
+     *  n.setSizeInBitsWithinLastWord(bitmap.sizeInBits());
+     *  </code>
      *
      * @param i iterator we wish to materialize
      * @return materialized version of the iterator

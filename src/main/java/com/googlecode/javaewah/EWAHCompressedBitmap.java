@@ -411,7 +411,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             final boolean i_remains = rlwi.size() > 0;
             final IteratingBufferedRunningLengthWord remaining = i_remains ? rlwi : rlwj;
             remaining.dischargeAsEmpty(container);
-            container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+            container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(), a.sizeInBits()));
         }
     }
 
@@ -512,7 +512,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         else if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING)
             remaining.dischargeAsEmpty(container);
         if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING)
-            container.setSizeInBits(Math.max(sizeInBits(),
+            container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(),
                     a.sizeInBits()));
     }
 
@@ -679,6 +679,18 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
     /**
      * Gets an IteratingRLW to iterate over the data. For experts only.
+     * 
+     * Note that iterator does not know about the size in bits of the
+     * bitmap: the size in bits is effectively rounded up to the nearest
+     * multiple of 64. However, if you materialize a bitmap from 
+     * an iterator, you can set the desired size in bits using the
+     * setSizeInBitsWithinLastWord methods:
+     * 
+     *  <code>
+     *  EWAHCompressedBitmap n = IteratorUtil.materialize(bitmap.getIteratingRLW()));
+     *  n.setSizeInBitsWithinLastWord(bitmap.sizeInBits());
+     *  </code>
+
      * 
      * The current bitmap is not modified.
      *
@@ -1032,7 +1044,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final IteratingBufferedRunningLengthWord remaining = i_remains ? rlwi
                 : rlwj;
         remaining.discharge(container);
-        container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+        container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(), a.sizeInBits()));
     }
 
     /**
@@ -1213,13 +1225,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         return true;
     }
 
-    /**
-     * Set the size in bits. This does not change the compressed bitmap.
-     *
-     * @since 0.4.0
-     */
     @Override
-    public void setSizeInBits(final int size) {
+    public void setSizeInBitsWithinLastWord(final int size) {
         if ((size + EWAHCompressedBitmap.WORD_IN_BITS - 1)
                 / EWAHCompressedBitmap.WORD_IN_BITS != (this.sizeInBits
                 + EWAHCompressedBitmap.WORD_IN_BITS - 1)
@@ -1227,6 +1234,39 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             throw new RuntimeException(
                     "You can only reduce the size of the bitmap within the scope of the last word. To extend the bitmap, please call setSizeInBits(int,boolean).");
         this.sizeInBits = size;
+        final int usedBitsInLast = this.sizeInBits
+                % WORD_IN_BITS;
+        if (usedBitsInLast == 0)
+            return;
+        if (this.rlw.getNumberOfLiteralWords() == 0) {
+            if ((this.rlw.getRunningLength() > 0)
+                    && (this.rlw.getRunningBit())) {
+                if((this.rlw.getRunningLength() == 1) && (this.rlw.position > 0)) {
+                    // we need to prune ending
+                    final EWAHIterator j = this.getEWAHIterator();
+                    int newrlwpos = this.rlw.position;
+                    while (j.hasNext()) {
+                        RunningLengthWord r = j.next();                             
+                        if (r.position < this.rlw.position) { 
+                            newrlwpos = r.position;
+                        } else break;
+                    }
+                    this.rlw.position = newrlwpos;
+                    this.actualSizeInWords -= 1;
+                } else {
+                    this.rlw.setRunningLength(this.rlw
+                            .getRunningLength() - 1);
+                }
+                this.addLiteralWord((~0l) >>> (WORD_IN_BITS - usedBitsInLast));
+            }
+            return;
+        }
+        this.buffer[this.actualSizeInWords - 1] &= ((~0l) >>> (WORD_IN_BITS - usedBitsInLast));
+        if(this.buffer[this.actualSizeInWords - 1] == 0) {
+            this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords()-1);
+            this.actualSizeInWords -= 1;
+            this.addEmptyWord(false);
+        }        
     }
 
     /**
@@ -1513,7 +1553,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final boolean i_remains = rlwi.size() > 0;
         final IteratingBufferedRunningLengthWord remaining = i_remains ? rlwi : rlwj;
         remaining.discharge(container);
-        container.setSizeInBits(Math.max(sizeInBits(), a.sizeInBits()));
+        container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(), a.sizeInBits()));
     }
 
     /**

@@ -159,5 +159,36 @@ public class IteratorAggregationTest32 {
         }
         System.gc();
     }
+    
+    /**
+    *
+    */
+   @Test
+   public void testMat() {
+       System.out.println("testMat ");
+       EWAHCompressedBitmap32 b = EWAHCompressedBitmap32.bitmapOf(0,3);
+       EWAHCompressedBitmap32 n = IteratorUtil32.materialize(b.getIteratingRLW());
+       assertTrue(n.sizeInBits() == 32);
+       n.setSizeInBitsWithinLastWord(b.sizeInBits());
+       assertTrue(n.sizeInBits() == b.sizeInBits());
+       assertTrue(n.equals(b));
+       EWAHCompressedBitmap32 neg = IteratorUtil32.materialize(IteratorAggregation32.not(b.getIteratingRLW()));
+       neg.setSizeInBitsWithinLastWord(b.sizeInBits());
+       EWAHCompressedBitmap32 x= ((EWAHCompressedBitmap32) b.clone());
+       x.not();
+       assertTrue(x.equals(neg));
+       for(int k = 145; k<1024; ++k)
+           b.set(k);
+       n = IteratorUtil32.materialize(b.getIteratingRLW());
+       assertTrue(n.sizeInBits()/64 * 64 == n.sizeInBits());
+       n.setSizeInBitsWithinLastWord(b.sizeInBits());
+       assertTrue(n.sizeInBits() == b.sizeInBits());
+       assertTrue(n.equals(b));
+       neg = IteratorUtil32.materialize(IteratorAggregation32.not(b.getIteratingRLW()));
+       neg.setSizeInBitsWithinLastWord(b.sizeInBits());
+       x= ((EWAHCompressedBitmap32) b.clone());
+       x.not();
+       assertTrue(x.equals(neg));
+   }
 
 }

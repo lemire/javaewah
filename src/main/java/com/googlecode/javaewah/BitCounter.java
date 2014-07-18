@@ -89,7 +89,7 @@ public final class BitCounter implements BitmapStorage {
      */
     // @Override : causes problems with Java 1.5
     @Override
-    public void setSizeInBits(int bits) {
+    public void setSizeInBitsWithinLastWord(int bits) {
         // no action
     }
 

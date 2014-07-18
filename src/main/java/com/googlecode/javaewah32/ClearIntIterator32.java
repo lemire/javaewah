@@ -2,7 +2,7 @@ package com.googlecode.javaewah32;
 
 import com.googlecode.javaewah.IntIterator;
 
-import static com.googlecode.javaewah32.EWAHCompressedBitmap32.wordinbits;
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;;
 
 /*
  * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
@@ -65,7 +65,7 @@ final class ClearIntIterator32 implements IntIterator {
     }
 
     private void setRunningLengthWord(RunningLengthWord32 rlw) {
-        this.runningLength = wordinbits * rlw.getRunningLength() + this.position;
+        this.runningLength = WORD_IN_BITS * rlw.getRunningLength() + this.position;
         if (rlw.getRunningBit()) {
             this.position = this.runningLength;
         }
@@ -83,13 +83,13 @@ final class ClearIntIterator32 implements IntIterator {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
             this.word = ~this.ewahBuffer[this.wordPosition++];
             if (this.wordPosition == this.wordLength && !this.ewahIter.hasNext()) {
-                final int usedBitsInLast = this.sizeInBits % wordinbits;
+                final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
                 if (usedBitsInLast > 0) {
-                    this.word &= ((~0) >>> (wordinbits - usedBitsInLast));
+                    this.word &= ((~0) >>> (WORD_IN_BITS - usedBitsInLast));
                 }
             }
             this.literalPosition = this.position;
-            this.position += wordinbits;
+            this.position += WORD_IN_BITS;
         }
         return this.word != 0;
     }

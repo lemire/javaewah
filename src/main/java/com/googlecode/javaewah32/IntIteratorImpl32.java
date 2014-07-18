@@ -7,7 +7,7 @@ package com.googlecode.javaewah32;
 
 import com.googlecode.javaewah.IntIterator;
 
-import static com.googlecode.javaewah32.EWAHCompressedBitmap32.wordinbits;
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;;
 
 /**
  * The IntIteratorImpl32 is the 32 bit implementation of the IntIterator
@@ -65,7 +65,7 @@ final class IntIteratorImpl32 implements IntIterator {
     }
 
     private void setRunningLengthWord(RunningLengthWord32 rlw) {
-        this.runningLength = wordinbits * rlw.getRunningLength()
+        this.runningLength = WORD_IN_BITS * rlw.getRunningLength()
                 + this.position;
         if (!rlw.getRunningBit()) {
             this.position = this.runningLength;
@@ -84,7 +84,7 @@ final class IntIteratorImpl32 implements IntIterator {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
             this.word = this.ewahBuffer[this.wordPosition++];
             this.literalPosition = this.position;
-            this.position += wordinbits;
+            this.position += WORD_IN_BITS;
         }
         return this.word != 0;
     }

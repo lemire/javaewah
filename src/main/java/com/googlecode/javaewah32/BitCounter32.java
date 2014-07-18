@@ -52,7 +52,7 @@ public final class BitCounter32 implements BitmapStorage32 {
     public void addStreamOfEmptyWords(boolean v, int number) {
         if (v) {
             this.oneBits += number
-                    * EWAHCompressedBitmap32.wordinbits;
+                    * EWAHCompressedBitmap32.WORD_IN_BITS;
         }
     }
 
@@ -87,15 +87,8 @@ public final class BitCounter32 implements BitmapStorage32 {
         return this.oneBits;
     }
 
-    /**
-     * should directly set the sizeInBits field, but is effectively ignored
-     * in this class.
-     *
-     * @param bits number of bits
-     */
-    // @Override : causes problems with Java 1.5
     @Override
-    public void setSizeInBits(int bits) {
+    public void setSizeInBitsWithinLastWord(int bits) {
         // no action
     }
 

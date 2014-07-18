@@ -142,7 +142,7 @@ public final class FastAggregation {
             Arrays.fill(hardbitmap, 0);
 
         }
-        container.setSizeInBits(range);
+        container.setSizeInBitsWithinLastWord(range);
     }
 
     /**
@@ -203,7 +203,7 @@ public final class FastAggregation {
                 container.addWord(hardbitmap[k]);
             Arrays.fill(hardbitmap, 0);
         }
-        container.setSizeInBits(range);
+        container.setSizeInBitsWithinLastWord(range);
     }
 
     /**
@@ -370,7 +370,7 @@ public final class FastAggregation {
         }
 
         if (maxAvailablePos == 0) { // this never happens...
-            container.setSizeInBits(0);
+            container.setSizeInBitsWithinLastWord(0);
             return;
         }
 
@@ -479,7 +479,7 @@ public final class FastAggregation {
                 }
             }
         }
-        container.setSizeInBits(maxSize);
+        container.setSizeInBitsWithinLastWord(maxSize);
     }
 
 }

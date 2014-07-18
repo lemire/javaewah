@@ -1,5 +1,7 @@
-upcoming
+version 0.8.7 (July 18th 2014)
  - added isEmpty methods
+ - methods setSizeInBits were renamed setSizeInBitsWithinLastWord and made safer
+ - we document better the behavior of iterator to solve this issue: https://github.com/lemire/javaewah/issues/35
 
 version 0.8.6 (April 29th 2014)
  - fixed bug in clone methods (Jean-Marc Astesana, issue 30)

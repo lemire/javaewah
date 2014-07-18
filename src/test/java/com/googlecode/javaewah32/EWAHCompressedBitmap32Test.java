@@ -146,8 +146,8 @@ public class EWAHCompressedBitmap32Test {
         b.set(4);
         b.set(5);
 
-        a.setSizeInBits(10);
-        b.setSizeInBits(10);
+        a.setSizeInBitsWithinLastWord(10);
+        b.setSizeInBitsWithinLastWord(10);
 
         EWAHCompressedBitmap32 and = a.and(b);
         Assert.assertEquals(10, and.sizeInBits());
@@ -169,8 +169,8 @@ public class EWAHCompressedBitmap32Test {
         b.set(4);
         b.set(5);
 
-        a.setSizeInBits(10);
-        b.setSizeInBits(10);
+        a.setSizeInBitsWithinLastWord(10);
+        b.setSizeInBitsWithinLastWord(10);
 
         EWAHCompressedBitmap32 and = a.andNot(b);
         Assert.assertEquals(10, and.sizeInBits());
@@ -190,8 +190,8 @@ public class EWAHCompressedBitmap32Test {
         b.set(4);
         b.set(5);
 
-        a.setSizeInBits(10);
-        b.setSizeInBits(10);
+        a.setSizeInBitsWithinLastWord(10);
+        b.setSizeInBitsWithinLastWord(10);
 
         EWAHCompressedBitmap32 or = a.or(b);
         Assert.assertEquals(10, or.sizeInBits());
@@ -213,8 +213,8 @@ public class EWAHCompressedBitmap32Test {
         b.set(4);
         b.set(5);
 
-        a.setSizeInBits(10);
-        b.setSizeInBits(10);
+        a.setSizeInBitsWithinLastWord(10);
+        b.setSizeInBitsWithinLastWord(10);
 
         EWAHCompressedBitmap32 xor = a.xor(b);
         Assert.assertEquals(10, xor.sizeInBits());

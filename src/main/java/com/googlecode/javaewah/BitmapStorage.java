@@ -56,9 +56,12 @@ public interface BitmapStorage {
     void clear();
 
     /**
-     * directly set the sizeInBits field
-     *
-     * @param bits number of bits
+     * Sets the size in bits of the bitmap as an *uncompressed* bitmap.
+     * This can only be used to reduce the size of the bitmaps within
+     * the scope of the last word. Specifically, this means that
+     * (sizeInBits()+63)/64 must be equal to (size +63)/64.
+     *  
+     * @param size         the size in bits
      */
-    void setSizeInBits(final int bits);
+    void setSizeInBitsWithinLastWord(final int bits);
 }
