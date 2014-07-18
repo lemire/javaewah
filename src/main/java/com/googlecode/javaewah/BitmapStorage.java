@@ -63,5 +63,5 @@ public interface BitmapStorage {
      *  
      * @param size         the size in bits
      */
-    void setSizeInBitsWithinLastWord(final int bits);
+    void setSizeInBitsWithinLastWord(final int size);
 }
