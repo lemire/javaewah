@@ -40,7 +40,7 @@ public interface LogicalElement<T> {
      * @param le another element
      * @return the result of the operation
      */
-    LogicalElement or(T le);
+    T or(T le);
 
     /**
      * How many logical bits does this element represent?
@@ -61,7 +61,15 @@ public interface LogicalElement<T> {
      * Compute the bitwise logical Xor
      *
      * @param le element
-     * @return the results of the operation
+     * @return the result of the operation
      */
     T xor(T le);
+
+    /**
+     * Compute the composition
+     *
+     * @param le another element
+     * @return the result of the operation
+     */
+    T compose(T le);
 }

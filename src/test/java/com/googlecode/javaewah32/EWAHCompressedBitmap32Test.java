@@ -13,11 +13,80 @@ import org.junit.Test;
 import java.io.*;
 import java.util.*;
 
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
+
 /**
  * This class is used for basic unit testing.
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
+
+    @Test
+    public void simpleCompose() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf(1, 3, 4);
+        bitmap1.setSizeInBits(5, false);
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf(0, 2);
+
+        EWAHCompressedBitmap32 result = bitmap1.compose(bitmap2);
+
+        Assert.assertEquals(5, result.sizeInBits());
+        Assert.assertEquals(2, result.cardinality());
+        Assert.assertEquals(Integer.valueOf(1), result.toList().get(0));
+        Assert.assertEquals(Integer.valueOf(4), result.toList().get(1));
+    }
+
+    @Test
+    public void composeBitmapOfOnesWithItself() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+
+        EWAHCompressedBitmap32 result = bitmap.compose(bitmap);
+
+        Assert.assertEquals(bitmap, result);
+    }
+
+    @Test
+    public void composeBitmapOfZerosAndOnesWithBitmapOfOnes() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap1.setSizeInBits(WORD_IN_BITS, false);
+        bitmap1.setSizeInBits(2 * WORD_IN_BITS, true);
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap2.setSizeInBits(WORD_IN_BITS, true);
+
+        EWAHCompressedBitmap32 result = bitmap1.compose(bitmap2);
+
+        Assert.assertEquals(bitmap1, result);
+    }
+
+    @Test
+    public void composeBitmapOfOnesWithBitmapOfZerosAndOnes() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap1.setSizeInBits(2 * WORD_IN_BITS, true);
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap2.setSizeInBits(WORD_IN_BITS, false);
+        bitmap2.setSizeInBits(2 * WORD_IN_BITS, true);
+
+        EWAHCompressedBitmap32 result = bitmap1.compose(bitmap2);
+
+        Assert.assertEquals(bitmap2, result);
+    }
+
+    @Test
+    public void composeBitmapWithBitmapOfZeros() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf(1, 3, 4, 9);
+        bitmap1.setSizeInBits(WORD_IN_BITS, false);
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap2.setSizeInBits(5, false);
+
+        EWAHCompressedBitmap32 result = bitmap1.compose(bitmap2);
+
+        Assert.assertEquals(0, result.cardinality());
+        Assert.assertEquals(WORD_IN_BITS, result.sizeInBits());
+    }
 
     @Test
 	public void testAstesana() {
