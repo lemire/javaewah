@@ -72,6 +72,18 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
+    public void clearIntIteratorOverBitmapOfZeros() {
+        EWAHCompressedBitmap x = EWAHCompressedBitmap.bitmapOf();
+        x.setSizeInBits(3, false);
+        IntIterator iterator = x.clearIntIterator();
+        for (int i : Arrays.asList(0, 1, 2)) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
     public void testGet() {
         for (int gap = 29; gap < 10000; gap *= 10) {
             EWAHCompressedBitmap x = new EWAHCompressedBitmap();
