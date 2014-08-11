@@ -1577,6 +1577,12 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * Returns a new compressed bitmap containing the composition of
      * the current bitmap with some other bitmap.
      *
+     * The composition A.compose(B) is defined as follows: we retain
+     * the ith set bit of A only if the ith bit of B is set. For example, 
+     * if you have the following bitmap A = { 0, 1, 0, 1, 1, 0 } and want
+     * to keep only the second and third ones, you can call A.compose(B) 
+     * with B = { 0, 1, 1 } and you will get C = { 0, 0, 0, 1, 1, 0 }.
+     *
      * If you are not planning on adding to the resulting bitmap, you may
      * call the trim() method to reduce memory usage.
      *
@@ -1596,6 +1602,12 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     /**
      * Computes a new compressed bitmap containing the composition of
      * the current bitmap with some other bitmap.
+     * 
+     * The composition A.compose(B) is defined as follows: we retain
+     * the ith set bit of A only if the ith bit of B is set. For example, 
+     * if you have the following bitmap A = { 0, 1, 0, 1, 1, 0 } and want
+     * to keep only the second and third ones, you can call A.compose(B) 
+     * with B = { 0, 1, 1 } and you will get C = { 0, 0, 0, 1, 1, 0 }.
      *
      * The current bitmap is not modified.
      *
@@ -1615,7 +1627,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             while(j.hasNext()) {
                 int jPosition = j.next();
                 if(iPosition == index++) {
-                    //consecutive ones could be optimized
+                    //todo: consecutive ones could be optimized
                     container.set(jPosition);
                     break;
                 }

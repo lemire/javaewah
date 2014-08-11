@@ -1618,6 +1618,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         remaining.discharge(container);
         container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(), a.sizeInBits()));
     }
+    
+
+    
 
     /**
      * Returns the cardinality of the result of a bitwise XOR of the values
