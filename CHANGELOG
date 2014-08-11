@@ -1,5 +1,7 @@
-version 0.8.8 (August 11th 2014)
+version 0.8.9 (August 11th 2014)
  - Fixed bug in clearIntIterator with bitmap of zeros
+
+version 0.8.8 (August 11th 2014)
  - added compose functions
 
 version 0.8.7 (July 18th 2014)
