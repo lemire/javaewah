@@ -207,7 +207,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             this.rlw.setRunningBit(v);
         }
         if (noLiteralWords && this.rlw.getRunningBit() == v
-                && (runningLength < RunningLengthWord.largestRunningLengthCount)) {
+                && (runningLength < RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT)) {
             this.rlw.setRunningLength(runningLength + 1);
             return;
         }
@@ -224,7 +224,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      */
     private void addLiteralWord(final long newData) {
         final int numberSoFar = this.rlw.getNumberOfLiteralWords();
-        if (numberSoFar >= RunningLengthWord.largestLiteralCount) {
+        if (numberSoFar >= RunningLengthWord.LARGEST_LITERAL_COUNT) {
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             this.rlw.setNumberOfLiteralWords(1);
@@ -249,9 +249,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
             final int numberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-            final int whatWeCanAdd = leftOverNumber < RunningLengthWord.largestLiteralCount
+            final int whatWeCanAdd = leftOverNumber < RunningLengthWord.LARGEST_LITERAL_COUNT
                     - numberOfLiteralWords ? leftOverNumber
-                    : RunningLengthWord.largestLiteralCount - numberOfLiteralWords;
+                    : RunningLengthWord.LARGEST_LITERAL_COUNT - numberOfLiteralWords;
             this.rlw.setNumberOfLiteralWords(numberOfLiteralWords+ whatWeCanAdd);
             leftOverNumber -= whatWeCanAdd;
             push_back(data, start, whatWeCanAdd);
@@ -286,17 +286,17 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 this.rlw.setRunningBit(true);
         }
         final long runLen = this.rlw.getRunningLength();
-        final long whatWeCanAdd = number < RunningLengthWord.largestRunningLengthCount
-                - runLen ? number : RunningLengthWord.largestRunningLengthCount - runLen;
+        final long whatWeCanAdd = number < RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT
+                - runLen ? number : RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT - runLen;
         this.rlw.setRunningLength(runLen + whatWeCanAdd);
         number -= whatWeCanAdd;
-        while(number >= RunningLengthWord.largestRunningLengthCount) {
+        while(number >= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT) {
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             if (v)
                 this.rlw.setRunningBit(true);
-            this.rlw.setRunningLength(RunningLengthWord.largestRunningLengthCount);
-            number -= RunningLengthWord.largestRunningLengthCount;
+            this.rlw.setRunningLength(RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT);
+            number -= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT;
         }
         if (number > 0) {
             push_back(0);
@@ -322,9 +322,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
             final int numberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
-            final int whatWeCanAdd = leftOverNumber < RunningLengthWord.largestLiteralCount
+            final int whatWeCanAdd = leftOverNumber < RunningLengthWord.LARGEST_LITERAL_COUNT
                     - numberOfLiteralWords ? leftOverNumber
-                    : RunningLengthWord.largestLiteralCount
+                    : RunningLengthWord.LARGEST_LITERAL_COUNT
                     - numberOfLiteralWords;
             this.rlw.setNumberOfLiteralWords(numberOfLiteralWords + whatWeCanAdd);
             leftOverNumber -= whatWeCanAdd;
@@ -642,19 +642,19 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
 
         final long runLen = this.rlw.getRunningLength();
-        final long whatWeCanAdd = number < RunningLengthWord.largestRunningLengthCount
+        final long whatWeCanAdd = number < RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT
                 - runLen ? number
-                : RunningLengthWord.largestRunningLengthCount - runLen;
+                : RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT - runLen;
         this.rlw.setRunningLength(runLen + whatWeCanAdd);
         number -= whatWeCanAdd;
 
-        while (number >= RunningLengthWord.largestRunningLengthCount) {
+        while (number >= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT) {
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             if (v)
                 this.rlw.setRunningBit(true);
-            this.rlw.setRunningLength(RunningLengthWord.largestRunningLengthCount);
-            number -= RunningLengthWord.largestRunningLengthCount;
+            this.rlw.setRunningLength(RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT);
+            number -= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT;
         }
         if (number > 0) {
             push_back(0);
@@ -1176,7 +1176,33 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
         return false;
     }
+    
+    /**
+     * getFirstSetBit is a light-weight method that returns the
+     * location of the set bit (=1) or -1 if there is none.
+     * 
+     * @return location of the first set bit or -1
+     */
+    public int getFirstSetBit() {
+        int nword = 0;
+        for(int pos = 0; pos < this.actualSizeInWords;++pos) {
+           long rl = (this.buffer[pos] >>> 1) & RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT;
+           boolean rb = (this.buffer[pos] & 1) != 0;
+           if((rl > 0) && rb ) {
+                return nword  * WORD_IN_BITS;
+           }
+           nword  += rl;
+           long lw = (this.buffer[pos] >>> (1 + RunningLengthWord.RUNNING_LENGTH_BITS));
+           if(lw > 0) {
+               long word = this.buffer[pos + 1];
+               long T = word & -word;
+               return nword  * WORD_IN_BITS + Long.bitCount(T - 1);
+           }
+        }
+        return -1;        
+    }
 
+    
     /**
      * Set the bit at position i to true, the bits must be set in (strictly)
      * increasing order. For example, set(15) and then set(7) will fail. You

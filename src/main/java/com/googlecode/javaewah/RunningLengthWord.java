@@ -31,7 +31,7 @@ public final class RunningLengthWord implements Cloneable {
      * @return the number of literal words
      */
     public int getNumberOfLiteralWords() {
-        return (int) (this.parent.buffer[this.position] >>> (1 + runningLengthBits));
+        return (int) (this.parent.buffer[this.position] >>> (1 + RUNNING_LENGTH_BITS));
     }
 
     /**
@@ -49,7 +49,7 @@ public final class RunningLengthWord implements Cloneable {
      * @return the running length
      */
     public long getRunningLength() {
-        return (this.parent.buffer[this.position] >>> 1) & largestRunningLengthCount;
+        return (this.parent.buffer[this.position] >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
     }
 
     /**
@@ -58,9 +58,9 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new number of literal words
      */
     public void setNumberOfLiteralWords(final long number) {
-        this.parent.buffer[this.position] |= notRunningLengthPlusRunningBit;
-        this.parent.buffer[this.position] &= (number << (runningLengthBits + 1))
-                | runningLengthPlusRunningBit;
+        this.parent.buffer[this.position] |= NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT;
+        this.parent.buffer[this.position] &= (number << (RUNNING_LENGTH_BITS + 1))
+                | RUNNING_LENGTH_PLUS_RUNNING_BIT;
     }
 
     /**
@@ -81,9 +81,9 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new running length
      */
     public void setRunningLength(final long number) {
-        this.parent.buffer[this.position] |= shiftedLargestRunningLengthCount;
+        this.parent.buffer[this.position] |= SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
         this.parent.buffer[this.position] &= (number << 1)
-                | notShiftedLargestRunningLengthCount;
+                | NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
     }
 
     /**
@@ -129,26 +129,26 @@ public final class RunningLengthWord implements Cloneable {
      * number of bits dedicated to marking of the running length of clean
      * words
      */
-    public static final int runningLengthBits = 32;
+    public static final int RUNNING_LENGTH_BITS = 32;
 
-    private static final int literalBits = 64 - 1 - runningLengthBits;
+    private static final int LITERAL_BITS = 64 - 1 - RUNNING_LENGTH_BITS;
 
     /**
      * largest number of literal words in a run.
      */
-    public static final int largestLiteralCount = (1 << literalBits) - 1;
+    public static final int LARGEST_LITERAL_COUNT = (1 << LITERAL_BITS) - 1;
 
     /**
      * largest number of clean words in a run
      */
-    public static final long largestRunningLengthCount = (1l << runningLengthBits) - 1;
+    public static final long LARGEST_RUNNING_LENGTH_COUNT = (1l << RUNNING_LENGTH_BITS) - 1;
 
-    private static final long runningLengthPlusRunningBit = (1l << (runningLengthBits + 1)) - 1;
+    private static final long RUNNING_LENGTH_PLUS_RUNNING_BIT = (1l << (RUNNING_LENGTH_BITS + 1)) - 1;
 
-    private static final long shiftedLargestRunningLengthCount = largestRunningLengthCount << 1;
+    private static final long SHIFTED_LARGEST_RUNNING_LENGTH_COUNT = LARGEST_RUNNING_LENGTH_COUNT << 1;
 
-    private static final long notRunningLengthPlusRunningBit = ~runningLengthPlusRunningBit;
+    private static final long NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT = ~RUNNING_LENGTH_PLUS_RUNNING_BIT;
 
-    private static final long notShiftedLargestRunningLengthCount = ~shiftedLargestRunningLengthCount;
+    private static final long NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT = ~SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
 
 }

@@ -1215,6 +1215,30 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
 
     /**
+     * getFirstSetBit is a light-weight method that returns the
+     * location of the set bit (=1) or -1 if there is none.
+     * 
+     * @return location of the first set bit or -1
+     */
+    public int getFirstSetBit() {
+        int nword = 0;
+        for(int pos = 0; pos < this.actualSizeInWords;++pos) {
+           int rl = (this.buffer[pos] >>> 1) & RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT;
+           boolean rb = (this.buffer[pos] & 1) != 0;
+           if((rl > 0) && rb ) {
+                return nword  * WORD_IN_BITS;
+           }
+           nword  += rl;
+           int lw = (this.buffer[pos] >>> (1 + RunningLengthWord32.RUNNING_LENGTH_BITS));
+           if(lw > 0) {
+               int word = this.buffer[pos + 1];
+               int T = word & -word;
+               return nword  * WORD_IN_BITS + Integer.bitCount(T - 1);
+           }
+        }
+        return -1;        
+    }
+    /**
      * Set the bit at position i to true, the bits must be set in (strictly)
      * increasing order. For example, set(15) and then set(7) will fail. You
      * must do set(7) and then set(15).

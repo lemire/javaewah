@@ -20,9 +20,9 @@ public final class BufferedRunningLengthWord implements Cloneable {
      * @param a the word
      */
     public BufferedRunningLengthWord(final long a) {
-        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runningLengthBits));
+        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.RUNNING_LENGTH_BITS));
         this.runningBit = (a & 1) != 0;
-        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.largestRunningLengthCount);
+        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT);
     }
 
     /**
@@ -83,9 +83,9 @@ public final class BufferedRunningLengthWord implements Cloneable {
      * @param a the word
      */
     public void reset(final long a) {
-        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.runningLengthBits));
+        this.numberOfLiteralWords = (int) (a >>> (1 + RunningLengthWord.RUNNING_LENGTH_BITS));
         this.runningBit = (a & 1) != 0;
-        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.largestRunningLengthCount);
+        this.runningLength = (int) ((a >>> 1) & RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT);
         this.literalWordOffset = 0;
     }
 
