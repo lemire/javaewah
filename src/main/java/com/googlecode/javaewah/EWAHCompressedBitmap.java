@@ -1574,6 +1574,57 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
 
     /**
+     * Returns a new compressed bitmap containing the composition of
+     * the current bitmap with some other bitmap.
+     *
+     * If you are not planning on adding to the resulting bitmap, you may
+     * call the trim() method to reduce memory usage.
+     *
+     * The current bitmap is not modified.
+     *
+     * @param a the other bitmap (it will not be modified)
+     * @return the EWAH compressed bitmap
+     */
+    @Override
+    public EWAHCompressedBitmap compose(EWAHCompressedBitmap a) {
+        int size = this.actualSizeInWords;
+        final EWAHCompressedBitmap container = new EWAHCompressedBitmap(size);
+        composeToContainer(a, container);
+        return container;
+    }
+
+    /**
+     * Computes a new compressed bitmap containing the composition of
+     * the current bitmap with some other bitmap.
+     *
+     * The current bitmap is not modified.
+     *
+     * The content of the container is overwritten.
+     *
+     * @param a         the other bitmap (it will not be modified)
+     * @param container where we store the result
+     */
+    public void composeToContainer(final EWAHCompressedBitmap a,
+                                   final EWAHCompressedBitmap container) {
+        container.clear();
+        final IntIterator i = a.intIterator();
+        final IntIterator j = intIterator();
+        int index = 0;
+        while(i.hasNext() && j.hasNext()) {
+            int iPosition = i.next();
+            while(j.hasNext()) {
+                int jPosition = j.next();
+                if(iPosition == index++) {
+                    //consecutive ones could be optimized
+                    container.set(jPosition);
+                    break;
+                }
+            }
+        }
+        container.setSizeInBits(sizeInBits, false);
+    }
+
+    /**
      * For internal use. Computes the bitwise and of the provided bitmaps
      * and stores the result in the container.
      * 
