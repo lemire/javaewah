@@ -65,7 +65,8 @@ final class ClearIntIterator32 implements IntIterator {
     }
 
     private void setRunningLengthWord(RunningLengthWord32 rlw) {
-        this.runningLength = WORD_IN_BITS * rlw.getRunningLength() + this.position;
+        this.runningLength = Math.min(this.sizeInBits,
+                                      WORD_IN_BITS * rlw.getRunningLength() + this.position);
         if (rlw.getRunningBit()) {
             this.position = this.runningLength;
         }
