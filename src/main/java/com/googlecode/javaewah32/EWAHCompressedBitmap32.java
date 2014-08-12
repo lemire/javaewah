@@ -5,6 +5,7 @@ package com.googlecode.javaewah32;
  * Licensed under the Apache License, Version 2.0.
  */
 
+import com.googlecode.javaewah.ChunkIterator;
 import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
 import com.googlecode.javaewah32.symmetric.RunningBitmapMerge32;
@@ -850,6 +851,17 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     public IntIterator clearIntIterator() {
         return new ClearIntIterator32(this.getEWAHIterator(), this.sizeInBits);
+    }
+
+    /**
+     * Iterator over the chunk of bits.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the chunk iterator
+     */
+    public ChunkIterator chunkIterator() {
+        return new ChunkIteratorImpl32(this.getEWAHIterator(), sizeInBits);
     }
 
     /**
@@ -1710,18 +1722,21 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     public void composeToContainer(final EWAHCompressedBitmap32 a,
                                    final EWAHCompressedBitmap32 container) {
         container.clear();
-        final IntIterator i = a.intIterator();
-        final IntIterator j = intIterator();
+        final ChunkIterator iterator = chunkIterator();
+        final ChunkIterator aIterator = a.chunkIterator();
         int index = 0;
-        while(i.hasNext() && j.hasNext()) {
-            int iPosition = i.next();
-            while(j.hasNext()) {
-                int jPosition = j.next();
-                if(iPosition == index++) {
-                    //consecutive ones could be optimized
-                    container.set(jPosition);
-                    break;
-                }
+        while(iterator.hasNext() && aIterator.hasNext()) {
+            if(!iterator.nextBit()) {
+                int length = iterator.nextLength();
+                index += length;
+                container.setSizeInBits(index, false);
+                iterator.move(length);
+            } else {
+                int length = Math.min(iterator.nextLength(), aIterator.nextLength());
+                index += length;
+                container.setSizeInBits(index, aIterator.nextBit());
+                iterator.move(length);
+                aIterator.move(length);
             }
         }
         container.setSizeInBits(sizeInBits, false);

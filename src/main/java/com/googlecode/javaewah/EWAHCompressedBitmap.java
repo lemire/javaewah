@@ -837,6 +837,17 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
 
     /**
+     * Iterator over the chunk of bits.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the chunk iterator
+     */
+    public ChunkIterator chunkIterator() {
+        return new ChunkIteratorImpl(this.getEWAHIterator(), sizeInBits);
+    }
+
+    /**
      * Iterates over the positions of the true values. This is similar to
      * intIterator(), but it uses Java generics.
      * 
@@ -1645,18 +1656,21 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public void composeToContainer(final EWAHCompressedBitmap a,
                                    final EWAHCompressedBitmap container) {
         container.clear();
-        final IntIterator i = a.intIterator();
-        final IntIterator j = intIterator();
+        final ChunkIterator iterator = chunkIterator();
+        final ChunkIterator aIterator = a.chunkIterator();
         int index = 0;
-        while(i.hasNext() && j.hasNext()) {
-            int iPosition = i.next();
-            while(j.hasNext()) {
-                int jPosition = j.next();
-                if(iPosition == index++) {
-                    //todo: consecutive ones could be optimized
-                    container.set(jPosition);
-                    break;
-                }
+        while(iterator.hasNext() && aIterator.hasNext()) {
+            if (!iterator.nextBit()) {
+                int length = iterator.nextLength();
+                index += length;
+                container.setSizeInBits(index, false);
+                iterator.move(length);
+            } else {
+                int length = Math.min(iterator.nextLength(), aIterator.nextLength());
+                index += length;
+                container.setSizeInBits(index, aIterator.nextBit());
+                iterator.move(length);
+                aIterator.move(length);
             }
         }
         container.setSizeInBits(sizeInBits, false);

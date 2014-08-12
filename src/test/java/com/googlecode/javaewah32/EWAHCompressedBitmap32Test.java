@@ -5,6 +5,7 @@ package com.googlecode.javaewah32;
  * Licensed under the Apache License, Version 2.0.
  */
 
+import com.googlecode.javaewah.ChunkIterator;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import org.junit.Assert;
@@ -20,6 +21,79 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
+
+    @Test
+    public void chunkIterator() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
+
+        ChunkIterator iterator = bitmap.chunkIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.nextBit());
+        Assert.assertEquals(5, iterator.nextLength());
+        iterator.move(2);
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.nextBit());
+        Assert.assertEquals(3, iterator.nextLength());
+        iterator.move();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertFalse(iterator.nextBit());
+        Assert.assertEquals(2, iterator.nextLength());
+        iterator.move(5);
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.nextBit());
+        Assert.assertEquals(1, iterator.nextLength());
+        iterator.move();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void chunkIteratorOverBitmapOfZeros() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+
+        ChunkIterator iterator = bitmap.chunkIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertFalse(iterator.nextBit());
+        Assert.assertEquals(WORD_IN_BITS, iterator.nextLength());
+        iterator.move();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void chunkIteratorOverBitmapOfZerosAndOnes() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS + 10, false);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, true);
+
+        ChunkIterator iterator = bitmap.chunkIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertFalse(iterator.nextBit());
+        Assert.assertEquals(WORD_IN_BITS + 10, iterator.nextLength());
+        iterator.move();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.nextBit());
+        Assert.assertEquals(WORD_IN_BITS - 10, iterator.nextLength());
+        iterator.move();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void chunkIteratorOverBitmapOfOnesAndZeros() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS - 10, true);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, false);
+
+        ChunkIterator iterator = bitmap.chunkIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.nextBit());
+        Assert.assertEquals(WORD_IN_BITS - 10, iterator.nextLength());
+        iterator.move();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertFalse(iterator.nextBit());
+        Assert.assertEquals(WORD_IN_BITS + 10, iterator.nextLength());
+        iterator.move();
+        Assert.assertFalse(iterator.hasNext());
+    }
 
     @Test
     public void simpleCompose() {
