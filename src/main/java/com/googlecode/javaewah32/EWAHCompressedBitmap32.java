@@ -262,37 +262,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         if (number == 0)
             return;
         this.sizeInBits += number * WORD_IN_BITS;
-        if ((this.rlw.getRunningBit() != v) && (this.rlw.size() == 0)) {
-            this.rlw.setRunningBit(v);
-        } else if ((this.rlw.getNumberOfLiteralWords() != 0)
-                || (this.rlw.getRunningBit() != v)) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(true);
-        }
-        final int runLen = this.rlw.getRunningLength();
-        final int whatWeCanAdd = number < RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT
-                - runLen ? number
-                : RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT
-                - runLen;
-        this.rlw.setRunningLength(runLen + whatWeCanAdd);
-        number -= whatWeCanAdd;
-        while (number >= RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(true);
-            this.rlw.setRunningLength(RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT);
-            number -= RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT;
-        }
-        if (number > 0) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(v);
-            this.rlw.setRunningLength(number);
-        }
+        fastaddStreamOfEmptyWords(v, number);
     }
 
     /**
@@ -661,20 +631,20 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             if (v)
-                this.rlw.setRunningBit(v);
+                this.rlw.setRunningBit(true);
         }
-        final int runlen = this.rlw.getRunningLength();
-        final int whatwecanadd = number < RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT
-                - runlen ? number
+        final int runLen = this.rlw.getRunningLength();
+        final int whatWeCanAdd = number < RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT
+                - runLen ? number
                 : RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT
-                - runlen;
-        this.rlw.setRunningLength(runlen + whatwecanadd);
-        number -= whatwecanadd;
+                - runLen;
+        this.rlw.setRunningLength(runLen + whatWeCanAdd);
+        number -= whatWeCanAdd;
         while (number >= RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT) {
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             if (v)
-                this.rlw.setRunningBit(v);
+                this.rlw.setRunningBit(true);
             this.rlw.setRunningLength(RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT);
             number -= RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT;
         }
@@ -682,7 +652,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             if (v)
-                this.rlw.setRunningBit(v);
+                this.rlw.setRunningBit(true);
             this.rlw.setRunningLength(number);
         }
     }

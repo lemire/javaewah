@@ -277,34 +277,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         if (number == 0)
             return;
         this.sizeInBits += number * WORD_IN_BITS;
-        if (this.rlw.getRunningBit() != v && this.rlw.size() == 0) {
-            this.rlw.setRunningBit(v);
-        } else if (this.rlw.getNumberOfLiteralWords() != 0 || this.rlw.getRunningBit() != v) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(true);
-        }
-        final long runLen = this.rlw.getRunningLength();
-        final long whatWeCanAdd = number < RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT
-                - runLen ? number : RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT - runLen;
-        this.rlw.setRunningLength(runLen + whatWeCanAdd);
-        number -= whatWeCanAdd;
-        while(number >= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(true);
-            this.rlw.setRunningLength(RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT);
-            number -= RunningLengthWord.LARGEST_RUNNING_LENGTH_COUNT;
-        }
-        if (number > 0) {
-            push_back(0);
-            this.rlw.position = this.actualSizeInWords - 1;
-            if (v)
-                this.rlw.setRunningBit(true);
-            this.rlw.setRunningLength(number);
-        }
+        fastaddStreamOfEmptyWords(v, number);
     }
 
     /**
