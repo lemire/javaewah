@@ -7,7 +7,7 @@ package com.googlecode.javaewah32;
 
 import com.googlecode.javaewah.IntIterator;
 
-import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;;
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 
 /**
  * The IntIteratorImpl32 is the 32 bit implementation of the IntIterator
