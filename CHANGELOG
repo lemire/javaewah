@@ -1,6 +1,7 @@
 version 0.8.10 (upcoming)
  - getFirstSetBit
  - Capitalized some constants
+ - Implement composition using chunk iterators
 
 version 0.8.9 (August 11th 2014)
  - Fixed bug in clearIntIterator with bitmap of zeros
