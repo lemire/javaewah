@@ -1,4 +1,4 @@
-version 0.8.10 (upcoming)
+version 0.8.10 (August 13th 2014)
  - getFirstSetBit
  - Capitalized some constants
  - Implement composition using chunk iterators
