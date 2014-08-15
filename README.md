@@ -143,6 +143,12 @@ API Documentation
 
 http://lemire.me/docs/javaewah/
 
+Further reading
+---------------
+
+Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience, 2014.
+http://arxiv.org/abs/1402.4466
+
 Acknowledgement
 ---------------
 
