@@ -96,7 +96,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.8.10</version>
+	     <version>0.8.11</version>
          </dependency>
      </dependencies>
 
@@ -107,7 +107,7 @@ Travis (Continuous integration)
 -------------------------------
 
 You can check whether the latest version builds on your favorite version
-of Java using Travis: https://travis-ci.org/lemire/javaewah/builds/11059867 
+of Java using Travis: https://travis-ci.org/lemire/javaewah/builds/
 
 Clojure 
 -------
