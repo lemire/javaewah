@@ -107,7 +107,7 @@ Travis (Continuous integration)
 -------------------------------
 
 You can check whether the latest version builds on your favorite version
-of Java using Travis: https://travis-ci.org/lemire/javaewah/builds/11059867 
+of Java using Travis: https://travis-ci.org/lemire/javaewah
 
 Clojure 
 -------
