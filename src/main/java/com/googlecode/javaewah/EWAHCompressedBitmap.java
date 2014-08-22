@@ -787,6 +787,17 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public IntIterator intIterator() {
         return new IntIteratorImpl(this.getEWAHIterator());
     }
+
+    /**
+     * Iterator over the set bits in reverse order.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the int iterator
+     */
+    public IntIterator reverseIntIterator() {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Checks whether this bitmap is empty (has a cardinality of zero).
