@@ -35,11 +35,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
      */
     public IteratingBufferedRunningLengthWord(
             final EWAHCompressedBitmap bitmap) {
-        this.iterator = EWAHIterator.getEWAHIterator(bitmap);
-        this.brlw = new BufferedRunningLengthWord(this.iterator.next());
-        this.literalWordStartPosition = this.iterator.literalWords()
-                + this.brlw.literalWordOffset;
-        this.buffer = this.iterator.buffer();
+        this(EWAHIterator.getEWAHIterator(bitmap));
     }
 
     /**
