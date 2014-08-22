@@ -658,15 +658,27 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
 
     /**
-     * Gets an EWAHIterator over the data. This is a customized iterator
+     * Gets an EWAHIterator32 over the data. This is a customized iterator
      * which iterates over run length words. For experts only.
      * 
      * The current bitmap is not modified.
      *
-     * @return the EWAHIterator
+     * @return the EWAHIterator32
      */
     public EWAHIterator32 getEWAHIterator() {
         return new EWAHIterator32(this, this.actualSizeInWords);
+    }
+
+    /**
+     * Gets a ReverseEWAHIterator32 over the data. This is a customized iterator
+     * which iterates over run length words in reverse order. For experts only.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the ReverseEWAHIterator32
+     */
+    private ReverseEWAHIterator32 getReverseEWAHIterator() {
+        return new ReverseEWAHIterator32(this, this.actualSizeInWords);
     }
 
     /**
@@ -809,7 +821,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @return the int iterator
      */
     public IntIterator reverseIntIterator() {
-        throw new UnsupportedOperationException();
+        return new ReverseIntIterator32(this.getReverseEWAHIterator(), this.sizeInBits);
     }
 
     /**
@@ -842,7 +854,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @return the chunk iterator
      */
     public ChunkIterator chunkIterator() {
-        return new ChunkIteratorImpl32(this.getEWAHIterator(), sizeInBits);
+        return new ChunkIteratorImpl32(this.getEWAHIterator(), this.sizeInBits);
     }
 
     /**
