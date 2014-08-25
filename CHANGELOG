@@ -1,4 +1,4 @@
-version 0.8.12 (upcoming)
+version 0.8.12 (August 25th 2014)
  - Faster "isEmpty" method
  - Introducing reverse iterators
 
