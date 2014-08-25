@@ -23,6 +23,51 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+    public void reverseIntIterator() {
+        int[] positions = new int[] { 0, 1, 2, 3, 5, 8, 13, 21 };
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(positions);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i=positions.length-1; i>=0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(positions[i], iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfOnes() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i= WORD_IN_BITS-1; i>=0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfZeros() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfOnesAndZeros() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS-10, true);
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i= WORD_IN_BITS-10; i>0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i-1, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
     public void chunkIterator() {
         EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
 
