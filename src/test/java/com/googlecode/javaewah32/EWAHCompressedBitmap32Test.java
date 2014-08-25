@@ -23,6 +23,15 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+    public void isEmpty() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+        bitmap.setSizeInBits(1000, false);
+        Assert.assertTrue(bitmap.isEmpty());
+        bitmap.set(1001);
+        Assert.assertFalse(bitmap.isEmpty());
+    }
+
+    @Test
     public void chunkIterator() {
         EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
 
