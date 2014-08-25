@@ -1,5 +1,6 @@
-version 0.8.12
+version 0.8.12 (upcoming)
  - Faster "isEmpty" method
+ - Introducing reverse iterators
 
 version 0.8.11 (August 15th 2014)
  - Refactoring: unify addStreamOfEmptyWords and fastaddStreamOfEmptyWord
