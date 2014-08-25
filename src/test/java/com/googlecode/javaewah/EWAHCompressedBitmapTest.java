@@ -66,6 +66,15 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
+    public void isEmpty() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(1000, false);
+        Assert.assertTrue(bitmap.isEmpty());
+        bitmap.set(1001);
+        Assert.assertFalse(bitmap.isEmpty());
+    }
+
+    @Test
     public void chunkIterator() {
         EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
 

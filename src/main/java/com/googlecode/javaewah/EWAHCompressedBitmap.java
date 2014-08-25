@@ -817,7 +817,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @return true if no bit is set
      */
     public boolean isEmpty() {
-    	return !intIterator().hasNext();
+    	return getFirstSetBit() < 0;
     }
 
     /**

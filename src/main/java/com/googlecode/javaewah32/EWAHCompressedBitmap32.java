@@ -830,9 +830,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @return true if no bit is set
      */
     public boolean isEmpty() {
-    	return !intIterator().hasNext();
+    	return getFirstSetBit() < 0;
     }
-
 
     /**
      * Iterator over the clear bits. The location of the clear bits is
