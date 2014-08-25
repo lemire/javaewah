@@ -21,6 +21,51 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 public class EWAHCompressedBitmapTest {
 
     @Test
+    public void reverseIntIterator() {
+        int[] positions = new int[] { 0, 1, 2, 3, 5, 8, 13, 21 };
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf(positions);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i=positions.length-1; i>=0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(positions[i], iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i=WORD_IN_BITS-1; i>=0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void reverseIntIteratorOverBitmapsOfOnesAndZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS-10, true);
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        IntIterator iterator = bitmap.reverseIntIterator();
+        for(int i=WORD_IN_BITS-10; i>0; --i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i-1, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
     public void chunkIterator() {
         EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
 

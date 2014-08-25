@@ -651,6 +651,18 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
 
     /**
+     * Gets a ReverseEWAHIterator over the data. This is a customized iterator
+     * which iterates over run length words in reverse order. For experts only.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the ReverseEWAHIterator
+     */
+    private ReverseEWAHIterator getReverseEWAHIterator() {
+        return new ReverseEWAHIterator(this, this.actualSizeInWords);
+    }
+
+    /**
      * Gets an IteratingRLW to iterate over the data. For experts only.
      * 
      * Note that iterator does not know about the size in bits of the
@@ -787,6 +799,17 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public IntIterator intIterator() {
         return new IntIteratorImpl(this.getEWAHIterator());
     }
+
+    /**
+     * Iterator over the set bits in reverse order.
+     *
+     * The current bitmap is not modified.
+     *
+     * @return the int iterator
+     */
+    public IntIterator reverseIntIterator() {
+        return new ReverseIntIterator(this.getReverseEWAHIterator(), this.sizeInBits);
+    }
     
     /**
      * Checks whether this bitmap is empty (has a cardinality of zero).
@@ -817,7 +840,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @return the chunk iterator
      */
     public ChunkIterator chunkIterator() {
-        return new ChunkIteratorImpl(this.getEWAHIterator(), sizeInBits);
+        return new ChunkIteratorImpl(this.getEWAHIterator(), this.sizeInBits);
     }
 
     /**
