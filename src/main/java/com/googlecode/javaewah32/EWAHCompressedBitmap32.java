@@ -1378,11 +1378,12 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 this.sizeInBits += maskWidth;
             }
             this.addStreamOfEmptyWords(defaultValue,
-                    (size / WORD_IN_BITS) - this.sizeInBits
-                            / WORD_IN_BITS
+                    (size / WORD_IN_BITS) - (this.sizeInBits / WORD_IN_BITS)
             );
             if (this.sizeInBits < size) {
-                if (this.rlw.getNumberOfLiteralWords() == 0) {
+                final int dist = (size + WORD_IN_BITS) / WORD_IN_BITS
+                        - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
+                if (dist>0 || this.rlw.getNumberOfLiteralWords() == 0) {
                     addLiteralWord(0);
                 }
                 final int maskWidth = size - this.sizeInBits;

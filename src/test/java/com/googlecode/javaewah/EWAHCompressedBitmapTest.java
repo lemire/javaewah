@@ -21,6 +21,24 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 public class EWAHCompressedBitmapTest {
 
     @Test
+    public void setSizeInBits() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS/2; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        for(int i=WORD_IN_BITS; i<WORD_IN_BITS + WORD_IN_BITS/2; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
     public void reverseIntIterator() {
         int[] positions = new int[] { 0, 1, 2, 3, 5, 8, 13, 21 };
         EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf(positions);
