@@ -21,6 +21,35 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 public class EWAHCompressedBitmapTest {
 
     @Test
+    public void setSizeInBitsStressTest() {
+        for (int i = 0; i < 10 * WORD_IN_BITS; ++i) {
+            for (int j = i; j < i + 10 * WORD_IN_BITS; ++j) {
+                for (boolean a : Arrays.asList(true, false)) {
+                    for (boolean b : Arrays.asList(true, false)) {
+                        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+                        bitmap.setSizeInBits(i, a);
+                        bitmap.setSizeInBits(j, b);
+                        IntIterator iterator = bitmap.intIterator();
+                        if (a) {
+                            for (int k = 0; k < i; ++k) {
+                                Assert.assertTrue(iterator.hasNext());
+                                Assert.assertEquals(k, iterator.next());
+                            }
+                        }
+                        if (b) {
+                            for (int k = i; k < j; ++k) {
+                                Assert.assertTrue(iterator.hasNext());
+                                Assert.assertEquals(k, iterator.next());
+                            }
+                        }
+                        Assert.assertFalse(iterator.hasNext());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void setSizeInBits() {
         EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
         bitmap.setSizeInBits(WORD_IN_BITS/2, true);

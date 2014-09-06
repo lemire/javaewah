@@ -1323,13 +1323,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
                     addLiteralWord(0);
                 }
-                final int maskWidth;
+                final int maskWidth = Math.min(WORD_IN_BITS - this.sizeInBits % WORD_IN_BITS,
+                                               size - this.sizeInBits);
                 final int maskShift = this.sizeInBits % WORD_IN_BITS;
-                if(this.sizeInBits + WORD_IN_BITS - this.sizeInBits % WORD_IN_BITS < size) {
-                    maskWidth = WORD_IN_BITS - this.sizeInBits % WORD_IN_BITS;
-                } else {
-                    maskWidth = size - this.sizeInBits;
-                }
                 this.buffer[this.actualSizeInWords - 1] |= ((~0l) >>> (WORD_IN_BITS - maskWidth)) << maskShift;
                 if (this.buffer[this.actualSizeInWords - 1] == ~0l) {
                     this.buffer[this.actualSizeInWords - 1] = 0;
