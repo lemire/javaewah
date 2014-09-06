@@ -23,6 +23,45 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+    public void compareSetAndSetSizeInBits() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf();
+        for(int i = WORD_IN_BITS / 2; i < WORD_IN_BITS; ++i) {
+            bitmap1.set(i);
+        }
+        for(int i = WORD_IN_BITS * 3 / 2; i < WORD_IN_BITS * 2; ++i) {
+            bitmap1.set(i);
+        }
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap2.setSizeInBits(WORD_IN_BITS / 2, false);
+        bitmap2.setSizeInBits(WORD_IN_BITS, true);
+        bitmap2.setSizeInBits(WORD_IN_BITS * 3 / 2, false);
+        bitmap2.setSizeInBits(WORD_IN_BITS * 2, true);
+
+        Assert.assertEquals(bitmap1, bitmap2);
+        Assert.assertArrayEquals(bitmap1.buffer, bitmap2.buffer);
+    }
+
+    @Test
+    public void compareSetAndSetSizeInBits2() {
+        EWAHCompressedBitmap32 bitmap1 = EWAHCompressedBitmap32.bitmapOf();
+        for(int i = 0; i < WORD_IN_BITS / 2; ++i) {
+            bitmap1.set(i);
+        }
+        for(int i = WORD_IN_BITS; i < WORD_IN_BITS * 3 / 2; ++i) {
+            bitmap1.set(i);
+        }
+
+        EWAHCompressedBitmap32 bitmap2 = EWAHCompressedBitmap32.bitmapOf();
+        bitmap2.setSizeInBits(WORD_IN_BITS / 2, true);
+        bitmap2.setSizeInBits(WORD_IN_BITS, false);
+        bitmap2.setSizeInBits(WORD_IN_BITS * 3 / 2, true);
+
+        Assert.assertEquals(bitmap1, bitmap2);
+        Assert.assertArrayEquals(bitmap1.buffer, bitmap2.buffer);
+    }
+
+    @Test
     public void setSizeInBitsStressTest() {
         for (int i = 0; i < 10 * WORD_IN_BITS; ++i) {
             for (int j = i; j < i + 10 * WORD_IN_BITS; ++j) {

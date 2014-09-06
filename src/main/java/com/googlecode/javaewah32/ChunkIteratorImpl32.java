@@ -97,12 +97,6 @@ final class ChunkIteratorImpl32 implements ChunkIterator {
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
             this.word = this.ewahBuffer[this.wordPosition++];
-            if (this.wordPosition == this.wordLength && !hasNextRLW()) {
-                final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
-                if (usedBitsInLast > 0) {
-                    this.word &= ((~0) >>> (WORD_IN_BITS - usedBitsInLast));
-                }
-            }
             this.wordMask = 1;
         }
         return this.word != 0 || (!hasNextRLW() && this.position < this.sizeInBits);
