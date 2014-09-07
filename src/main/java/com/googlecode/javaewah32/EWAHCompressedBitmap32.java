@@ -896,22 +896,15 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     private void negative_push_back(final int[] data, final int start,
                                     final int number) {
-        while (this.actualSizeInWords + number >= this.buffer.length) {
+        int size = newSizeInWords(number);
+        if (size >= this.buffer.length) {
             final int oldBuffer[] = this.buffer;
-            if (this.actualSizeInWords + number < 32768)
-                this.buffer = new int[(this.actualSizeInWords + number) * 2];
-            else if ((this.actualSizeInWords + number) * 3 / 2 < this.actualSizeInWords
-                    + number)
-                this.buffer = new int[Integer.MAX_VALUE];
-            else
-                this.buffer = new int[(this.actualSizeInWords + number) * 3 / 2];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0,
-                    oldBuffer.length);
+            this.buffer = new int[size];
+            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
             this.rlw.parent.buffer = this.buffer;
         }
         for (int k = 0; k < number; ++k)
-            this.buffer[this.actualSizeInWords + k] = ~data[start
-                    + k];
+            this.buffer[this.actualSizeInWords + k] = ~data[start + k];
         this.actualSizeInWords += number;
     }
 
@@ -1083,16 +1076,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @param data the word to be added
      */
     private void push_back(final int data) {
-        if (this.actualSizeInWords == this.buffer.length) {
+        int size = newSizeInWords(1);
+        if (size >= this.buffer.length) {
             final int oldBuffer[] = this.buffer;
-            if (oldBuffer.length < 32768)
-                this.buffer = new int[oldBuffer.length * 2];
-            else if (oldBuffer.length * 3 / 2 < oldBuffer.length)
-                this.buffer = new int[Integer.MAX_VALUE];
-            else
-                this.buffer = new int[oldBuffer.length * 3 / 2];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0,
-                    oldBuffer.length);
+            this.buffer = new int[size];
+            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
             this.rlw.parent.buffer = this.buffer;
         }
         this.buffer[this.actualSizeInWords++] = data;
@@ -1107,22 +1095,33 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     private void push_back(final int[] data, final int start,
                            final int number) {
-        if (this.actualSizeInWords + number >= this.buffer.length) {
+        int size = newSizeInWords(number);
+        if (size >= this.buffer.length) {
             final int oldBuffer[] = this.buffer;
-            if (this.actualSizeInWords + number < 32768)
-                this.buffer = new int[(this.actualSizeInWords + number) * 2];
-            else if ((this.actualSizeInWords + number) * 3 / 2 < this.actualSizeInWords
-                    + number) // overflow
-                this.buffer = new int[Integer.MAX_VALUE];
-            else
-                this.buffer = new int[(this.actualSizeInWords + number) * 3 / 2];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0,
-                    oldBuffer.length);
+            this.buffer = new int[size];
+            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
             this.rlw.parent.buffer = this.buffer;
         }
-        System.arraycopy(data, start, this.buffer,
-                this.actualSizeInWords, number);
+        System.arraycopy(data, start, this.buffer, this.actualSizeInWords, number);
         this.actualSizeInWords += number;
+    }
+
+    /**
+     * For internal use.
+     *
+     * @param number the number of words to add
+     */
+    private int newSizeInWords(final int number) {
+        int size = this.actualSizeInWords + number;
+        if (size >= this.buffer.length) {
+            if (size < 32768)
+                size = size * 2;
+            else if (size * 3 / 2 < size) // overflow
+                size = Integer.MAX_VALUE;
+            else
+                size = size * 3 / 2;
+        }
+        return size;
     }
 
     /*
