@@ -1228,8 +1228,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         if (i < this.sizeInBits)
             return false;
         // distance in words:
-        final int dist = (i + WORD_IN_BITS) / WORD_IN_BITS
-                - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
+        final int dist = distanceInWords(i);
         this.sizeInBits = i + 1;
         if (dist > 0) {// easy
             if (dist > 1)
@@ -1304,10 +1303,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @return true if the update was possible
      */
     public boolean setSizeInBits(final int size, final boolean defaultValue) {
-        if (size <= this.sizeInBits)
+        if (size <= this.sizeInBits) {
             return false;
-        if (!defaultValue) {
-            if(this.sizeInBits < size) {
+        }
+        if ((this.sizeInBits % WORD_IN_BITS) != 0) {
+            if (!defaultValue) {
                 if (this.rlw.getNumberOfLiteralWords() > 0) {
                     final int bitsToAdd = size - this.sizeInBits;
                     final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
@@ -1316,23 +1316,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                         this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
                         this.actualSizeInWords--;
                         this.sizeInBits -= usedBitsInLast;
-                    } else if(usedBitsInLast > 0) {
+                    } else if (usedBitsInLast > 0) {
                         this.sizeInBits += Math.min(bitsToAdd, freeBitsInLast);
                     }
                 }
-            }
-            this.addStreamOfEmptyWords(defaultValue,
-                    (size / WORD_IN_BITS) - (this.sizeInBits / WORD_IN_BITS)
-            );
-            if(this.sizeInBits < size) {
-                final int dist = (size - 1 + WORD_IN_BITS) / WORD_IN_BITS
-                        - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
-                if (dist > 0) {
-                    addLiteralWord(0);
-                }
-            }
-        } else {
-            if ((this.sizeInBits % WORD_IN_BITS) != 0) {
+            } else {
                 if (this.rlw.getNumberOfLiteralWords() == 0) {
                     this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
                     addLiteralWord(0);
@@ -1349,22 +1337,33 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 }
                 this.sizeInBits += maskWidth;
             }
-            this.addStreamOfEmptyWords(defaultValue,
-                    (size / WORD_IN_BITS) - (this.sizeInBits / WORD_IN_BITS)
-            );
-            if (this.sizeInBits < size) {
-                final int dist = (size + WORD_IN_BITS) / WORD_IN_BITS
-                        - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
-                if(dist>0 || this.rlw.getNumberOfLiteralWords() == 0) {
-                    addLiteralWord(0);
-                }
+        }
+        this.addStreamOfEmptyWords(defaultValue,
+                (size / WORD_IN_BITS) - (this.sizeInBits / WORD_IN_BITS)
+        );
+        if (this.sizeInBits < size) {
+            final int dist = distanceInWords(size - 1);
+            if (dist > 0) {
+                addLiteralWord(0);
+            }
+            if (defaultValue) {
                 final int maskWidth = size - this.sizeInBits;
                 final int maskShift = this.sizeInBits % WORD_IN_BITS;
                 this.buffer[this.actualSizeInWords - 1] |= ((~0l) >>> (WORD_IN_BITS - maskWidth)) << maskShift;
             }
+            this.sizeInBits = size;
         }
-        this.sizeInBits = size;
         return true;
+    }
+
+    /**
+     * For internal use.
+     *
+     * @param i the index
+     */
+    private int distanceInWords(int i) {
+        return (i + WORD_IN_BITS) / WORD_IN_BITS
+                - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
     }
 
     /**
