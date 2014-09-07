@@ -31,7 +31,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the number of literal words
      */
     public int getNumberOfLiteralWords() {
-        return (int) (this.parent.buffer[this.position] >>> (1 + RUNNING_LENGTH_BITS));
+        return getNumberOfLiteralWords(this.parent.buffer, this.position);
+    }
+
+    static int getNumberOfLiteralWords(final long[] buffer, final int position) {
+        return (int) (buffer[position] >>> (1 + RUNNING_LENGTH_BITS));
     }
 
     /**
@@ -40,7 +44,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the running bit
      */
     public boolean getRunningBit() {
-        return (this.parent.buffer[this.position] & 1) != 0;
+        return getRunningBit(this.parent.buffer, this.position);
+    }
+
+    static boolean getRunningBit(final long[] buffer, final int position) {
+        return (buffer[position] & 1) != 0;
     }
 
     /**
@@ -49,7 +57,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the running length
      */
     public long getRunningLength() {
-        return (this.parent.buffer[this.position] >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
+        return getRunningLength(this.parent.buffer, this.position);
+    }
+
+    static long getRunningLength(final long[] buffer, final int position) {
+        return (buffer[position] >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
     }
 
     /**
@@ -58,8 +70,12 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new number of literal words
      */
     public void setNumberOfLiteralWords(final long number) {
-        this.parent.buffer[this.position] |= NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT;
-        this.parent.buffer[this.position] &= (number << (RUNNING_LENGTH_BITS + 1))
+        setNumberOfLiteralWords(this.parent.buffer, this.position, number);
+    }
+
+    static void setNumberOfLiteralWords(final long[] buffer, final int position, final long number) {
+        buffer[position] |= NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT;
+        buffer[position] &= (number << (RUNNING_LENGTH_BITS + 1))
                 | RUNNING_LENGTH_PLUS_RUNNING_BIT;
     }
 
@@ -69,10 +85,14 @@ public final class RunningLengthWord implements Cloneable {
      * @param b the new running bit
      */
     public void setRunningBit(final boolean b) {
+        setRunningBit(this.parent.buffer, this.position, b);
+    }
+
+    static void setRunningBit(final long[] buffer, final int position, final boolean b) {
         if (b)
-            this.parent.buffer[this.position] |= 1l;
+            buffer[position] |= 1l;
         else
-            this.parent.buffer[this.position] &= ~1l;
+            buffer[position] &= ~1l;
     }
 
     /**
@@ -81,8 +101,12 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new running length
      */
     public void setRunningLength(final long number) {
-        this.parent.buffer[this.position] |= SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
-        this.parent.buffer[this.position] &= (number << 1)
+        setRunningLength(this.parent.buffer, this.position, number);
+    }
+
+    static void setRunningLength(final long[] buffer, final int position, final long number) {
+        buffer[position] |= SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
+        buffer[position] &= (number << 1)
                 | NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
     }
 

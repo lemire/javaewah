@@ -1220,13 +1220,13 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     public int getFirstSetBit() {
         int nword = 0;
         for(int pos = 0; pos < this.actualSizeInWords;++pos) {
-           int rl = (this.buffer[pos] >>> 1) & RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT;
-           boolean rb = (this.buffer[pos] & 1) != 0;
+           int rl = RunningLengthWord32.getRunningLength(this.buffer, pos);
+           boolean rb = RunningLengthWord32.getRunningBit(this.buffer, pos);
            if((rl > 0) && rb) {
                 return nword * WORD_IN_BITS;
            }
            nword  += rl;
-           int lw = (this.buffer[pos] >>> (1 + RunningLengthWord32.RUNNING_LENGTH_BITS));
+           int lw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, pos);
            if(lw > 0) {
                int word = this.buffer[pos + 1];
                if(word != 0) {
@@ -1238,9 +1238,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         return -1;        
     }
     /**
-     * Set the bit at position i to true, the bits must be set in (strictly)
-     * increasing order. For example, set(15) and then set(7) will fail. You
-     * must do set(7) and then set(15).
+     * Set the bit at position i to true.
      * 
      * Since this modifies the bitmap, this method is not thread-safe.
      *
@@ -1256,21 +1254,31 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     "Set values should be between 0 and "
                             + (Integer.MAX_VALUE - WORD_IN_BITS)
             );
-        if (i < this.sizeInBits)
-            return false;
-        // distance in words:
+        if (i < this.sizeInBits) {
+            locateAndSet(i);
+        } else {
+            extendAndSet(i);
+        }
+        return true;
+    }
+
+    /**
+     * For internal use.
+     *
+     * @param i the index
+     */
+    private void extendAndSet(int i) {
         final int dist = distanceInWords(i);
         this.sizeInBits = i + 1;
         if (dist > 0) {// easy
-            if (dist > 1)
+            if (dist > 1) {
                 fastaddStreamOfEmptyWords(false, dist - 1);
+            }
             addLiteralWord(1 << (i % WORD_IN_BITS));
-            return true;
         }
         if (this.rlw.getNumberOfLiteralWords() == 0) {
             this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
             addLiteralWord(1 << (i % WORD_IN_BITS));
-            return true;
         }
         this.buffer[this.actualSizeInWords - 1] |= 1 << (i % WORD_IN_BITS);
         if (this.buffer[this.actualSizeInWords - 1] == ~0) {
@@ -1281,7 +1289,125 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             // next we add one clean word
             addEmptyWord(true);
         }
-        return true;
+    }
+
+    /**
+     * For internal use.
+     *
+     * @param i the index
+     */
+    private void locateAndSet(int i) {
+        int nbits = 0;
+        for(int pos = 0; pos < this.actualSizeInWords; ) {
+            int rl = RunningLengthWord32.getRunningLength(this.buffer, pos);
+            boolean rb = RunningLengthWord32.getRunningBit(this.buffer, pos);
+            int lw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, pos);
+            int rbits = rl * WORD_IN_BITS;
+            if(i < nbits + rbits) {
+                setInRunningLength(i, nbits, pos, rl, rb, lw);
+                return;
+            }
+            nbits += rbits;
+            int lbits = lw * WORD_IN_BITS;
+            if(i < nbits + lbits) {
+                setInLiteralWords(i, nbits, pos, rl, rb, lw);
+                return;
+            }
+            nbits += lbits;
+            pos += lw + 1;
+        }
+    }
+
+    private void setInRunningLength(int i, int nbits, int pos, int rl, boolean rb, int lw) {
+        if(!rb) {
+            int wordPosition = (i - nbits) / WORD_IN_BITS + 1;
+            int addedWords = (wordPosition==rl) ? 1 : 2;
+            int size = newSizeInWords(addedWords);
+            final int oldBuffer[] = this.buffer;
+            if(size >= this.buffer.length) {
+                this.buffer = new int[size];
+                System.arraycopy(oldBuffer, 0, this.buffer, 0, pos + 1);
+            }
+            System.arraycopy(oldBuffer, pos + 1, this.buffer, pos + 1 + addedWords, this.actualSizeInWords - pos - 1);
+            this.actualSizeInWords += addedWords;
+            this.buffer[pos+1] = 1 << i % WORD_IN_BITS;
+            if(this.rlw.position >= pos+1) {
+                this.rlw.position += addedWords;
+            }
+            if(addedWords==1) {
+                setRLWInfo(pos, false, rl-1, lw+1);
+            } else {
+                setRLWInfo(pos, false, wordPosition-1, 1);
+                setRLWInfo(pos+2, false, rl-wordPosition, lw);
+                if(this.rlw.position == pos) {
+                    this.rlw.position += 2;
+                }
+            }
+        }
+    }
+
+    private void setInLiteralWords(int i, int nbits, int pos, int rl, boolean rb, int lw) {
+        int wordPosition = (i - nbits) / WORD_IN_BITS + 1;
+        this.buffer[pos + wordPosition] |= 1 << i % WORD_IN_BITS;
+        if(this.buffer[pos + wordPosition]==(~0)) {
+            boolean canMergeInCurrentRLW = mergeLiteralWordInCurrentRunningLength(rb, rl, wordPosition);
+            boolean canMergeInNextRLW = mergeLiteralWordInNextRunningLength(lw, pos, wordPosition);
+            if(canMergeInCurrentRLW && canMergeInNextRLW) {
+                int nextRl = RunningLengthWord32.getRunningLength(this.buffer, pos + 2);
+                int nextLw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, pos + 2);
+                System.arraycopy(this.buffer, pos + 2, this.buffer, pos, this.actualSizeInWords - pos - 2);
+                this.buffer[--this.actualSizeInWords] = 0;
+                this.buffer[--this.actualSizeInWords] = 0;
+                setRLWInfo(pos, true, rl + 1 + nextRl, nextLw);
+                if(this.rlw.position >= pos+2) {
+                    this.rlw.position -= 2;
+                }
+            } else if(canMergeInCurrentRLW) {
+                System.arraycopy(this.buffer, pos + 2, this.buffer, pos + 1, this.actualSizeInWords - pos - 2);
+                this.buffer[--this.actualSizeInWords] = 0;
+                setRLWInfo(pos, true, rl+1, lw-1);
+                if(this.rlw.position >= pos+2) {
+                    this.rlw.position--;
+                }
+            } else if(canMergeInNextRLW) {
+                int nextRLWPos = pos + lw + 1;
+                int nextRl = RunningLengthWord32.getRunningLength(this.buffer, nextRLWPos);
+                int nextLw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, nextRLWPos);
+                System.arraycopy(this.buffer, nextRLWPos, this.buffer, pos+wordPosition, this.actualSizeInWords - nextRLWPos);
+                this.buffer[--this.actualSizeInWords] = 0;
+                setRLWInfo(pos, rb, rl, lw-1);
+                setRLWInfo(pos+wordPosition, true, nextRl+1, nextLw);
+                if(this.rlw.position >= nextRLWPos) {
+                    this.rlw.position -= lw + 1 - wordPosition;
+                }
+            } else {
+                setRLWInfo(pos, rb, rl, wordPosition-1);
+                setRLWInfo(pos+wordPosition, true, 1, lw-wordPosition);
+                if(this.rlw.position == pos) {
+                    this.rlw.position += wordPosition;
+                }
+            }
+        }
+    }
+
+    private boolean mergeLiteralWordInCurrentRunningLength(boolean rb, int rl, int wordPosition) {
+        return (rb || rl==0) && wordPosition==1;
+    }
+
+    private boolean mergeLiteralWordInNextRunningLength(int lw, int pos, int wordPosition) {
+        int nextRLWPos = pos + lw + 1;
+        if(lw==wordPosition && nextRLWPos<this.actualSizeInWords) {
+            int nextRl = RunningLengthWord32.getRunningLength(this.buffer, nextRLWPos);
+            boolean nextRb = RunningLengthWord32.getRunningBit(this.buffer, nextRLWPos);
+            return (nextRb || nextRl == 0);
+        }
+        return false;
+    }
+
+    private void setRLWInfo(int pos, boolean rb, int rl, int lw) {
+        RunningLengthWord32.setRunningBit(this.buffer, pos, rb);
+        RunningLengthWord32.setRunningLength(this.buffer, pos, rl);
+        RunningLengthWord32.setNumberOfLiteralWords(this.buffer, pos, lw);
     }
 
     /**
@@ -1400,7 +1526,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     private int distanceInWords(final int i) {
         return (i + WORD_IN_BITS) / WORD_IN_BITS
-                        - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
+                - (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS;
     }
 
     /**

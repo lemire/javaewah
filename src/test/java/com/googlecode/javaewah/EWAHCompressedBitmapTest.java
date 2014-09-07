@@ -21,6 +21,305 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 public class EWAHCompressedBitmapTest {
 
     @Test
+    public void setBitsInDecreasingOrder() {
+        int[] positions = new int[] { 0, 1, 2, 3, 5, 8, 13, 21 };
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        for(int i=positions.length-1; i>=0; --i) {
+            Assert.assertTrue(bitmap.set(positions[i]));
+        }
+        IntIterator iterator = bitmap.intIterator();
+        for(int position : positions) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(position, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setBitsInDecreasingOrderWithWordPrefix() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.set(10);
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS + 10);
+        bitmap.set(WORD_IN_BITS + 5);
+        IntIterator iterator = bitmap.intIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(10, iterator.next());
+        Assert.assertEquals(WORD_IN_BITS + 5, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS + 10, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setBitsInDecreasingOrderWithWordPrefixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS + 10);
+        bitmap.set(WORD_IN_BITS + 5);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS + 5, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS + 10, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setBitsInDecreasingOrderWithWordPrefixOfZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS + 10);
+        bitmap.set(WORD_IN_BITS + 5);
+        IntIterator iterator = bitmap.intIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS + 5, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS + 10, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setBitInWordOfZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS/2, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setBitInWordsOfZerosWithWordPrefix() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.set(0);
+        bitmap.setSizeInBits(3*WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS*3/2);
+        IntIterator iterator = bitmap.intIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(0, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS*3/2, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void setUniqueClearBit() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefix() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS + WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS/2; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        for(int i=WORD_IN_BITS; i<2*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(3 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordSuffix() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(WORD_IN_BITS+1, true);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS+1; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefixAndWordSuffix() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS-1, false);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS+1, true);
+        bitmap.setSizeInBits(3 * WORD_IN_BITS, false);
+        bitmap.trim();
+        bitmap.set(WORD_IN_BITS + WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=WORD_IN_BITS-1; i<2*WORD_IN_BITS+1; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(4 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefixOfZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, false);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS + WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=WORD_IN_BITS; i<2*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(2 * WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS + WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<2*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordSuffixOfZeros() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        bitmap.setSizeInBits(2*WORD_IN_BITS, false);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordSuffixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(2*WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<2*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordSuffixAndWordSuffixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(WORD_IN_BITS, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS / 2, false);
+        bitmap.setSizeInBits(2*WORD_IN_BITS, true);
+        bitmap.setSizeInBits(3*WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        for(int i=WORD_IN_BITS*3/2; i<3*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(3 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefixAndSuffixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2, true);
+        bitmap.setSizeInBits(WORD_IN_BITS + WORD_IN_BITS/2+1, false);
+        bitmap.setSizeInBits(3*WORD_IN_BITS, true);
+        bitmap.set(WORD_IN_BITS + WORD_IN_BITS/2);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=0; i<3*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setUniqueClearBitWithWordPrefixAndWordSuffixOfOnes() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        bitmap.setSizeInBits(WORD_IN_BITS-1, false);
+        bitmap.setSizeInBits(2*WORD_IN_BITS-1, true);
+        bitmap.setSizeInBits(2*WORD_IN_BITS, false);
+        bitmap.setSizeInBits(3*WORD_IN_BITS, true);
+        bitmap.set(2*WORD_IN_BITS-1);
+        IntIterator iterator = bitmap.intIterator();
+        for(int i=WORD_IN_BITS-1; i<3*WORD_IN_BITS; ++i) {
+            Assert.assertTrue(iterator.hasNext());
+            Assert.assertEquals(i, iterator.next());
+        }
+        Assert.assertFalse(iterator.hasNext());
+        Assert.assertEquals(3 * WORD_IN_BITS / 8, bitmap.sizeInBytes());
+    }
+
+    @Test
+    public void setInIncreasingOrderStressTest() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+        for (int i=0; i< 10 * WORD_IN_BITS; ++i) {
+            bitmap.set(i);
+            IntIterator iterator = bitmap.intIterator();
+            for (int j=0; j<=i; ++j) {
+                Assert.assertTrue(iterator.hasNext());
+                Assert.assertEquals(j, iterator.next());
+            }
+            Assert.assertFalse(iterator.hasNext());
+        }
+    }
+
+    @Test
     public void compareSetAndSetSizeInBits() {
         EWAHCompressedBitmap bitmap1 = EWAHCompressedBitmap.bitmapOf();
         for(int i = WORD_IN_BITS / 2; i < WORD_IN_BITS; ++i) {
