@@ -1,5 +1,6 @@
-version 0.8.13 (upcoming)
+version 0.9.00 (September 8th 2014)
  - Fixed bug in setSizeInBits
+ - We can now set the bits in any order
 
 version 0.8.12 (August 25th 2014)
  - Faster "isEmpty" method

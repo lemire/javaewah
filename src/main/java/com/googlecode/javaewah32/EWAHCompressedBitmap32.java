@@ -1240,6 +1240,15 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     /**
      * Set the bit at position i to true.
      * 
+     * Though you can set the bits in any order (e.g., set(100), set(10), set(1),
+     * you will typically get better performance if you set the bits in increasing order (e.g., set(1), set(10), set(100)).
+     * 
+     * Setting a bit that is larger than any of the current set bit
+     * is a constant time operation. Setting a bit that is smaller than an 
+     * already set bit can require time proportional to the compressed
+     * size of the bitmap, as the bitmap may need to be rewritten.
+
+     * 
      * Since this modifies the bitmap, this method is not thread-safe.
      *
      * @param i the index
