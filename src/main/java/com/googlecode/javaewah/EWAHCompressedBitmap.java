@@ -121,11 +121,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * Sets explicitly the buffer size (in 64-bit words). The initial memory
      * usage will be "bufferSize * 64". For large poorly compressible
      * bitmaps, using large values may improve performance.
+     * 
+     * If the requested bufferSize is less than 1, a value of 1 is used
+     * by default. In particular, negative values of bufferSize are 
+     * effectively ignored.
      *
      * @param bufferSize number of 64-bit words reserved when the object is
      *                   created)
      */
-    public EWAHCompressedBitmap(final int bufferSize) {
+    public EWAHCompressedBitmap(int bufferSize) {
+        if(bufferSize < 1) bufferSize = 1;
         this.buffer = new long[bufferSize];
         this.rlw = new RunningLengthWord(this, 0);
     }

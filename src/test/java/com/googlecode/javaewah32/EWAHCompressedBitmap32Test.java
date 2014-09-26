@@ -36,6 +36,30 @@ public class EWAHCompressedBitmap32Test {
         }
         Assert.assertFalse(iterator.hasNext());
     }
+    
+    @Test
+    public void setOutOfOrderStressTest() {
+        System.out.println("out-of-order stress test");
+        int n = 10 * WORD_IN_BITS;
+        for(int k = 0; k < 100; ++k) {
+            List<Integer> positions = new ArrayList<Integer>(n);
+            for (int i = 0; i < n; ++i) {
+                positions.add(i);
+            }
+            Collections.shuffle(positions);
+            EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf();
+            for (int position : positions) {
+                bitmap.set(position);
+            }
+            IntIterator iterator = bitmap.intIterator();
+            for (int i = 0; i < n; ++i) {
+                Assert.assertTrue(iterator.hasNext());
+                Assert.assertEquals(i, iterator.next());
+            }
+            Assert.assertFalse(iterator.hasNext());
+            Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+        }
+    }
 
     @Test
     public void setBitsInDecreasingOrderWithWordPrefix() {

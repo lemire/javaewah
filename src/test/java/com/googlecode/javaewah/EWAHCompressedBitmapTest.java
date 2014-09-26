@@ -20,18 +20,24 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
-
-    @Ignore
+    @Test
+    public void jugovacTest() {
+        EWAHCompressedBitmap bm1 = new EWAHCompressedBitmap(1);
+        bm1.set(1);
+        EWAHCompressedBitmap bm2 = new EWAHCompressedBitmap(0);
+        bm1.andCardinality(bm2);
+    }
+    
     @Test
     public void setOutOfOrderStressTest() {
+        System.out.println("out-of-order stress test");
         int n = 10 * WORD_IN_BITS;
-        while(true) {
+        for(int k = 0; k < 100; ++k) {
             List<Integer> positions = new ArrayList<Integer>(n);
             for (int i = 0; i < n; ++i) {
                 positions.add(i);
             }
             Collections.shuffle(positions);
-            System.out.println(positions);
             EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
             for (int position : positions) {
                 bitmap.set(position);

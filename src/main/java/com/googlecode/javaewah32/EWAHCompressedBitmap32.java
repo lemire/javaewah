@@ -98,10 +98,15 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * usage will be "bufferSize * 32". For large poorly compressible
      * bitmaps, using large values may improve performance.
      *
+     * If the requested bufferSize is less than 1, a value of 1 is used
+     * by default. In particular, negative values of bufferSize are 
+     * effectively ignored.
+     *
      * @param bufferSize number of 32-bit words reserved when the object is
      *                   created)
      */
-    public EWAHCompressedBitmap32(final int bufferSize) {
+    public EWAHCompressedBitmap32(int bufferSize) {
+        if(bufferSize < 1) bufferSize = 1;
         this.buffer = new int[bufferSize];
         this.rlw = new RunningLengthWord32(this, 0);
 
