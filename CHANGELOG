@@ -1,3 +1,6 @@
+upcoming 
+ - Fixed issue #28: setting a capacity of 0 breaks the bitmap
+
 version 0.9.0 (September 8th 2014)
  - Fixed bug in setSizeInBits
  - We can now set the bits in any order
