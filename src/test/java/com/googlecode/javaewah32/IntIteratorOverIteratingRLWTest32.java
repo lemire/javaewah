@@ -20,7 +20,7 @@ public class IntIteratorOverIteratingRLWTest32 {
     public void testConsecClean() {
         System.out.println("testing int iteration, 2 consec clean runs starting with zeros");
         EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
-        for (int i = 0; i < 128; ++i)
+        for (int i = 32; i < 64; ++i)
             e.set(i);
         IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(e.getIteratingRLW());
         assertTrue(ii.hasNext());
@@ -29,7 +29,7 @@ public class IntIteratorOverIteratingRLWTest32 {
             ++ctr;
             ii.next();
         }
-        assertEquals(64, ctr);
+        assertEquals(32, ctr);
     }
 
     @Test
@@ -37,9 +37,9 @@ public class IntIteratorOverIteratingRLWTest32 {
         System.out
                 .println("testing int iteration, 2 consec clean runs starting with ones");
         EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
-        for (int i = 0; i < 2 * 64; ++i)
+        for (int i = 0; i < 2 * 32; ++i)
             e.set(i);
-        for (int i = 4 * 64; i < 5 * 64; ++i)
+        for (int i = 4 * 32; i < 5 * 32; ++i)
             e.set(i);
 
         IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(e.getIteratingRLW());
@@ -49,16 +49,16 @@ public class IntIteratorOverIteratingRLWTest32 {
             ++ctr;
             ii.next();
         }
-        assertEquals(3 * 64, ctr);
+        assertEquals(3 * 32, ctr);
     }
 
     @Test
     public void testStartDirty() {
         System.out.println("testing int iteration, no initial runs");
         EWAHCompressedBitmap32 e = new EWAHCompressedBitmap32();
-        for (int i = 1; i < 2 * 64; ++i)
+        for (int i = 1; i < 2 * 32; ++i)
             e.set(i);
-        for (int i = 4 * 64; i < 5 * 64; ++i)
+        for (int i = 4 * 32; i < 5 * 32; ++i)
             e.set(i);
 
         IntIteratorOverIteratingRLW32 ii = new IntIteratorOverIteratingRLW32(e.getIteratingRLW());
@@ -68,7 +68,7 @@ public class IntIteratorOverIteratingRLWTest32 {
             ++ctr;
             ii.next();
         }
-        assertEquals(3 * 64 - 1, ctr);
+        assertEquals(3 * 32 - 1, ctr);
     }
 
     @Test

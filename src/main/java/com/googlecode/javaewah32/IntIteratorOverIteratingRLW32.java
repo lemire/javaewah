@@ -2,7 +2,7 @@ package com.googlecode.javaewah32;
 
 import com.googlecode.javaewah.IntIterator;
 
-import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 
 /*
  * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
