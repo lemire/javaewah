@@ -22,6 +22,14 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
 
+	@Test
+    public void jugovacTest() {
+        EWAHCompressedBitmap32 bm1 = new EWAHCompressedBitmap32(1);
+        bm1.set(1);
+        EWAHCompressedBitmap32 bm2 = new EWAHCompressedBitmap32(0);
+        bm1.andCardinality(bm2);
+    }
+	
     @Test
     public void setBitsInDecreasingOrder() {
         int[] positions = new int[] { 0, 1, 2, 3, 5, 8, 13, 21 };
