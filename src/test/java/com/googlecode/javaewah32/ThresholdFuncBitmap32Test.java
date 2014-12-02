@@ -8,7 +8,7 @@ import org.junit.Test;
  * @since 0.8.2
  * @author Daniel Lemire
  */
-public class ThresholdFuncBitmapTest32 {
+public class ThresholdFuncBitmap32Test {
     @Test
     public void basictest() {
         System.out.println("Testing ThresholdFuncBitmap");

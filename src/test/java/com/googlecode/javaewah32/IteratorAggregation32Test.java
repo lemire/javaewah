@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests specifically for iterators.
  */
-public class IteratorAggregationTest32 {
+public class IteratorAggregation32Test {
 
     /**
      * @param N   number of bitmaps to generate in each set

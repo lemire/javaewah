@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  * Tests for utility class.
  */
 @SuppressWarnings("javadoc")
-public class IntIteratorOverIteratingRLWTest32 {
+public class IntIteratorOverIteratingRLW32Test {
 
     @Test
     // had problems with bitmaps beginning with two consecutive clean runs
