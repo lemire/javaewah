@@ -18,7 +18,7 @@ final class ChunkIteratorImpl implements ChunkIterator {
 
     private final EWAHIterator ewahIter;
     private final int sizeInBits;
-    private final long[] ewahBuffer;
+    private final Buffer buffer;
     private int position;
     private boolean runningBit;
     private int runningLength;
@@ -33,7 +33,7 @@ final class ChunkIteratorImpl implements ChunkIterator {
     ChunkIteratorImpl(EWAHIterator ewahIter, int sizeInBits) {
         this.ewahIter = ewahIter;
         this.sizeInBits = sizeInBits;
-        this.ewahBuffer = ewahIter.buffer();
+        this.buffer = ewahIter.buffer();
         this.hasNext = moveToNextRLW();
     }
 
@@ -94,7 +94,7 @@ final class ChunkIteratorImpl implements ChunkIterator {
 
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
-            this.word = this.ewahBuffer[this.wordPosition++];
+            this.word = this.buffer.getWord(this.wordPosition++);
             this.wordMask = 1l;
         }
         return this.word != 0 || (!hasNextRLW() && this.position < this.sizeInBits);

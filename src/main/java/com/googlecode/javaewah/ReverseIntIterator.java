@@ -18,7 +18,7 @@ final class ReverseIntIterator implements IntIterator {
 
     private final ReverseEWAHIterator ewahIter;
     private final int sizeInBits;
-    private final long[] ewahBuffer;
+    private final Buffer buffer;
     private int position;
     private boolean runningBit;
     private int runningLength;
@@ -31,7 +31,7 @@ final class ReverseIntIterator implements IntIterator {
     ReverseIntIterator(ReverseEWAHIterator ewahIter, int sizeInBits) {
         this.ewahIter = ewahIter;
         this.sizeInBits = sizeInBits;
-        this.ewahBuffer = ewahIter.buffer();
+        this.buffer = ewahIter.buffer();
         this.position = sizeInBits;
         this.runningLength = Integer.MAX_VALUE;
         this.hasNext = this.moveToPreviousRLW();
@@ -80,7 +80,7 @@ final class ReverseIntIterator implements IntIterator {
 
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordLength > 0) {
-            this.word = Long.reverse(this.ewahBuffer[this.wordPosition + this.wordLength--]);
+            this.word = Long.reverse(this.buffer.getWord(this.wordPosition + this.wordLength--));
             if (this.position == this.sizeInBits - 1) {
                 final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
                 if (usedBitsInLast > 0) {

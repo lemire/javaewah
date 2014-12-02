@@ -34,7 +34,6 @@ public interface LogicalElement<T> {
      */
     void not();
 
-    @SuppressWarnings({"rawtypes", "javadoc"})
     /**
      * Compute the bitwise logical or
      * @param le another element

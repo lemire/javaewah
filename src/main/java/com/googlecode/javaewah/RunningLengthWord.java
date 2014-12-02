@@ -16,12 +16,12 @@ public final class RunningLengthWord implements Cloneable {
     /**
      * Instantiates a new running length word.
      *
-     * @param a an array of 64-bit words
-     * @param p position in the array where the running length word is
+     * @param buffer the buffer
+     * @param p position in the buffer where the running length word is
      *          located.
      */
-    RunningLengthWord(final EWAHCompressedBitmap a, final int p) {
-        this.parent = a;
+    RunningLengthWord(final Buffer buffer, final int p) {
+        this.buffer = buffer;
         this.position = p;
     }
 
@@ -31,11 +31,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the number of literal words
      */
     public int getNumberOfLiteralWords() {
-        return getNumberOfLiteralWords(this.parent.buffer, this.position);
+        return getNumberOfLiteralWords(this.buffer, this.position);
     }
 
-    static int getNumberOfLiteralWords(final long[] buffer, final int position) {
-        return (int) (buffer[position] >>> (1 + RUNNING_LENGTH_BITS));
+    static int getNumberOfLiteralWords(final Buffer buffer, final int position) {
+        return (int) (buffer.getWord(position) >>> (1 + RUNNING_LENGTH_BITS));
     }
 
     /**
@@ -44,11 +44,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the running bit
      */
     public boolean getRunningBit() {
-        return getRunningBit(this.parent.buffer, this.position);
+        return getRunningBit(this.buffer, this.position);
     }
 
-    static boolean getRunningBit(final long[] buffer, final int position) {
-        return (buffer[position] & 1) != 0;
+    static boolean getRunningBit(final Buffer buffer, final int position) {
+        return (buffer.getWord(position) & 1) != 0;
     }
 
     /**
@@ -57,11 +57,11 @@ public final class RunningLengthWord implements Cloneable {
      * @return the running length
      */
     public long getRunningLength() {
-        return getRunningLength(this.parent.buffer, this.position);
+        return getRunningLength(this.buffer, this.position);
     }
 
-    static long getRunningLength(final long[] buffer, final int position) {
-        return (buffer[position] >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
+    static long getRunningLength(final Buffer buffer, final int position) {
+        return (buffer.getWord(position) >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
     }
 
     /**
@@ -70,29 +70,29 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new number of literal words
      */
     public void setNumberOfLiteralWords(final long number) {
-        setNumberOfLiteralWords(this.parent.buffer, this.position, number);
+        setNumberOfLiteralWords(this.buffer, this.position, number);
     }
 
-    static void setNumberOfLiteralWords(final long[] buffer, final int position, final long number) {
-        buffer[position] |= NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT;
-        buffer[position] &= (number << (RUNNING_LENGTH_BITS + 1))
-                | RUNNING_LENGTH_PLUS_RUNNING_BIT;
+    static void setNumberOfLiteralWords(final Buffer buffer, final int position, final long number) {
+        buffer.orWord(position, NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT);
+        buffer.andWord(position, (number << (RUNNING_LENGTH_BITS + 1)) | RUNNING_LENGTH_PLUS_RUNNING_BIT);
     }
 
-    /**
+    /**@Override
+	public 
      * Sets the running bit.
      *
      * @param b the new running bit
      */
     public void setRunningBit(final boolean b) {
-        setRunningBit(this.parent.buffer, this.position, b);
+        setRunningBit(this.buffer, this.position, b);
     }
 
-    static void setRunningBit(final long[] buffer, final int position, final boolean b) {
+    static void setRunningBit(final Buffer buffer, final int position, final boolean b) {
         if (b)
-            buffer[position] |= 1l;
+            buffer.orWord(position, 1l);
         else
-            buffer[position] &= ~1l;
+            buffer.andWord(position, ~1l);
     }
 
     /**
@@ -101,13 +101,12 @@ public final class RunningLengthWord implements Cloneable {
      * @param number the new running length
      */
     public void setRunningLength(final long number) {
-        setRunningLength(this.parent.buffer, this.position, number);
+        setRunningLength(this.buffer, this.position, number);
     }
 
-    static void setRunningLength(final long[] buffer, final int position, final long number) {
-        buffer[position] |= SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
-        buffer[position] &= (number << 1)
-                | NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT;
+    static void setRunningLength(final Buffer buffer, final int position, final long number) {
+        buffer.orWord(position, SHIFTED_LARGEST_RUNNING_LENGTH_COUNT);
+        buffer.andWord(position, (number << 1) | NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT);
     }
 
     /**
@@ -134,7 +133,7 @@ public final class RunningLengthWord implements Cloneable {
     public RunningLengthWord clone() throws CloneNotSupportedException {
         RunningLengthWord answer;
         answer = (RunningLengthWord) super.clone();
-        answer.parent = this.parent;
+        answer.buffer = this.buffer;
         answer.position = this.position;
         return answer;
     }
@@ -142,12 +141,12 @@ public final class RunningLengthWord implements Cloneable {
     /**
      * The array of words.
      */
-    public EWAHCompressedBitmap parent;
+    Buffer buffer;
 
     /**
      * The position in array.
      */
-    public int position;
+    int position;
 
     /**
      * number of bits dedicated to marking of the running length of clean

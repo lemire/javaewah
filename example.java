@@ -1,5 +1,4 @@
 import com.googlecode.javaewah.EWAHCompressedBitmap;
-import com.googlecode.javaewah.symmetric.*;
 import java.io.*;
 
 /**
@@ -12,7 +11,7 @@ public class example {
  * @param args arguments from the command line
  * @throws IOException if an IO error occurs
  */
-public static void main(final String[] args) throws java.io.IOException {
+public static void main(final String[] args) throws Exception {
     EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0,2,55,64,1<<30);
     EWAHCompressedBitmap ewahBitmap2 = EWAHCompressedBitmap.bitmapOf(1,3,64,1<<30);
     System.out.println("bitmap 1: "+ewahBitmap1);

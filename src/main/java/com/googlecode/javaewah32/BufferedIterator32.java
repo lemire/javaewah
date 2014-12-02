@@ -103,7 +103,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public int getLiteralWordAt(int index) {
-        return this.buffer[this.literalWordStartPosition + index];
+        return this.buffer.getWord(this.literalWordStartPosition + index);
     }
 
     /**
@@ -158,7 +158,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
     }
 
     private BufferedRunningLengthWord32 brlw;
-    private int[] buffer;
+    private Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
     private CloneableIterator<EWAHIterator32> masterIterator;

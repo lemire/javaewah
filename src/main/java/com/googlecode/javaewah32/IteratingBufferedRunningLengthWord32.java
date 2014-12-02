@@ -48,7 +48,6 @@ public final class IteratingBufferedRunningLengthWord32 implements
      */
     @Override
     public void discardFirstWords(int x) {
-
         while (x > 0) {
             if (this.brlw.RunningLength > x) {
                 this.brlw.RunningLength -= x;
@@ -187,7 +186,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
      */
     @Override
     public int getLiteralWordAt(int index) {
-        return this.buffer[this.literalWordStartPosition + index];
+        return this.buffer.getWord(this.literalWordStartPosition + index);
     }
 
     /**
@@ -238,7 +237,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
      * @param container where we write the data
      */
     public void writeLiteralWords(int numWords, BitmapStorage32 container) {
-        container.addStreamOfLiteralWords(this.buffer,
+        container.addStreamOfLiteralWords(this.buffer.getWords(),
                 this.literalWordStartPosition, numWords);
     }
 
@@ -251,7 +250,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
      */
     public void writeNegatedLiteralWords(int numWords,
                                          BitmapStorage32 container) {
-        container.addStreamOfNegatedLiteralWords(this.buffer,
+        container.addStreamOfNegatedLiteralWords(this.buffer.getWords(),
                 this.literalWordStartPosition, numWords);
     }
 
@@ -273,7 +272,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
             container.addStreamOfEmptyWords(
                     runningLengthWord.getRunningBit(),
                     runningLength);
-            container.addStreamOfLiteralWords(iterator.buffer(),
+            container.addStreamOfLiteralWords(iterator.buffer().getWords(),
                     iterator.literalWords()
                             + runningLengthWord.literalWordOffset,
                     runningLengthWord.getNumberOfLiteralWords()
@@ -298,7 +297,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
     }
 
     private BufferedRunningLengthWord32 brlw;
-    private int[] buffer;
+    private Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
 
