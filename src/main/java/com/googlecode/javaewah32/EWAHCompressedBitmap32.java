@@ -169,11 +169,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     public void addWord(final int newData, final int bitsThatMatter) {
         this.sizeInBits += bitsThatMatter;
         if (newData == 0) {
-            addEmptyWord(false);
+            insertEmptyWord(false);
         } else if (newData == ~0) {
-            addEmptyWord(true);
+            insertEmptyWord(true);
         } else {
-            addLiteralWord(newData);
+            insertLiteralWord(newData);
         }
     }
 
@@ -181,9 +181,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * For internal use.
      *
      * @param v the boolean value
-     * @return the storage cost of the addition
      */
-    private int addEmptyWord(final boolean v) {
+    private void insertEmptyWord(final boolean v) {
         final boolean noliteralword = (this.rlw
                 .getNumberOfLiteralWords() == 0);
         final int runlen = this.rlw.getRunningLength();
@@ -194,33 +193,42 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 && (this.rlw.getRunningBit() == v)
                 && (runlen < RunningLengthWord32.LARGEST_RUNNING_LENGTH_COUNT)) {
             this.rlw.setRunningLength(runlen + 1);
-            return 0;
+            return;
         }
         push_back(0);
         this.rlw.position = this.actualSizeInWords - 1;
         this.rlw.setRunningBit(v);
         this.rlw.setRunningLength(1);
-        return 1;
     }
 
+    /**
+     * Adding literal words directly to the bitmap (for expert use).
+     * Since this modifies the bitmap, this method is not thread-safe.
+     * 
+     * @param newData the literal word
+     */
+    @Override
+    public void addLiteralWord(final int newData) {
+    	this.sizeInBits += WORD_IN_BITS;
+    	insertLiteralWord(newData);
+    }
+    
     /**
      * For internal use.
      *
      * @param newData the literal word
-     * @return the storage cost of the addition
      */
-    private int addLiteralWord(final int newData) {
+    private void insertLiteralWord(final int newData) {
     	final int numbersofar = this.rlw.getNumberOfLiteralWords();
         if (numbersofar >= RunningLengthWord32.LARGEST_LITERAL_COUNT) {
             push_back(0);
             this.rlw.position = this.actualSizeInWords - 1;
             this.rlw.setNumberOfLiteralWords(1);
             push_back(newData);
-            return 2;
+            return;
         }
         this.rlw.setNumberOfLiteralWords(numbersofar + 1);
         push_back(newData);
-        return 1;
     }
 
     /**
@@ -379,7 +387,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addWord(rlwi.getLiteralWordAt(k)
+                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
                             & rlwj.getLiteralWordAt(k));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);
@@ -494,7 +502,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addWord(rlwi.getLiteralWordAt(k)
+                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
                             & (~rlwj.getLiteralWordAt(k)));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);
@@ -959,7 +967,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 							this.actualSizeInWords -= 1;
 						} else
 							rlw1.setRunningLength(rlw1.getRunningLength() - 1);
-                        this.addLiteralWord((~0) >>> (WORD_IN_BITS - usedbitsinlast));
+                        this.insertLiteralWord((~0) >>> (WORD_IN_BITS - usedbitsinlast));
                         
                     }
                     return;
@@ -1044,7 +1052,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k) {
-                    container.addWord(rlwi.getLiteralWordAt(k)
+                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
                             | rlwj.getLiteralWordAt(k));
                 }
                 rlwi.discardFirstWords(nbre_literal);
@@ -1288,11 +1296,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             if (dist > 1) {
                 fastaddStreamOfEmptyWords(false, dist - 1);
             }
-            addLiteralWord(1 << (i % WORD_IN_BITS));
+            insertLiteralWord(1 << (i % WORD_IN_BITS));
         }
         if (this.rlw.getNumberOfLiteralWords() == 0) {
             this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
-            addLiteralWord(1 << (i % WORD_IN_BITS));
+            insertLiteralWord(1 << (i % WORD_IN_BITS));
         }
         this.buffer[this.actualSizeInWords - 1] |= 1 << (i % WORD_IN_BITS);
         if (this.buffer[this.actualSizeInWords - 1] == ~0) {
@@ -1301,7 +1309,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             this.rlw.setNumberOfLiteralWords(this.rlw
                     .getNumberOfLiteralWords() - 1);
             // next we add one clean word
-            addEmptyWord(true);
+            insertEmptyWord(true);
         }
     }
 
@@ -1459,7 +1467,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     this.rlw.setRunningLength(this.rlw
                             .getRunningLength() - 1);
                 }
-                this.addLiteralWord((~0) >>> (WORD_IN_BITS - usedBitsInLast));
+                this.insertLiteralWord((~0) >>> (WORD_IN_BITS - usedBitsInLast));
             }
             return;
         }
@@ -1500,7 +1508,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             } else {
                 if (this.rlw.getNumberOfLiteralWords() == 0) {
                     this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
-                    addLiteralWord(0);
+                    insertLiteralWord(0);
                 }
                 final int maskWidth = Math.min(WORD_IN_BITS - this.sizeInBits % WORD_IN_BITS,
                                                size - this.sizeInBits);
@@ -1510,7 +1518,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     this.buffer[this.actualSizeInWords - 1] = 0;
                     --this.actualSizeInWords;
                     this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
-                    addEmptyWord(true);
+                    insertEmptyWord(true);
                 }
                 this.sizeInBits += maskWidth;
             }
@@ -1799,7 +1807,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addWord(rlwi.getLiteralWordAt(k)
+                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
                             ^ rlwj.getLiteralWordAt(k));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);

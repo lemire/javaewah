@@ -22,6 +22,13 @@ public interface BitmapStorage {
      * @param newData the word
      */
     void addWord(final long newData);
+    
+    /**
+     * Adding literal words directly to the bitmap (for expert use).
+     *
+     * @param newData the word
+     */
+    void addLiteralWord(final long newData);
 
     /**
      * if you have several literal words to copy over, this might be faster.

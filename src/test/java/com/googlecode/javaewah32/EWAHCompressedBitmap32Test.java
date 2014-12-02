@@ -23,6 +23,21 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
 	@Test
+	public void testBug090() {
+	    EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+	    bm.setSizeInBits(8, false); // Create a bitmap with no bit set
+
+	    EWAHCompressedBitmap32 bm1 = bm.clone();
+	    bm1.not(); // Create a bitmap with all bits set
+	    bm1 = bm1.and(bm); // Clear all bits
+
+	    Assert.assertEquals(0,bm.cardinality());
+	    Assert.assertEquals(0,bm1.cardinality());
+	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
+	    Assert.assertTrue(bm.equals(bm1));
+	}
+	
+	@Test
     public void jugovacTest() {
         EWAHCompressedBitmap32 bm1 = new EWAHCompressedBitmap32(1);
         bm1.set(1);

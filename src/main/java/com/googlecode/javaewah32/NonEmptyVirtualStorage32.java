@@ -25,6 +25,16 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
         if (newData != 0)
             throw nonEmptyException;
     }
+    
+    /**
+     * If the word to be added is non-zero, a NonEmptyException exception is
+     * thrown.
+     */
+    @Override
+    public void addLiteralWord(int newData) {
+        if (newData != 0)
+            throw nonEmptyException;
+    }
 
     /**
      * throws a NonEmptyException exception when number is greater than 0

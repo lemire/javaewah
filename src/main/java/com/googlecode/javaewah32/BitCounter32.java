@@ -20,9 +20,18 @@ public final class BitCounter32 implements BitmapStorage32 {
      *
      * @param newData the word
      */
-    // @Override : causes problems with Java 1.5
     @Override
     public void addWord(final int newData) {
+        this.oneBits += Integer.bitCount(newData);
+    }
+    
+    /**
+     * Virtually add literal words directly to the bitmap
+     *
+     * @param newData the word
+     */
+    @Override
+    public void addLiteralWord(final int newData) {
         this.oneBits += Integer.bitCount(newData);
     }
 
@@ -33,11 +42,10 @@ public final class BitCounter32 implements BitmapStorage32 {
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    // @Override : causes problems with Java 1.5
     @Override
     public void addStreamOfLiteralWords(int[] data, int start, int number) {
         for (int i = start; i < start + number; i++) {
-            addWord(data[i]);
+            addLiteralWord(data[i]);
         }
     }
 
@@ -47,7 +55,6 @@ public final class BitCounter32 implements BitmapStorage32 {
      * @param v      zeros or ones
      * @param number how many to words add
      */
-    // @Override : causes problems with Java 1.5
     @Override
     public void addStreamOfEmptyWords(boolean v, int number) {
         if (v) {
@@ -63,12 +70,11 @@ public final class BitCounter32 implements BitmapStorage32 {
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    // @Override : causes problems with Java 1.5
     @Override
     public void addStreamOfNegatedLiteralWords(int[] data, int start,
                                                int number) {
         for (int i = start; i < start + number; i++) {
-            addWord(~data[i]);
+            addLiteralWord(~data[i]);
         }
     }
 

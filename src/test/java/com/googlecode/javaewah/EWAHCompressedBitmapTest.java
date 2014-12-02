@@ -6,7 +6,6 @@ package com.googlecode.javaewah;
  */
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -20,6 +19,22 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+
+	@Test
+	public void testBug090() {
+	    EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+	    bm.setSizeInBits(8, false); // Create a bitmap with no bit set
+
+	    EWAHCompressedBitmap bm1 = bm.clone();
+	    bm1.not(); // Create a bitmap with all bits set
+	    bm1 = bm1.and(bm); // Clear all bits
+
+	    Assert.assertEquals(0,bm.cardinality());
+	    Assert.assertEquals(0,bm1.cardinality());
+	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
+	    Assert.assertTrue(bm.equals(bm1));
+	}
+
     @Test
     public void jugovacTest() {
         EWAHCompressedBitmap bm1 = new EWAHCompressedBitmap(1);
