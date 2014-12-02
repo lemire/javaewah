@@ -227,8 +227,6 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * Since this modifies the bitmap, this method is not thread-safe.
      * 
      * @param newData        the word
-     * @param bitsThatMatter the number of significant bits (by default it should
-     *                       be 64)
      */
     public void addLiteralWord(final long newData) {
     	this.sizeInBits += WORD_IN_BITS;
