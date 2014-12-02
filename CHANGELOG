@@ -1,4 +1,4 @@
-upcoming 
+version 0.9.1 (December 2nd 2014) 
  - Fixed issue #28: setting a capacity of 0 breaks the bitmap
 
 version 0.9.0 (September 8th 2014)
