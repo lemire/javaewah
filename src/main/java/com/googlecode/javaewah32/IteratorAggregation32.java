@@ -206,7 +206,7 @@ public final class IteratorAggregation32 {
             if (l + counter > max)
                 l = max - counter;
             for (int k = 0; k < l; ++k) {
-                container.addLiteralWord(i.getLiteralWordAt(k));
+                container.addWord(i.getLiteralWordAt(k));
             }
             counter += l;
             i.discardFirstWords(l + l1);
@@ -237,7 +237,7 @@ public final class IteratorAggregation32 {
             if (l + counter > max)
                 l = max - counter;
             for (int k = 0; k < l; ++k) {
-                container.addLiteralWord(i.getLiteralWordAt(k));
+                container.addWord(i.getLiteralWordAt(k));
             }
             counter += l;
             i.discardFirstWords(l + l1);
@@ -284,7 +284,7 @@ public final class IteratorAggregation32 {
             if (nbre_literal > 0) {
                 desiredrlwcount -= nbre_literal;
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
+                    container.addWord(rlwi.getLiteralWordAt(k)
                             & rlwj.getLiteralWordAt(k));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);
@@ -328,7 +328,7 @@ public final class IteratorAggregation32 {
                     rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
+                    container.addWord(rlwi.getLiteralWordAt(k)
                             & rlwj.getLiteralWordAt(k));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);
@@ -386,7 +386,7 @@ public final class IteratorAggregation32 {
             if (nbre_literal > 0) {
                 desiredrlwcount -= nbre_literal;
                 for (int k = 0; k < nbre_literal; ++k)
-                    container.addLiteralWord(rlwi.getLiteralWordAt(k)
+                    container.addWord(rlwi.getLiteralWordAt(k)
                             ^ rlwj.getLiteralWordAt(k));
                 rlwi.discardFirstWords(nbre_literal);
                 rlwj.discardFirstWords(nbre_literal);

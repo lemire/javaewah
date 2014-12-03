@@ -64,7 +64,7 @@ public final class IteratorUtil32 {
                         i.getRunningLength());
             }
             for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
-                c.addLiteralWord(i.getLiteralWordAt(k));
+                c.addWord(i.getLiteralWordAt(k));
             if (!i.next())
                 break;
         }
@@ -122,7 +122,7 @@ public final class IteratorUtil32 {
             }
             long L = i.getNumberOfLiteralWords();
             for (int k = 0; k < L; ++k)
-                c.addLiteralWord(i.getLiteralWordAt(k));
+                c.addWord(i.getLiteralWordAt(k));
             if (max > 0) {
                 if (!i.next())
                     break;

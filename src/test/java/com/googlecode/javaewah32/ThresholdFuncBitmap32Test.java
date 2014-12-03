@@ -1,5 +1,7 @@
 package com.googlecode.javaewah32;
 
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.maxSizeInBits;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -50,12 +52,14 @@ public class ThresholdFuncBitmap32Test {
 
         EWAHCompressedBitmap32 ewahandth = EWAHCompressedBitmap32
                 .threshold(3, ewah1, ewah2, ewah3);
+        ewahandth.setSizeInBitsWithinLastWord(maxSizeInBits(ewah1, ewah2, ewah3));
         EWAHCompressedBitmap32 ewahtrueand = EWAHCompressedBitmap32.and(
                 ewah1, ewah2, ewah3);
         Assert.assertTrue(ewahandth.equals(ewahtrueand));
 
         EWAHCompressedBitmap32 ewahmajth = EWAHCompressedBitmap32
                 .threshold(2, ewah1, ewah2, ewah3);
+        ewahmajth.setSizeInBitsWithinLastWord(maxSizeInBits(ewah1, ewah2, ewah3));
         EWAHCompressedBitmap32 ewahtruemaj = EWAHCompressedBitmap32.or(
                 ewah1.and(ewah2), ewah1.and(ewah3), ewah2.and(ewah3));
         Assert.assertTrue(ewahmajth.equals(ewahtruemaj));

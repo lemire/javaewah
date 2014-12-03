@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.*;
 
+import static com.googlecode.javaewah32.EWAHCompressedBitmap32.maxSizeInBits;
 import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 
 /**
@@ -22,6 +23,36 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
 
+	@Test
+	public void testBug091() {
+	    String v1 = "0000000000000000000000000000000000000000000000000000000000111101";
+	    String v2 = "0000000000000000001111011111111111111111111111111110001111000000";
+
+	    EWAHCompressedBitmap32 bm1 = strToBitmap(v1);
+	    EWAHCompressedBitmap32 bm2 = strToBitmap(v2);
+
+	    bm1 = bm1.and(bm2); // bm1 should now have no bit set
+
+	    EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+	    bm.setSizeInBits(bm1.sizeInBits(), false); // Create a bitmap with no bit set
+
+	    Assert.assertEquals(0,bm1.cardinality());
+	    Assert.assertEquals(0,bm1.cardinality());
+	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
+	    Assert.assertTrue(bm.equals(bm1));
+	}
+	
+	private EWAHCompressedBitmap32 strToBitmap(String str) {
+	    EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+	    for (int i = 0; i < str.length(); i++) {
+	        if (str.charAt(i)=='1') {
+	            bm.set(i);
+	        }
+	    }
+	    bm.setSizeInBits(str.length(), false);
+	    return bm;
+	}
+	
 	@Test
 	public void testBug090() {
 	    EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
@@ -977,6 +1008,7 @@ public class EWAHCompressedBitmap32Test {
                 ++intersection;
             }
         }
+        inter.setSizeInBits(maxSizeInBits(a, b), false);
         EWAHCompressedBitmap32 and2 = a.and(b);
         if (!and2.equals(inter))
             throw new RuntimeException("intersections don't match");
@@ -1598,8 +1630,10 @@ public class EWAHCompressedBitmap32Test {
         System.out.println("testing hashCode");
         EWAHCompressedBitmap32 ewcb = EWAHCompressedBitmap32.bitmapOf(
                 50, 70).and(EWAHCompressedBitmap32.bitmapOf(50, 1000));
-        Assert.assertEquals(EWAHCompressedBitmap32.bitmapOf(50), ewcb);
-        Assert.assertEquals(EWAHCompressedBitmap32.bitmapOf(50)
+        EWAHCompressedBitmap32 expected = EWAHCompressedBitmap32.bitmapOf(50);
+        expected.setSizeInBits(1000, false);
+        Assert.assertEquals(expected, ewcb);
+        Assert.assertEquals(expected
                 .hashCode(), ewcb.hashCode());
         ewcb.addWord(~0);
         EWAHCompressedBitmap32 ewcb2 = ewcb.clone();

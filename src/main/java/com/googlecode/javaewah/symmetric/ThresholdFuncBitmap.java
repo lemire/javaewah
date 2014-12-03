@@ -113,7 +113,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
             for (EWAHPointer R : this.getLiterals()) {
                 w |= R.iterator.getLiteralWordAt(i + runBegin - R.beginOfRun());
             }
-            out.addLiteralWord(w);
+            out.addWord(w);
         }
     }
 
@@ -123,7 +123,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
             for (EWAHPointer R : this.getLiterals()) {
                 w &= R.iterator.getLiteralWordAt(i + runBegin - R.beginOfRun());
             }
-            out.addLiteralWord(w);
+            out.addWord(w);
         }
     }
 
@@ -136,7 +136,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
             for (EWAHPointer R : this.getLiterals()) {
                 this.buffers[p++] = R.iterator.getLiteralWordAt(i + runBegin - R.beginOfRun());
             }
-            out.addLiteralWord(threshold4(deficit, this.buffers, this.bufferUsed));
+            out.addWord(threshold4(deficit, this.buffers, this.bufferUsed));
         }
     }
 

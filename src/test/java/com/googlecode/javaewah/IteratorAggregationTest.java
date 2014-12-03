@@ -1,11 +1,13 @@
 package com.googlecode.javaewah;
 
-import com.googlecode.javaewah.synth.ClusteredDataGenerator;
-import org.junit.Test;
+import static com.googlecode.javaewah.EWAHCompressedBitmap.maxSizeInBits;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import com.googlecode.javaewah.synth.ClusteredDataGenerator;
 
 /*
  * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
@@ -78,6 +80,8 @@ public class IteratorAggregationTest {
                         .materialize(IteratorAggregation
                                 .bufferedand(IteratorUtil
                                         .toIterators(x)));
+                x1.setSizeInBits(maxSizeInBits(x), false);
+                x1.setSizeInBitsWithinLastWord(maxSizeInBits(x));
                 assertTrue(x1.equals(tanswer));
             }
             System.gc();
