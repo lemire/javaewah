@@ -24,6 +24,59 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
 	@Test
+	public void andCompressedSize() {
+		EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf();
+		EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf();
+		
+		b1.set(0);
+		b1.set(WORD_IN_BITS);
+		b2.set(1);
+		b2.set(WORD_IN_BITS+1);
+		
+		EWAHCompressedBitmap32 result = b1.and(b2);
+		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+	}
+	
+	@Test
+	public void orCompressedSize() {
+		EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf();
+		EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf();
+		
+		b1.set(0);
+		b1.set(WORD_IN_BITS);
+		b2.setSizeInBits(1, false);
+		b2.setSizeInBits(WORD_IN_BITS, true);
+
+		EWAHCompressedBitmap32 result = b1.or(b2);
+		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+	}
+	
+	@Test
+	public void xorCompressedSize() {
+		EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf();
+		EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf();
+		
+		b1.set(0);
+		b1.set(WORD_IN_BITS);
+		b2.setSizeInBits(1, false);
+		b2.setSizeInBits(WORD_IN_BITS, true);
+
+		EWAHCompressedBitmap32 result = b1.xor(b2);
+		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+	}
+	
+	@Test
+	public void andNotCompressedSize() {
+		EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf();
+		
+		b1.set(0);
+		b1.set(WORD_IN_BITS);
+
+		EWAHCompressedBitmap32 result = b1.andNot(b1);
+		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+	}
+	
+	@Test
 	public void testBug091() {
 	    String v1 = "0000000000000000000000000000000000000000000000000000000000111101";
 	    String v2 = "0000000000000000001111011111111111111111111111111110001111000000";
