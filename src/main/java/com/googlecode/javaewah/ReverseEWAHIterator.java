@@ -18,15 +18,14 @@ final class ReverseEWAHIterator {
     /**
      * Instantiates a new reverse EWAH iterator.
      *
-     * @param a           the array of words
-     * @param sizeInWords the number of words that are significant in the array of words
+     * @param buffer      the buffer
      */
-    public ReverseEWAHIterator(final EWAHCompressedBitmap a, final int sizeInWords) {
+    public ReverseEWAHIterator(final Buffer buffer) {
         this.pointer = 0;
-        this.rlw = new RunningLengthWord(a, this.pointer);
+        this.rlw = new RunningLengthWord(buffer, this.pointer);
         this.positions = new Stack<Integer>();
-        this.positions.ensureCapacity(sizeInWords);
-        while(this.pointer < sizeInWords) {
+        this.positions.ensureCapacity(buffer.sizeInWords());
+        while(this.pointer < buffer.sizeInWords()) {
             this.positions.push(this.pointer);
             this.rlw.position = this.pointer;
             this.pointer += this.rlw.getNumberOfLiteralWords() + 1;
@@ -34,12 +33,12 @@ final class ReverseEWAHIterator {
     }
 
     /**
-     * Access to the array of words
+     * Access to the buffer
      *
-     * @return the long[]
+     * @return the buffer
      */
-    public long[] buffer() {
-        return this.rlw.parent.buffer;
+    public Buffer buffer() {
+        return this.rlw.buffer;
     }
 
     /**

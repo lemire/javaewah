@@ -182,7 +182,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
      */
     @Override
     public long getLiteralWordAt(int index) {
-        return this.buffer[this.literalWordStartPosition + index];
+        return this.buffer.getWord(this.literalWordStartPosition + index);
     }
 
     /**
@@ -233,7 +233,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
      * @param container where we write
      */
     public void writeLiteralWords(int numWords, BitmapStorage container) {
-        container.addStreamOfLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
+        container.addStreamOfLiteralWords(this.buffer.getWords(), this.literalWordStartPosition, numWords);
     }
 
     /**
@@ -244,7 +244,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
      * @param container where we write
      */
     public void writeNegatedLiteralWords(int numWords, BitmapStorage container) {
-        container.addStreamOfNegatedLiteralWords(this.buffer, this.literalWordStartPosition, numWords);
+        container.addStreamOfNegatedLiteralWords(this.buffer.getWords(), this.literalWordStartPosition, numWords);
     }
 
     /**
@@ -261,7 +261,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
         for (; ; ) {
             final long runningLength = runningLengthWord.getRunningLength();
             container.addStreamOfEmptyWords(runningLengthWord.getRunningBit(), runningLength);
-            container.addStreamOfLiteralWords(iterator.buffer(),
+            container.addStreamOfLiteralWords(iterator.buffer().getWords(),
                     iterator.literalWords() + runningLengthWord.literalWordOffset,
                     runningLengthWord.getNumberOfLiteralWords()
             );
@@ -282,7 +282,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
     }
 
     private BufferedRunningLengthWord brlw;
-    private long[] buffer;
+    private Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator iterator;
 }
