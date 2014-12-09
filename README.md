@@ -143,6 +143,14 @@ API Documentation
 
 http://lemire.me/docs/javaewah/
 
+Benchmark
+-----------------
+
+To run a simple benchmark, use the following command:
+
+         $ mvn -Dtest=PerformanceTest test
+
+
 Further reading
 ---------------
 
