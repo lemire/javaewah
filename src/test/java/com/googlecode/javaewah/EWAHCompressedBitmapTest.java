@@ -496,7 +496,7 @@ public class EWAHCompressedBitmapTest {
         bitmap2.setSizeInBits(WORD_IN_BITS * 2, true);
 
         Assert.assertEquals(bitmap1, bitmap2);
-        Assert.assertArrayEquals(bitmap1.buffer, bitmap2.buffer);
+        Assert.assertArrayEquals(bitmap1.buffer.getWords(), bitmap2.buffer.getWords());
     }
 
     @Test
@@ -515,7 +515,7 @@ public class EWAHCompressedBitmapTest {
         bitmap2.setSizeInBits(WORD_IN_BITS * 3 / 2, true);
 
         Assert.assertEquals(bitmap1, bitmap2);
-        Assert.assertArrayEquals(bitmap1.buffer, bitmap2.buffer);
+        Assert.assertArrayEquals(bitmap1.buffer.getWords(), bitmap2.buffer.getWords());
     }
 
     @Test
@@ -1277,7 +1277,7 @@ public class EWAHCompressedBitmapTest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Test
-    public void testExternalization() throws IOException {
+    public void testExternalization() throws Exception {
         System.out.println("testing EWAH externalization");
         EWAHCompressedBitmap ewcb = new EWAHCompressedBitmap();
         int[] val = {5, 4400, 44600, 55400, 1000000};
@@ -1484,21 +1484,21 @@ public class EWAHCompressedBitmapTest {
         for (int k = 0; k < 4096; ++k) {
             EWAHCompressedBitmap ewah = new EWAHCompressedBitmap();
             ewah.setSizeInBits(k, false);
-            Assert.assertEquals(ewah.sizeInBits, k);
+            Assert.assertEquals(ewah.sizeInBits(), k);
             Assert.assertEquals(ewah.cardinality(), 0);
             EWAHCompressedBitmap ewah2 = new EWAHCompressedBitmap();
             ewah2.setSizeInBits(k, false);
-            Assert.assertEquals(ewah2.sizeInBits, k);
+            Assert.assertEquals(ewah2.sizeInBits(), k);
             Assert.assertEquals(ewah2.cardinality(), 0);
             EWAHCompressedBitmap ewah3 = new EWAHCompressedBitmap();
             for (int i = 0; i < k; ++i) {
                 ewah3.set(i);
             }
-            Assert.assertEquals(ewah3.sizeInBits, k);
+            Assert.assertEquals(ewah3.sizeInBits(), k);
             Assert.assertEquals(ewah3.cardinality(), k);
             EWAHCompressedBitmap ewah4 = new EWAHCompressedBitmap();
             ewah4.setSizeInBits(k, true);
-            Assert.assertEquals(ewah4.sizeInBits, k);
+            Assert.assertEquals(ewah4.sizeInBits(), k);
             Assert.assertEquals(ewah4.cardinality(), k);
         }
     }

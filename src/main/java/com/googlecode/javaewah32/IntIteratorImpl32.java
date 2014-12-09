@@ -20,7 +20,7 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 final class IntIteratorImpl32 implements IntIterator {
 
     private final EWAHIterator32 ewahIter;
-    private final int[] ewahBuffer;
+    private final Buffer buffer;
     private int position;
     private int runningLength;
     private int word;
@@ -31,7 +31,7 @@ final class IntIteratorImpl32 implements IntIterator {
 
     IntIteratorImpl32(EWAHIterator32 ewahIter) {
         this.ewahIter = ewahIter;
-        this.ewahBuffer = ewahIter.buffer();
+        this.buffer = ewahIter.buffer();
         this.hasnext = this.moveToNext();
     }
 
@@ -82,7 +82,7 @@ final class IntIteratorImpl32 implements IntIterator {
 
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
-            this.word = this.ewahBuffer[this.wordPosition++];
+            this.word = this.buffer.getWord(this.wordPosition++);
             this.literalPosition = this.position;
             this.position += WORD_IN_BITS;
         }

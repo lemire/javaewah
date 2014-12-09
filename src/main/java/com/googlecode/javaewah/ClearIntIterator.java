@@ -17,7 +17,7 @@ final class ClearIntIterator implements IntIterator {
 
     private final EWAHIterator ewahIter;
     private final int sizeInBits;
-    private final long[] ewahBuffer;
+    private final Buffer buffer;
     private int position;
     private int runningLength;
     private long word;
@@ -29,7 +29,7 @@ final class ClearIntIterator implements IntIterator {
     ClearIntIterator(EWAHIterator ewahIter, int sizeInBits) {
         this.ewahIter = ewahIter;
         this.sizeInBits = sizeInBits;
-        this.ewahBuffer = ewahIter.buffer();
+        this.buffer = ewahIter.buffer();
         this.hasNext = this.moveToNext();
     }
 
@@ -79,7 +79,7 @@ final class ClearIntIterator implements IntIterator {
 
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordPosition < this.wordLength) {
-            this.word = ~this.ewahBuffer[this.wordPosition++];
+            this.word = ~this.buffer.getWord(this.wordPosition++);
             if (this.wordPosition == this.wordLength && !this.ewahIter.hasNext()) {
                 final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
                 if (usedBitsInLast > 0) {

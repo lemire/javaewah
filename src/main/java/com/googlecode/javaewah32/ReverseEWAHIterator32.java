@@ -7,6 +7,7 @@ package com.googlecode.javaewah32;
 
 import java.util.Stack;
 
+
 /**
  * The class ReverseEWAHIterator32 represents a special type of efficient iterator
  * iterating over (uncompressed) words of bits in reverse order.
@@ -18,15 +19,14 @@ final class ReverseEWAHIterator32 {
     /**
      * Instantiates a new reverse EWAH iterator.
      *
-     * @param a           the array of words
-     * @param sizeInWords the number of words that are significant in the array of words
+     * @param buffer      the buffer
      */
-    public ReverseEWAHIterator32(final EWAHCompressedBitmap32 a, final int sizeInWords) {
+    public ReverseEWAHIterator32(final Buffer buffer) {
         this.pointer = 0;
-        this.rlw = new RunningLengthWord32(a, this.pointer);
+        this.rlw = new RunningLengthWord32(buffer, this.pointer);
         this.positions = new Stack<Integer>();
-        this.positions.ensureCapacity(sizeInWords);
-        while(this.pointer < sizeInWords) {
+        this.positions.ensureCapacity(buffer.sizeInWords());
+        while(this.pointer < buffer.sizeInWords()) {
             this.positions.push(this.pointer);
             this.rlw.position = this.pointer;
             this.pointer += this.rlw.getNumberOfLiteralWords() + 1;
@@ -34,12 +34,12 @@ final class ReverseEWAHIterator32 {
     }
 
     /**
-     * Access to the array of words
+     * Access to the buffer
      *
-     * @return the int[]
+     * @return the buffer
      */
-    public int[] buffer() {
-        return this.rlw.parent.buffer;
+    public Buffer buffer() {
+        return this.rlw.buffer;
     }
 
     /**

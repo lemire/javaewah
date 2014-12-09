@@ -113,14 +113,14 @@ public final class FastAggregation {
             @Override
             public int compare(EWAHCompressedBitmap a,
                                EWAHCompressedBitmap b) {
-                return b.sizeInBits - a.sizeInBits;
+                return b.sizeInBits() - a.sizeInBits();
             }
         });
 
         java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
         for (EWAHCompressedBitmap bitmap : sbitmaps) {
-            if (bitmap.sizeInBits > range)
-                range = bitmap.sizeInBits;
+            if (bitmap.sizeInBits() > range)
+                range = bitmap.sizeInBits();
             al.add(new IteratingBufferedRunningLengthWord(bitmap));
         }
         long[] hardbitmap = new long[bufSize];
@@ -177,14 +177,14 @@ public final class FastAggregation {
             @Override
             public int compare(EWAHCompressedBitmap a,
                                EWAHCompressedBitmap b) {
-                return b.sizeInBits - a.sizeInBits;
+                return b.sizeInBits() - a.sizeInBits();
             }
         });
 
         java.util.ArrayList<IteratingBufferedRunningLengthWord> al = new java.util.ArrayList<IteratingBufferedRunningLengthWord>();
         for (EWAHCompressedBitmap bitmap : sbitmaps) {
-            if (bitmap.sizeInBits > range)
-                range = bitmap.sizeInBits;
+            if (bitmap.sizeInBits() > range)
+                range = bitmap.sizeInBits();
             al.add(new IteratingBufferedRunningLengthWord(bitmap));
         }
         long[] hardbitmap = new long[bufSize];
@@ -355,7 +355,7 @@ public final class FastAggregation {
                     @Override
                     public int compare(EWAHCompressedBitmap a,
                                        EWAHCompressedBitmap b) {
-                        return a.sizeInBits < b.sizeInBits ? 1 : a.sizeInBits == b.sizeInBits ? 0 : -1;
+                        return a.sizeInBits() < b.sizeInBits() ? 1 : a.sizeInBits() == b.sizeInBits() ? 0 : -1;
                     }
                 }
         );
@@ -374,7 +374,7 @@ public final class FastAggregation {
             return;
         }
 
-        int maxSize = sortedBitmaps[0].sizeInBits;
+        int maxSize = sortedBitmaps[0].sizeInBits();
 
         while (true) {
             long maxOneRl = 0;
