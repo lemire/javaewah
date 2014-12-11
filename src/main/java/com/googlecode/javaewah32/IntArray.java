@@ -1,14 +1,10 @@
 package com.googlecode.javaewah32;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Arrays;
 
 import com.googlecode.javaewah32.Buffer;
 
-class IntArray implements Buffer, Externalizable, Cloneable {
+class IntArray implements Buffer, Cloneable {
 
     public IntArray() {
         this(DEFAULT_BUFFER_SIZE);
@@ -163,25 +159,6 @@ class IntArray implements Buffer, Externalizable, Cloneable {
             e.printStackTrace(); // cannot happen
         }
         return clone;
-    }
-    
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(this.actualSizeInWords);
-        for (int i = 0; i < this.actualSizeInWords; ++i) {
-            out.writeInt(this.buffer[i]);
-        }
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.actualSizeInWords = in.readInt();
-        if (this.buffer.length < this.actualSizeInWords) {
-            this.buffer = new int[this.actualSizeInWords];
-        }
-        for (int i = 0; i < this.actualSizeInWords; ++i) {
-            this.buffer[i] = in.readInt();
-        }
     }
     
     /**

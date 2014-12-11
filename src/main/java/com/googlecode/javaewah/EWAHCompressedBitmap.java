@@ -574,25 +574,31 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      *
      * The current bitmap is not modified.
      *
-     * @param out the ObjectOutput stream
+     * @param out the DataOutput stream
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void serialize(ObjectOutput out) throws IOException {
+    public void serialize(DataOutput out) throws IOException {
         out.writeInt(this.sizeInBits);
-        out.writeObject(this.buffer);
+        out.writeInt(this.buffer.sizeInWords());
+        for(int i = 0; i < this.buffer.sizeInWords(); ++i) {
+            out.writeLong(this.buffer.getWord(i));
+        }
         out.writeInt(this.rlw.position);
     }
     
     /**
      * Deserialize.
      *
-     * @param in the ObjectInput stream
+     * @param in the DataInput stream
      * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ClassNotFoundException
      */
-    public void deserialize(ObjectInput in) throws IOException, ClassNotFoundException {
+    public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
-        this.buffer = (Buffer) in.readObject();
+        int sizeInWords = in.readInt();
+        this.buffer = new LongArray(sizeInWords);
+        for(int i = 0; i < sizeInWords; ++i) {
+            this.buffer.push_back(in.readLong());
+        }
         this.rlw = new RunningLengthWord(this.buffer, in.readInt());
     }
 

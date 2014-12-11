@@ -1,14 +1,10 @@
 package com.googlecode.javaewah;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Arrays;
 
 import com.googlecode.javaewah.Buffer;
 
-class LongArray implements Buffer, Externalizable, Cloneable {
+class LongArray implements Buffer, Cloneable {
 
     public LongArray() {
         this(DEFAULT_BUFFER_SIZE);
@@ -163,25 +159,6 @@ class LongArray implements Buffer, Externalizable, Cloneable {
             e.printStackTrace(); // cannot happen
         }
         return clone;
-    }
-    
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(this.actualSizeInWords);
-        for (int i = 0; i < this.actualSizeInWords; ++i) {
-            out.writeLong(this.buffer[i]);
-        }
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.actualSizeInWords = in.readInt();
-        if (this.buffer.length < this.actualSizeInWords) {
-            this.buffer = new long[this.actualSizeInWords];
-        }
-        for (int i = 0; i < this.actualSizeInWords; ++i) {
-            this.buffer[i] = in.readLong();
-        }
     }
     
     /**
