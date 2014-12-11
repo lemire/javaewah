@@ -18,7 +18,7 @@ final class ReverseIntIterator implements IntIterator {
 
     private final ReverseEWAHIterator ewahIter;
     private final int sizeInBits;
-    private final Buffer buffer;
+    private final LongArray buffer;
     private int position;
     private boolean runningBit;
     private int runningLength;

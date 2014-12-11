@@ -1589,7 +1589,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @param other bitmap to swap with
      */
     public void swap(final EWAHCompressedBitmap32 other) {
-        Buffer tmp = this.buffer;
+        IntArray tmp = this.buffer;
         this.buffer = other.buffer;
         other.buffer = tmp;
 
@@ -1597,7 +1597,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         this.rlw.position = other.rlw.position;
         other.rlw.position = tmp2;
 
-        Buffer tmp3 = this.rlw.buffer;
+        IntArray tmp3 = this.rlw.buffer;
         this.rlw.buffer = other.rlw.buffer;
         other.rlw.buffer = tmp3;
 
@@ -2016,7 +2016,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    protected Buffer buffer = null;
+    protected IntArray buffer = null;
 
     /**
      * The current (last) running length word.

@@ -158,7 +158,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
     }
 
     private BufferedRunningLengthWord32 brlw;
-    private Buffer buffer;
+    private IntArray buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
     private CloneableIterator<EWAHIterator32> masterIterator;

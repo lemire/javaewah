@@ -155,7 +155,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
     }
 
     private BufferedRunningLengthWord brlw;
-    private Buffer buffer;
+    private LongArray buffer;
     private int literalWordStartPosition;
     private EWAHIterator iterator;
     private CloneableIterator<EWAHIterator> masterIterator;

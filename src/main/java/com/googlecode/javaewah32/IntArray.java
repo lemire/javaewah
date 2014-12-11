@@ -2,9 +2,7 @@ package com.googlecode.javaewah32;
 
 import java.util.Arrays;
 
-import com.googlecode.javaewah32.Buffer;
-
-class IntArray implements Buffer, Cloneable {
+class IntArray implements Cloneable {
 
     public IntArray() {
         this(DEFAULT_BUFFER_SIZE);
@@ -17,27 +15,22 @@ class IntArray implements Buffer, Cloneable {
         this.buffer = new int[bufferSize];
     }
     
-    @Override
     public int sizeInWords() {
         return this.actualSizeInWords;
     }
     
-    @Override
     public int getWord(int position) {
         return this.buffer[position];
     }
     
-    @Override
     public int getLastWord() {
         return getWord(this.actualSizeInWords - 1);
     }
     
-    @Override
     public int[] getWords() {
         return this.buffer;
     }
     
-    @Override
     public void clear() {
         this.actualSizeInWords = 1;
         // buffer is not fully cleared but any new set operations should
@@ -46,22 +39,18 @@ class IntArray implements Buffer, Cloneable {
         this.buffer[0] = 0;
     }
     
-    @Override
     public void trim() {
         this.buffer = Arrays.copyOf(this.buffer, this.actualSizeInWords);
     }
     
-    @Override
     public void setWord(int position, int word) {
         this.buffer[position] = word;
     }
     
-    @Override
     public void setLastWord(int word) {
         setWord(this.actualSizeInWords - 1, word);
     }
     
-    @Override
     public void push_back(int data) {
         int size = newSizeInWords(1);
         if (size >= this.buffer.length) {
@@ -72,7 +61,6 @@ class IntArray implements Buffer, Cloneable {
         this.buffer[this.actualSizeInWords++] = data;
     }
 
-    @Override
     public void push_back(int[] data, int start, int number) {
         int size = newSizeInWords(number);
         if (size >= this.buffer.length) {
@@ -84,7 +72,6 @@ class IntArray implements Buffer, Cloneable {
         this.actualSizeInWords += number;
     }
     
-    @Override
     public void negative_push_back(int[] data, int start, int number) {
         int size = newSizeInWords(number);
         if (size >= this.buffer.length) {
@@ -98,37 +85,30 @@ class IntArray implements Buffer, Cloneable {
         this.actualSizeInWords += number;
     }
     
-    @Override
     public void removeLastWord() {
         setWord(--this.actualSizeInWords, 0);
     }
     
-    @Override
     public void negateWord(int position) {
         this.buffer[position] = ~this.buffer[position];
     }
     
-    @Override
     public void andWord(int position, int mask) {
         this.buffer[position] &= mask;
     }
     
-    @Override
     public void orWord(int position, int mask) {
         this.buffer[position] |= mask;
     }
     
-    @Override
     public void andLastWord(int mask) {
         andWord(this.actualSizeInWords - 1, mask);
     }
     
-    @Override
     public void orLastWord(int mask) {
         orWord(this.actualSizeInWords - 1, mask);
     }
     
-    @Override
     public void expand(int position, int length) {
         int size = newSizeInWords(length);
         int oldBuffer[] = this.buffer;
@@ -140,7 +120,6 @@ class IntArray implements Buffer, Cloneable {
         this.actualSizeInWords += length;
     }
     
-    @Override
     public void collapse(int position, int length) {
         System.arraycopy(this.buffer, position + length, this.buffer, position, this.actualSizeInWords - position - length);
         for(int i = 0; i < length; ++i) {
@@ -148,8 +127,7 @@ class IntArray implements Buffer, Cloneable {
         }
     }
     
-    @Override
-    public Buffer clone() {
+    public IntArray clone() {
         IntArray clone = null;
         try {
             clone = (IntArray) super.clone();

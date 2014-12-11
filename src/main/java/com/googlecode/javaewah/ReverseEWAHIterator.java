@@ -20,7 +20,7 @@ final class ReverseEWAHIterator {
      *
      * @param buffer      the buffer
      */
-    public ReverseEWAHIterator(final Buffer buffer) {
+    public ReverseEWAHIterator(final LongArray buffer) {
         this.pointer = 0;
         this.rlw = new RunningLengthWord(buffer, this.pointer);
         this.positions = new Stack<Integer>();
@@ -37,7 +37,7 @@ final class ReverseEWAHIterator {
      *
      * @return the buffer
      */
-    public Buffer buffer() {
+    public LongArray buffer() {
         return this.rlw.buffer;
     }
 

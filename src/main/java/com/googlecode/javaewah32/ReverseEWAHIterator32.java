@@ -21,7 +21,7 @@ final class ReverseEWAHIterator32 {
      *
      * @param buffer      the buffer
      */
-    public ReverseEWAHIterator32(final Buffer buffer) {
+    public ReverseEWAHIterator32(final IntArray buffer) {
         this.pointer = 0;
         this.rlw = new RunningLengthWord32(buffer, this.pointer);
         this.positions = new Stack<Integer>();
@@ -38,7 +38,7 @@ final class ReverseEWAHIterator32 {
      *
      * @return the buffer
      */
-    public Buffer buffer() {
+    public IntArray buffer() {
         return this.rlw.buffer;
     }
 
