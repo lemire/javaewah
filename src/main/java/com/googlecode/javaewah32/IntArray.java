@@ -52,33 +52,18 @@ class IntArray implements Cloneable {
     }
     
     public void push_back(int data) {
-        int size = newSizeInWords(1);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
+        resizeBuffer(1);
         this.buffer[this.actualSizeInWords++] = data;
     }
 
     public void push_back(int[] data, int start, int number) {
-        int size = newSizeInWords(number);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
+        resizeBuffer(number);
         System.arraycopy(data, start, this.buffer, this.actualSizeInWords, number);
         this.actualSizeInWords += number;
     }
     
     public void negative_push_back(int[] data, int start, int number) {
-        int size = newSizeInWords(number);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
+        resizeBuffer(number);
         for (int i = 0; i < number; ++i) {
             this.buffer[this.actualSizeInWords + i] = ~data[start + i];
         }
@@ -110,13 +95,8 @@ class IntArray implements Cloneable {
     }
     
     public void expand(int position, int length) {
-        int size = newSizeInWords(length);
-        int oldBuffer[] = this.buffer;
-        if(size >= this.buffer.length) {
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, position);
-        }
-        System.arraycopy(oldBuffer, position, this.buffer, position + length, this.actualSizeInWords - position);
+        resizeBuffer(length);
+        System.arraycopy(this.buffer, position, this.buffer, position + length, this.actualSizeInWords - position);
         this.actualSizeInWords += length;
     }
     
@@ -139,6 +119,15 @@ class IntArray implements Cloneable {
         return clone;
     }
     
+    private void resizeBuffer(int number) {
+        int size = newSizeInWords(number);
+        if (size >= this.buffer.length) {
+            int oldBuffer[] = this.buffer;
+            this.buffer = new int[size];
+            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
+        }
+    }
+
     /**
      * For internal use.
      *
