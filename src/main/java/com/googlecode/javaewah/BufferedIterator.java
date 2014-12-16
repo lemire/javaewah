@@ -11,6 +11,7 @@ package com.googlecode.javaewah;
  * @author Daniel Lemire
  */
 public class BufferedIterator implements IteratingRLW, Cloneable {
+
     /**
      * Instantiates a new iterating buffered running length word.
      *
@@ -19,12 +20,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
     public BufferedIterator(final CloneableIterator<EWAHIterator> iterator) {
         this.masterIterator = iterator;
         if (this.masterIterator.hasNext()) {
-            this.iterator = this.masterIterator.next();
-            this.brlw = new BufferedRunningLengthWord(
-                    this.iterator.next());
-            this.literalWordStartPosition = this.iterator
-                    .literalWords() + this.brlw.literalWordOffset;
-            this.buffer = this.iterator.buffer();
+            iteratingBrlw = new IteratingBufferedRunningLengthWord(this.masterIterator.next());
         }
     }
 
@@ -37,19 +33,19 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
     @Override
     public void discardFirstWords(long x) {
         while (x > 0) {
-            if (this.brlw.runningLength > x) {
-                this.brlw.runningLength -= x;
+            if (this.iteratingBrlw.getRunningLength() > x) {
+                this.iteratingBrlw.discardFirstWords(x);
                 return;
             }
-            x -= this.brlw.runningLength;
-            this.brlw.runningLength = 0;
-            long toDiscard = x > this.brlw.numberOfLiteralWords ? this.brlw.numberOfLiteralWords
+            this.iteratingBrlw.discardFirstWords(this.iteratingBrlw.getRunningLength());
+            x -= this.iteratingBrlw.getRunningLength();
+            long toDiscard = x > this.iteratingBrlw.getNumberOfLiteralWords()
+                    ? this.iteratingBrlw.getNumberOfLiteralWords()
                     : x;
 
-            this.literalWordStartPosition += toDiscard;
-            this.brlw.numberOfLiteralWords -= toDiscard;
+            this.iteratingBrlw.discardFirstWords(toDiscard);
             x -= toDiscard;
-            if ((x > 0) || (this.brlw.size() == 0)) {
+            if ((x > 0) || (this.iteratingBrlw.size() == 0)) {
                 if (!this.next()) {
                     break;
                 }
@@ -59,8 +55,8 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
 
     @Override
     public void discardRunningWords() {
-        this.brlw.runningLength = 0;
-        if (this.brlw.getNumberOfLiteralWords() == 0)
+        this.iteratingBrlw.discardRunningWords();
+        if (this.iteratingBrlw.getNumberOfLiteralWords() == 0)
             this.next();
     }
 
@@ -71,24 +67,13 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public boolean next() {
-        if (!this.iterator.hasNext()) {
-            if (!reload()) {
-                this.brlw.numberOfLiteralWords = 0;
-                this.brlw.runningLength = 0;
+        if (!this.iteratingBrlw.next()) {
+            if (!this.masterIterator.hasNext()) {
                 return false;
+            } else {
+                this.iteratingBrlw = new IteratingBufferedRunningLengthWord(this.masterIterator.next());
             }
         }
-        this.brlw.reset(this.iterator.next());
-        this.literalWordStartPosition = this.iterator.literalWords(); // +
-        return true;
-    }
-
-    private boolean reload() {
-        if (!this.masterIterator.hasNext()) {
-            return false;
-        }
-        this.iterator = this.masterIterator.next();
-        this.buffer = this.iterator.buffer();
         return true;
     }
 
@@ -100,7 +85,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public long getLiteralWordAt(int index) {
-        return this.buffer.getWord(this.literalWordStartPosition + index);
+        return this.iteratingBrlw.getLiteralWordAt(index);
     }
 
     /**
@@ -110,7 +95,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public int getNumberOfLiteralWords() {
-        return this.brlw.numberOfLiteralWords;
+        return this.iteratingBrlw.getNumberOfLiteralWords();
     }
 
     /**
@@ -120,7 +105,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public boolean getRunningBit() {
-        return this.brlw.runningBit;
+        return this.iteratingBrlw.getRunningBit();
     }
 
     /**
@@ -130,7 +115,7 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public long getRunningLength() {
-        return this.brlw.runningLength;
+        return this.iteratingBrlw.getRunningLength();
     }
 
     /**
@@ -140,23 +125,17 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
      */
     @Override
     public long size() {
-        return this.brlw.size();
+        return this.iteratingBrlw.size();
     }
 
     @Override
     public BufferedIterator clone() throws CloneNotSupportedException {
         BufferedIterator answer = (BufferedIterator) super.clone();
-        answer.brlw = this.brlw.clone();
-        answer.buffer = this.buffer;
-        answer.iterator = this.iterator.clone();
-        answer.literalWordStartPosition = this.literalWordStartPosition;
+        answer.iteratingBrlw = this.iteratingBrlw.clone();
         answer.masterIterator = this.masterIterator.clone();
         return answer;
     }
 
-    private BufferedRunningLengthWord brlw;
-    private LongArray buffer;
-    private int literalWordStartPosition;
-    private EWAHIterator iterator;
+    private IteratingBufferedRunningLengthWord iteratingBrlw;
     private CloneableIterator<EWAHIterator> masterIterator;
 }
