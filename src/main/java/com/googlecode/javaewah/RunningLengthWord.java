@@ -131,17 +131,13 @@ public final class RunningLengthWord implements Cloneable {
 
     @Override
     public RunningLengthWord clone() throws CloneNotSupportedException {
-        RunningLengthWord answer;
-        answer = (RunningLengthWord) super.clone();
-        answer.buffer = this.buffer;
-        answer.position = this.position;
-        return answer;
+        return (RunningLengthWord) super.clone();
     }
 
     /**
      * The array of words.
      */
-    LongArray buffer;
+    final LongArray buffer;
 
     /**
      * The position in array.
