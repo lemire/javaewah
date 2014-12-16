@@ -39,7 +39,14 @@ final class LongArray implements Cloneable {
     public int sizeInWords() {
         return this.actualSizeInWords;
     }
-    
+
+    /**
+     * Increases the size of the buffer if necessary
+     */
+    public void ensureCapacity(int capacity) {
+        resizeBuffer(capacity - this.actualSizeInWords);
+    }
+
     /**
      * Returns the word at a given position
      * @param position
@@ -229,6 +236,21 @@ final class LongArray implements Cloneable {
             e.printStackTrace(); // cannot happen
         }
         return clone;
+    }
+
+    /**
+     * Swap the content of the buffer with another.
+     *
+     * @param other buffer to swap with
+     */
+    public void swap(final LongArray other) {
+        long[] tmp = this.buffer;
+        this.buffer = other.buffer;
+        other.buffer = tmp;
+
+        int tmp2 = this.actualSizeInWords;
+        this.actualSizeInWords = other.actualSizeInWords;
+        other.actualSizeInWords = tmp2;
     }
 
     /**

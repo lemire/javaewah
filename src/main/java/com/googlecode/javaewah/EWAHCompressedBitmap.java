@@ -113,8 +113,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * Creates an empty bitmap (no bit set to true).
      */
     public EWAHCompressedBitmap() {
-        this.buffer = new LongArray();
-        this.rlw = new RunningLengthWord(this.buffer, 0);
+        this(new LongArray());
     }
 
     /**
@@ -130,7 +129,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      *                   created)
      */
     public EWAHCompressedBitmap(int bufferSize) {
-        this.buffer = new LongArray(bufferSize);
+        this(new LongArray(bufferSize));
+    }
+
+    private EWAHCompressedBitmap(LongArray buffer) {
+        this.buffer = buffer;
         this.rlw = new RunningLengthWord(this.buffer, 0);
     }
 
@@ -557,15 +560,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      */
     @Override
     public EWAHCompressedBitmap clone() {
-        EWAHCompressedBitmap clone = null;
-        try {
-            clone = (EWAHCompressedBitmap) super.clone();
-            clone.buffer = this.buffer.clone();
-            clone.sizeInBits = this.sizeInBits;
-            clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace(); // cannot happen
-        }
+        EWAHCompressedBitmap clone = new EWAHCompressedBitmap(this.buffer.clone());
+        clone.sizeInBits = this.sizeInBits;
+        clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
         return clone;
     }
 
@@ -595,7 +592,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
         int sizeInWords = in.readInt();
-        this.buffer = new LongArray(sizeInWords);
+        this.buffer.clear();
+        this.buffer.ensureCapacity(sizeInWords);
         for(int i = 0; i < sizeInWords; ++i) {
             this.buffer.push_back(in.readLong());
         }
@@ -1575,21 +1573,15 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @param other bitmap to swap with
      */
     public void swap(final EWAHCompressedBitmap other) {
-        LongArray tmp = this.buffer;
-        this.buffer = other.buffer;
-        other.buffer = tmp;
+        this.buffer.swap(other.buffer);
 
         int tmp2 = this.rlw.position;
         this.rlw.position = other.rlw.position;
         other.rlw.position = tmp2;
 
-        LongArray tmp3 = this.rlw.buffer;
-        this.rlw.buffer = other.rlw.buffer;
-        other.rlw.buffer = tmp3;
-
-        int tmp4 = this.sizeInBits;
+        int tmp3 = this.sizeInBits;
         this.sizeInBits = other.sizeInBits;
-        other.sizeInBits = tmp4;
+        other.sizeInBits = tmp3;
     }
 
     /**
@@ -1994,7 +1986,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    protected LongArray buffer = null;
+    protected final LongArray buffer;
 
     /**
      * The current (last) running length word.
