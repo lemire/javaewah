@@ -1986,7 +1986,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    protected final LongArray buffer;
+    final LongArray buffer;
 
     /**
      * The current (last) running length word.
