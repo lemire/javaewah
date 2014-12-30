@@ -24,6 +24,24 @@ public class PerformanceTest
 	  	}
 	  }
 	  
+
+	  @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
+	  @Test
+	  public void toarray() throws Exception {
+	  	for(int k = 1; k < N * 100 ; ++k) {
+	  		bogus += ewah[k % N].toArray().length;
+	  	}
+	  }
+
+	  @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
+	  @Test
+	  public void cardinality() throws Exception {
+	  	for(int k = 1; k < N * 100; ++k) {
+	  		bogus += ewah[k % N].cardinality();
+	  	}
+	  }
+
+	  
 	  @BeforeClass
     public static void prepare()
     {
