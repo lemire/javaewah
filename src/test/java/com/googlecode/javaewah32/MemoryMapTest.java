@@ -7,18 +7,25 @@ import java.nio.channels.FileChannel;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.googlecode.javaewah.EWAHCompressedBitmap;
+
 public class MemoryMapTest
 {
 
 	@Test
-	public void basicTest() throws IOException {
+	public void basicTest() throws IOException, CloneNotSupportedException {
 		EWAHCompressedBitmap32 ewahBitmap = EWAHCompressedBitmap32.bitmapOf(0, 2, 55,
 				64, 1 << 30);
+		EWAHCompressedBitmap32 newewahBitmap = ewahBitmap.clone();
+		Assert.assertEquals(newewahBitmap, ewahBitmap);		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ewahBitmap.serialize(new DataOutputStream(bos));
 		ByteBuffer bb = ByteBuffer.wrap(bos.toByteArray());
 		EWAHCompressedBitmap32 mapped = new EWAHCompressedBitmap32(bb);
 		Assert.assertEquals(mapped, ewahBitmap);
+		EWAHCompressedBitmap32 newmapped;
+		newmapped = mapped.clone();
+		Assert.assertEquals(newmapped, ewahBitmap);		
 	}
 	
 	@Test

@@ -11,16 +11,20 @@ public class MemoryMapTest
 {
 	
 
-
 	@Test
-	public void basicTest() throws IOException {
+	public void basicTest() throws IOException,CloneNotSupportedException {
 		EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
 				64, 1 << 30);
+		EWAHCompressedBitmap newewahBitmap = ewahBitmap.clone();
+		Assert.assertEquals(newewahBitmap, ewahBitmap);		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ewahBitmap.serialize(new DataOutputStream(bos));
 		ByteBuffer bb = ByteBuffer.wrap(bos.toByteArray());
 		EWAHCompressedBitmap mapped = new EWAHCompressedBitmap(bb);
 		Assert.assertEquals(mapped, ewahBitmap);
+		EWAHCompressedBitmap newmapped;
+		newmapped = mapped.clone();
+		Assert.assertEquals(newmapped, ewahBitmap);		
 	}
 	
 	@Test

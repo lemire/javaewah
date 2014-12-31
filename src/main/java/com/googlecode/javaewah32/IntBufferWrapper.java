@@ -7,6 +7,7 @@ package com.googlecode.javaewah32;
 
 import java.nio.IntBuffer;
 
+
 /**
  * java.nio.IntBuffer wrapper.
  * Users should not be concerned by this class.
@@ -145,7 +146,7 @@ final class IntBufferWrapper implements Buffer32 {
 
     @Override
     public IntBufferWrapper clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+        return new IntBufferWrapper(this.buffer, this.actualSizeInWords);
     }
 
     @Override

@@ -144,7 +144,7 @@ final class LongBufferWrapper implements Buffer {
 
     @Override
     public LongBufferWrapper clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException(); // TODO: This should be supported
+       return new LongBufferWrapper(this.buffer, this.actualSizeInWords);
     }
 
     @Override
