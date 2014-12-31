@@ -43,7 +43,9 @@ final class LongBufferWrapper implements Buffer {
 
     @Override
     public long[] getWords() {
+        // TODO: This is likely to be a performance bottleneck
         long[] words = new long[this.actualSizeInWords];
+        this.buffer.rewind(); // This code may not be thread safe
         this.buffer.get(words, 0, this.actualSizeInWords);
         return words;
     }
@@ -137,7 +139,7 @@ final class LongBufferWrapper implements Buffer {
 
     @Override
     public LongBufferWrapper clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+        throw new CloneNotSupportedException(); // TODO: This should be supported
     }
 
     @Override

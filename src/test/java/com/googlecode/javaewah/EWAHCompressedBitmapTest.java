@@ -21,6 +21,27 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
 
+  @Test
+  public void equalToSelf() {
+  	EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
+				64, 1 << 30);
+  	Assert.assertTrue(ewahBitmap.equals(ewahBitmap));
+  }
+
+  @Test
+  public void safeSerialization() throws IOException {
+  	EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
+				64, 1 << 30);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		// Note: you could use a file output steam instead of ByteArrayOutputStream
+		ewahBitmap.serialize(new DataOutputStream(bos));
+		EWAHCompressedBitmap ewahBitmapnew = new EWAHCompressedBitmap();
+		byte[] bout = bos.toByteArray();
+		ewahBitmapnew.deserialize(new DataInputStream(new ByteArrayInputStream(bout)));
+		assertEquals(ewahBitmapnew, ewahBitmap);
+		Assert.assertEquals(ewahBitmapnew.serializedSizeInBytes(), ewahBitmap.serializedSizeInBytes());
+  }
+
     @Test
     public void simpleTestWithLongBuffer() {
         java.nio.LongBuffer buffer = java.nio.LongBuffer.wrap(new long[10]);

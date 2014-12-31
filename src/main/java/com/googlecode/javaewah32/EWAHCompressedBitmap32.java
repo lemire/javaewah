@@ -614,7 +614,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @param in the ObjectInput stream
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void deserialize(ObjectInput in) throws IOException {
+    public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
         int sizeInWords = in.readInt();
         this.buffer.clear();

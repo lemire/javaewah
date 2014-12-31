@@ -43,7 +43,9 @@ final class IntBufferWrapper implements Buffer32 {
 
     @Override
     public int[] getWords() {
+        // TODO: This is likely to be a performance bottleneck
         int[] words = new int[this.actualSizeInWords];
+        this.buffer.rewind(); // This code may not be thread safe
         this.buffer.get(words, 0, this.actualSizeInWords);
         return words;
     }
