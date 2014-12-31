@@ -149,14 +149,22 @@ final class LongBufferWrapper implements Buffer {
 
     @Override
     public void swap(final Buffer other) {
+    	if(other instanceof LongBufferWrapper) {// optimized version
+    		LongBufferWrapper o = (LongBufferWrapper) other;
+    		LongBuffer tmp = this.buffer;
+        int tmp2 = this.actualSizeInWords;
+        this.actualSizeInWords = o.actualSizeInWords;
+        this.buffer = o.buffer;
+        o.actualSizeInWords = tmp2;
+        o.buffer = tmp;
+    	} else {
         long[] tmp = this.getWords();
         int tmp2 = this.actualSizeInWords;
-
         this.clear();
         this.push_back(other.getWords(), 0, other.sizeInWords());
-
         other.clear();
         other.push_back(tmp, 0, tmp2);
+    	}
     }
     
     /**
@@ -167,6 +175,6 @@ final class LongBufferWrapper implements Buffer {
     /**
      * The buffer
      */
-    private final LongBuffer buffer;
+    private LongBuffer buffer;
     
 }

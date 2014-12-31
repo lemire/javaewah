@@ -8,6 +8,7 @@ package com.googlecode.javaewah32;
 import java.nio.IntBuffer;
 
 
+
 /**
  * java.nio.IntBuffer wrapper.
  * Users should not be concerned by this class.
@@ -151,6 +152,15 @@ final class IntBufferWrapper implements Buffer32 {
 
     @Override
     public void swap(final Buffer32 other) {
+    	if(other instanceof IntBufferWrapper) {// optimized version
+    		IntBufferWrapper o = (IntBufferWrapper) other;
+    		IntBuffer tmp = this.buffer;
+        int tmp2 = this.actualSizeInWords;
+        this.actualSizeInWords = o.actualSizeInWords;
+        this.buffer = o.buffer;
+        o.actualSizeInWords = tmp2;
+        o.buffer = tmp;
+    	} else {
         int[] tmp = this.getWords();
         int tmp2 = this.actualSizeInWords;
 
@@ -159,6 +169,7 @@ final class IntBufferWrapper implements Buffer32 {
 
         other.clear();
         other.push_back(tmp, 0, tmp2);
+    	}
     }
     
     /**
@@ -169,6 +180,6 @@ final class IntBufferWrapper implements Buffer32 {
     /**
      * The buffer
      */
-    private final IntBuffer buffer;
+    private IntBuffer buffer;
     
 }

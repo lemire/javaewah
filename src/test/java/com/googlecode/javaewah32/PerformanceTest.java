@@ -2,16 +2,11 @@ package com.googlecode.javaewah32;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.carrotsearch.junitbenchmarks.IResultsConsumer;
-import com.carrotsearch.junitbenchmarks.WriterConsumer;
-import com.carrotsearch.junitbenchmarks.h2.H2Consumer;
 
-import com.googlecode.javaewah.BenchmarkConsumers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;

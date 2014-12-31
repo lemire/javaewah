@@ -7,7 +7,6 @@ import java.nio.channels.FileChannel;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.googlecode.javaewah.EWAHCompressedBitmap;
 
 public class MemoryMapTest
 {
