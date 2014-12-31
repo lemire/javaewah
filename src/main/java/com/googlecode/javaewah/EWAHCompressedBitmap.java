@@ -132,6 +132,14 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         this(new LongArray(bufferSize));
     }
 
+    /**
+     * Creates a bitmap with the specified java.nio.LongBuffer
+     * @param buffer data source
+     */
+    public EWAHCompressedBitmap(java.nio.LongBuffer buffer) {
+        this(new LongBuffer(buffer));
+    }
+
     private EWAHCompressedBitmap(Buffer buffer) {
         this.buffer = buffer;
         this.rlw = new RunningLengthWord(this.buffer, 0);
@@ -561,7 +569,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @see java.lang.Object#clone()
      */
     @Override
-    public EWAHCompressedBitmap clone() {
+    public EWAHCompressedBitmap clone() throws CloneNotSupportedException {
         EWAHCompressedBitmap clone = new EWAHCompressedBitmap(this.buffer.clone());
         clone.sizeInBits = this.sizeInBits;
         clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);

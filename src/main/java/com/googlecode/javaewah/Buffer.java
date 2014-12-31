@@ -153,7 +153,7 @@ interface Buffer {
     /**
      * Creates and returns a copy of the buffer
      */
-    Buffer clone();
+    Buffer clone() throws CloneNotSupportedException;
 
     /**
      * Swap the content of the buffer with another.

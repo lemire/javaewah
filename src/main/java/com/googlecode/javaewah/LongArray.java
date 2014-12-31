@@ -8,7 +8,7 @@ package com.googlecode.javaewah;
 import java.util.Arrays;
 
 /**
- * Long array wrapper class.
+ * Long array wrapper.
  * Users should not be concerned by this class.
  *
  * @author Gregory Ssi-Yan-Kai
@@ -161,13 +161,24 @@ final class LongArray implements Buffer, Cloneable {
 
     @Override
     public void swap(final Buffer other) {
-        long[] tmp = this.buffer;
-        this.buffer = ((LongArray)other).buffer;
-        ((LongArray)other).buffer = tmp;
+        if(other instanceof LongArray) {
+            long[] tmp = this.buffer;
+            this.buffer = ((LongArray)other).buffer;
+            ((LongArray)other).buffer = tmp;
 
-        int tmp2 = this.actualSizeInWords;
-        this.actualSizeInWords = ((LongArray)other).actualSizeInWords;
-        ((LongArray)other).actualSizeInWords = tmp2;
+            int tmp2 = this.actualSizeInWords;
+            this.actualSizeInWords = ((LongArray)other).actualSizeInWords;
+            ((LongArray)other).actualSizeInWords = tmp2;
+        } else {
+            long[] tmp = this.getWords();
+            int tmp2 = this.actualSizeInWords;
+
+            this.clear();
+            this.push_back(other.getWords(), 0, other.sizeInWords());
+
+            other.clear();
+            other.push_back(tmp, 0, tmp2);
+        }
     }
 
     /**
