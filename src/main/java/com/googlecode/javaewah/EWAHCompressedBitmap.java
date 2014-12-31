@@ -538,8 +538,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             if (localrlw.getRunningBit()) {
                 counter += WORD_IN_BITS * localrlw.getRunningLength();
             }
-            for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
-                counter += Long.bitCount(i.buffer().getWord(i.literalWords() + j));
+            final int numberOfLiteralWords = localrlw.getNumberOfLiteralWords();
+            final int literalWords = i.literalWords();
+            for (int j = 0; j < numberOfLiteralWords; ++j) {
+                counter += Long.bitCount(i.buffer().getWord(literalWords + j));
             }
         }
         return counter;
@@ -1496,17 +1498,20 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final EWAHIterator i = this.getEWAHIterator();
         while (i.hasNext()) {
             RunningLengthWord localRlw = i.next();
+            final long runningLength = localRlw.getRunningLength();
             if (localRlw.getRunningBit()) {
-                for (int j = 0; j < localRlw.getRunningLength(); ++j) {
+                for (int j = 0; j < runningLength; ++j) {
                     for (int c = 0; c < WORD_IN_BITS; ++c) {
                         ans[inAnsPos++] = pos++;
                     }
                 }
             } else {
-                pos += WORD_IN_BITS * localRlw.getRunningLength();
+                pos += WORD_IN_BITS * runningLength;
             }
-            for (int j = 0; j < localRlw.getNumberOfLiteralWords(); ++j) {
-                long data = i.buffer().getWord(i.literalWords() + j);
+            final int numberOfLiteralWords = localRlw.getNumberOfLiteralWords();
+            final int literalWords = i.literalWords();
+            for (int j = 0; j < numberOfLiteralWords; ++j) {
+                long data = i.buffer().getWord(literalWords + j);
                 while (data != 0) {
                     final long T = data & -data;
                     ans[inAnsPos++] = Long.bitCount(T - 1)
