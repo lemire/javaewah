@@ -163,7 +163,7 @@ public class IteratorAggregationTest {
     *
     */
    @Test
-   public void testMat() {
+   public void testMat() throws Exception {
        System.out.println("testMat ");
        EWAHCompressedBitmap b = EWAHCompressedBitmap.bitmapOf(0,3);
        EWAHCompressedBitmap n = IteratorUtil.materialize(b.getIteratingRLW());
@@ -173,7 +173,7 @@ public class IteratorAggregationTest {
        assertTrue(n.equals(b));
        EWAHCompressedBitmap neg = IteratorUtil.materialize(IteratorAggregation.not(b.getIteratingRLW()));
        neg.setSizeInBitsWithinLastWord(b.sizeInBits());
-       EWAHCompressedBitmap x= ((EWAHCompressedBitmap) b.clone());
+       EWAHCompressedBitmap x= b.clone();
        x.not();
        assertTrue(x.equals(neg));
        for(int k = 145; k<1024; ++k)
@@ -185,7 +185,7 @@ public class IteratorAggregationTest {
        assertTrue(n.equals(b));
        neg = IteratorUtil.materialize(IteratorAggregation.not(b.getIteratingRLW()));
        neg.setSizeInBitsWithinLastWord(b.sizeInBits());
-       x= ((EWAHCompressedBitmap) b.clone());
+       x= b.clone();
        x.not();
        assertTrue(x.equals(neg));
    }

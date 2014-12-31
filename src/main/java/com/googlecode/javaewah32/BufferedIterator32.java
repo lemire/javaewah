@@ -22,12 +22,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
             final CloneableIterator<EWAHIterator32> iterator) {
         this.masterIterator = iterator;
         if (this.masterIterator.hasNext()) {
-            this.iterator = this.masterIterator.next();
-            this.brlw = new BufferedRunningLengthWord32(
-                    this.iterator.next());
-            this.literalWordStartPosition = this.iterator
-                    .literalWords() + this.brlw.literalWordOffset;
-            this.buffer = this.iterator.buffer();
+            iteratingBrlw = new IteratingBufferedRunningLengthWord32(this.masterIterator.next());
         }
     }
 
@@ -40,19 +35,19 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
     @Override
     public void discardFirstWords(int x) {
         while (x > 0) {
-            if (this.brlw.RunningLength > x) {
-                this.brlw.RunningLength -= x;
+            if (this.iteratingBrlw.getRunningLength() > x) {
+                this.iteratingBrlw.discardFirstWords(x);
                 return;
             }
-            x -= this.brlw.RunningLength;
-            this.brlw.RunningLength = 0;
-            int toDiscard = x > this.brlw.NumberOfLiteralWords ? this.brlw.NumberOfLiteralWords
+            this.iteratingBrlw.discardFirstWords(this.iteratingBrlw.getRunningLength());
+            x -= this.iteratingBrlw.getRunningLength();
+            int toDiscard = x > this.iteratingBrlw.getNumberOfLiteralWords()
+                    ? this.iteratingBrlw.getNumberOfLiteralWords()
                     : x;
 
-            this.literalWordStartPosition += toDiscard;
-            this.brlw.NumberOfLiteralWords -= toDiscard;
+            this.iteratingBrlw.discardFirstWords(toDiscard);
             x -= toDiscard;
-            if ((x > 0) || (this.brlw.size() == 0)) {
+            if ((x > 0) || (this.iteratingBrlw.size() == 0)) {
                 if (!this.next()) {
                     break;
                 }
@@ -62,8 +57,8 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
 
     @Override
     public void discardRunningWords() {
-        this.brlw.RunningLength = 0;
-        if (this.brlw.getNumberOfLiteralWords() == 0)
+        this.iteratingBrlw.discardRunningWords();
+        if (this.iteratingBrlw.getNumberOfLiteralWords() == 0)
             this.next();
     }
 
@@ -74,24 +69,13 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public boolean next() {
-        if (!this.iterator.hasNext()) {
-            if (!reload()) {
-                this.brlw.NumberOfLiteralWords = 0;
-                this.brlw.RunningLength = 0;
+        if (!this.iteratingBrlw.next()) {
+            if (!this.masterIterator.hasNext()) {
                 return false;
+            } else {
+                this.iteratingBrlw = new IteratingBufferedRunningLengthWord32(this.masterIterator.next());
             }
         }
-        this.brlw.reset(this.iterator.next());
-        this.literalWordStartPosition = this.iterator.literalWords(); // +
-        return true;
-    }
-
-    private boolean reload() {
-        if (!this.masterIterator.hasNext()) {
-            return false;
-        }
-        this.iterator = this.masterIterator.next();
-        this.buffer = this.iterator.buffer();
         return true;
     }
 
@@ -103,7 +87,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public int getLiteralWordAt(int index) {
-        return this.buffer.getWord(this.literalWordStartPosition + index);
+        return this.iteratingBrlw.getLiteralWordAt(index);
     }
 
     /**
@@ -113,17 +97,17 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public int getNumberOfLiteralWords() {
-        return this.brlw.NumberOfLiteralWords;
+        return this.iteratingBrlw.getNumberOfLiteralWords();
     }
 
     /**
      * Gets the running bit.
-     *
+     *RunningBit
      * @return the running bit
      */
     @Override
     public boolean getRunningBit() {
-        return this.brlw.RunningBit;
+        return this.iteratingBrlw.getRunningBit();
     }
 
     /**
@@ -133,7 +117,7 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public int getRunningLength() {
-        return this.brlw.RunningLength;
+        return this.iteratingBrlw.getRunningLength();
     }
 
     /**
@@ -143,24 +127,18 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
      */
     @Override
     public int size() {
-        return this.brlw.size();
+        return this.iteratingBrlw.size();
     }
 
     @Override
     public BufferedIterator32 clone() throws CloneNotSupportedException {
         BufferedIterator32 answer = (BufferedIterator32) super.clone();
-        answer.brlw = this.brlw.clone();
-        answer.buffer = this.buffer;
-        answer.iterator = this.iterator.clone();
-        answer.literalWordStartPosition = this.literalWordStartPosition;
+        answer.iteratingBrlw = this.iteratingBrlw.clone();
         answer.masterIterator = this.masterIterator.clone();
         return answer;
     }
 
-    private BufferedRunningLengthWord32 brlw;
-    private IntArray buffer;
-    private int literalWordStartPosition;
-    private EWAHIterator32 iterator;
+    private IteratingBufferedRunningLengthWord32 iteratingBrlw;
     private CloneableIterator<EWAHIterator32> masterIterator;
 
 }

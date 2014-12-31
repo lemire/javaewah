@@ -275,14 +275,12 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
     public IteratingBufferedRunningLengthWord clone() throws CloneNotSupportedException {
         IteratingBufferedRunningLengthWord answer = (IteratingBufferedRunningLengthWord) super .clone();
         answer.brlw = this.brlw.clone();
-        answer.buffer = this.buffer;
         answer.iterator = this.iterator.clone();
-        answer.literalWordStartPosition = this.literalWordStartPosition;
         return answer;
     }
 
     private BufferedRunningLengthWord brlw;
-    private LongArray buffer;
+    private final Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator iterator;
 }

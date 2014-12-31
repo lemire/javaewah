@@ -113,8 +113,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * Creates an empty bitmap (no bit set to true).
      */
     public EWAHCompressedBitmap() {
-        this.buffer = new LongArray();
-        this.rlw = new RunningLengthWord(this.buffer, 0);
+        this(new LongArray());
     }
 
     /**
@@ -130,7 +129,19 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      *                   created)
      */
     public EWAHCompressedBitmap(int bufferSize) {
-        this.buffer = new LongArray(bufferSize);
+        this(new LongArray(bufferSize));
+    }
+
+    /**
+     * Creates a bitmap with the specified java.nio.LongBuffer
+     * @param buffer data source
+     */
+    public EWAHCompressedBitmap(java.nio.LongBuffer buffer) {
+        this(new LongBuffer(buffer));
+    }
+
+    private EWAHCompressedBitmap(Buffer buffer) {
+        this.buffer = buffer;
         this.rlw = new RunningLengthWord(this.buffer, 0);
     }
 
@@ -535,8 +546,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             if (localrlw.getRunningBit()) {
                 counter += WORD_IN_BITS * localrlw.getRunningLength();
             }
-            for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
-                counter += Long.bitCount(i.buffer().getWord(i.literalWords() + j));
+            final int numberOfLiteralWords = localrlw.getNumberOfLiteralWords();
+            final int literalWords = i.literalWords();
+            for (int j = 0; j < numberOfLiteralWords; ++j) {
+                counter += Long.bitCount(i.buffer().getWord(literalWords + j));
             }
         }
         return counter;
@@ -556,16 +569,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @see java.lang.Object#clone()
      */
     @Override
-    public EWAHCompressedBitmap clone() {
-        EWAHCompressedBitmap clone = null;
-        try {
-            clone = (EWAHCompressedBitmap) super.clone();
-            clone.buffer = this.buffer.clone();
-            clone.sizeInBits = this.sizeInBits;
-            clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace(); // cannot happen
-        }
+    public EWAHCompressedBitmap clone() throws CloneNotSupportedException {
+        EWAHCompressedBitmap clone = new EWAHCompressedBitmap(this.buffer.clone());
+        clone.sizeInBits = this.sizeInBits;
+        clone.rlw = new RunningLengthWord(clone.buffer, this.rlw.position);
         return clone;
     }
 
@@ -595,7 +602,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
         int sizeInWords = in.readInt();
-        this.buffer = new LongArray(sizeInWords);
+        this.buffer.clear();
+        this.buffer.ensureCapacity(sizeInWords);
         for(int i = 0; i < sizeInWords; ++i) {
             this.buffer.push_back(in.readLong());
         }
@@ -1498,17 +1506,20 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final EWAHIterator i = this.getEWAHIterator();
         while (i.hasNext()) {
             RunningLengthWord localRlw = i.next();
+            final long runningLength = localRlw.getRunningLength();
             if (localRlw.getRunningBit()) {
-                for (int j = 0; j < localRlw.getRunningLength(); ++j) {
+                for (int j = 0; j < runningLength; ++j) {
                     for (int c = 0; c < WORD_IN_BITS; ++c) {
                         ans[inAnsPos++] = pos++;
                     }
                 }
             } else {
-                pos += WORD_IN_BITS * localRlw.getRunningLength();
+                pos += WORD_IN_BITS * runningLength;
             }
-            for (int j = 0; j < localRlw.getNumberOfLiteralWords(); ++j) {
-                long data = i.buffer().getWord(i.literalWords() + j);
+            final int numberOfLiteralWords = localRlw.getNumberOfLiteralWords();
+            final int literalWords = i.literalWords();
+            for (int j = 0; j < numberOfLiteralWords; ++j) {
+                long data = i.buffer().getWord(literalWords + j);
                 while (data != 0) {
                     final long T = data & -data;
                     ans[inAnsPos++] = Long.bitCount(T - 1)
@@ -1575,21 +1586,15 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @param other bitmap to swap with
      */
     public void swap(final EWAHCompressedBitmap other) {
-        LongArray tmp = this.buffer;
-        this.buffer = other.buffer;
-        other.buffer = tmp;
+        this.buffer.swap(other.buffer);
 
         int tmp2 = this.rlw.position;
         this.rlw.position = other.rlw.position;
         other.rlw.position = tmp2;
 
-        LongArray tmp3 = this.rlw.buffer;
-        this.rlw.buffer = other.rlw.buffer;
-        other.rlw.buffer = tmp3;
-
-        int tmp4 = this.sizeInBits;
+        int tmp3 = this.sizeInBits;
         this.sizeInBits = other.sizeInBits;
-        other.sizeInBits = tmp4;
+        other.sizeInBits = tmp3;
     }
 
     /**
@@ -1994,7 +1999,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    protected LongArray buffer = null;
+    final Buffer buffer;
 
     /**
      * The current (last) running length word.

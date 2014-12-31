@@ -1,13 +1,31 @@
 package com.googlecode.javaewah32;
 
+/*
+ * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
+ * Licensed under the Apache License, Version 2.0.
+ */
+
 import java.util.Arrays;
 
-class IntArray implements Cloneable {
+/**
+ * Int array wrapper.
+ * Users should not be concerned by this class.
+ *
+ * @author Gregory Ssi-Yan-Kai
+ */
+class IntArray implements Buffer, Cloneable {
 
+    /**
+     * Creates a buffer with default size
+     */
     public IntArray() {
         this(DEFAULT_BUFFER_SIZE);
     }
-    
+ 
+    /**
+     * Creates a buffer with explicit size
+     * @param bufferSize
+     */
     public IntArray(int bufferSize) {
         if(bufferSize < 1) {
             bufferSize = 1;
@@ -15,111 +33,112 @@ class IntArray implements Cloneable {
         this.buffer = new int[bufferSize];
     }
     
+    @Override
     public int sizeInWords() {
         return this.actualSizeInWords;
     }
-    
+
+    @Override
+    public void ensureCapacity(int capacity) {
+        resizeBuffer(capacity - this.actualSizeInWords);
+    }
+
+    @Override
     public int getWord(int position) {
         return this.buffer[position];
     }
-    
+
+    @Override
     public int getLastWord() {
         return getWord(this.actualSizeInWords - 1);
     }
-    
+
+    @Override
     public int[] getWords() {
         return this.buffer;
     }
     
+    @Override
     public void clear() {
         this.actualSizeInWords = 1;
-        // buffer is not fully cleared but any new set operations should
-        // overwrite
-        // stale data
         this.buffer[0] = 0;
     }
     
+    @Override
     public void trim() {
         this.buffer = Arrays.copyOf(this.buffer, this.actualSizeInWords);
     }
     
+    @Override
     public void setWord(int position, int word) {
         this.buffer[position] = word;
     }
     
+    @Override
     public void setLastWord(int word) {
         setWord(this.actualSizeInWords - 1, word);
     }
     
-    public void push_back(int data) {
-        int size = newSizeInWords(1);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
-        this.buffer[this.actualSizeInWords++] = data;
+    @Override
+    public void push_back(int word) {
+        resizeBuffer(1);
+        this.buffer[this.actualSizeInWords++] = word;
     }
 
+    @Override
     public void push_back(int[] data, int start, int number) {
-        int size = newSizeInWords(number);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
+        resizeBuffer(number);
         System.arraycopy(data, start, this.buffer, this.actualSizeInWords, number);
         this.actualSizeInWords += number;
     }
     
+    @Override
     public void negative_push_back(int[] data, int start, int number) {
-        int size = newSizeInWords(number);
-        if (size >= this.buffer.length) {
-            int oldBuffer[] = this.buffer;
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
-        }
+        resizeBuffer(number);
         for (int i = 0; i < number; ++i) {
             this.buffer[this.actualSizeInWords + i] = ~data[start + i];
         }
         this.actualSizeInWords += number;
     }
     
+    @Override
     public void removeLastWord() {
         setWord(--this.actualSizeInWords, 0);
     }
     
+    @Override
     public void negateWord(int position) {
         this.buffer[position] = ~this.buffer[position];
     }
     
+    @Override
     public void andWord(int position, int mask) {
         this.buffer[position] &= mask;
     }
     
+    @Override
     public void orWord(int position, int mask) {
         this.buffer[position] |= mask;
     }
     
+    @Override
     public void andLastWord(int mask) {
         andWord(this.actualSizeInWords - 1, mask);
     }
     
+    @Override
     public void orLastWord(int mask) {
         orWord(this.actualSizeInWords - 1, mask);
     }
     
+    @Override
     public void expand(int position, int length) {
-        int size = newSizeInWords(length);
-        int oldBuffer[] = this.buffer;
-        if(size >= this.buffer.length) {
-            this.buffer = new int[size];
-            System.arraycopy(oldBuffer, 0, this.buffer, 0, position);
-        }
-        System.arraycopy(oldBuffer, position, this.buffer, position + length, this.actualSizeInWords - position);
+        resizeBuffer(length);
+        System.arraycopy(this.buffer, position, this.buffer, position + length, this.actualSizeInWords - position);
         this.actualSizeInWords += length;
     }
     
+    @Override
     public void collapse(int position, int length) {
         System.arraycopy(this.buffer, position + length, this.buffer, position, this.actualSizeInWords - position - length);
         for(int i = 0; i < length; ++i) {
@@ -127,6 +146,7 @@ class IntArray implements Cloneable {
         }
     }
     
+    @Override
     public IntArray clone() {
         IntArray clone = null;
         try {
@@ -138,10 +158,45 @@ class IntArray implements Cloneable {
         }
         return clone;
     }
+
+
+   @Override
+   public void swap(final Buffer other) {
+       if(other instanceof IntArray) {
+           int[] tmp = this.buffer;
+           this.buffer = ((IntArray) other).buffer;
+           ((IntArray) other).buffer = tmp;
+
+           int tmp2 = this.actualSizeInWords;
+           this.actualSizeInWords = ((IntArray) other).actualSizeInWords;
+           ((IntArray) other).actualSizeInWords = tmp2;
+       } else {
+           int[] tmp = other.getWords();
+           int tmp2 = other.sizeInWords();
+
+           other.clear();
+           other.push_back(this.getWords(), 0, this.sizeInWords());
+
+           this.clear();
+           this.push_back(tmp, 0, tmp2);
+       }
+    }
     
     /**
-     * For internal use.
-     *
+     * Resizes the buffer if the number of words to add exceeds the buffer capacity.
+     * @param number the number of words to add
+     */
+    private void resizeBuffer(int number) {
+        int size = newSizeInWords(number);
+        if (size >= this.buffer.length) {
+            int oldBuffer[] = this.buffer;
+            this.buffer = new int[size];
+            System.arraycopy(oldBuffer, 0, this.buffer, 0, oldBuffer.length);
+        }
+    }
+
+    /**
+     * Returns the resulting buffer size in words given the number of words to add.
      * @param number the number of words to add
      */
     private int newSizeInWords(int number) {

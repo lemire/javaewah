@@ -21,6 +21,38 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
 
+    @Test
+    public void simpleTestWithLongBuffer() {
+        java.nio.LongBuffer buffer = java.nio.LongBuffer.wrap(new long[10]);
+        EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap(buffer);
+
+        int maxPosition = 666;
+        int[] positions = new int[] { 1, maxPosition, 99, 5 };
+        for (int position : positions) {
+            bitmap.set(position);
+        }
+
+        Assert.assertEquals(positions.length, bitmap.cardinality());
+
+        int[] sortedPositions = positions.clone();
+        Arrays.sort(sortedPositions);
+        Assert.assertArrayEquals(sortedPositions, bitmap.toArray());
+
+        bitmap.not();
+        Assert.assertEquals(maxPosition+1-positions.length, bitmap.cardinality());
+
+        for (int i = 0; i <= maxPosition; i++) {
+            bitmap.set(i);
+        }
+        Assert.assertEquals(maxPosition + 1, bitmap.cardinality());
+
+        bitmap.clear();
+        Assert.assertEquals(0, bitmap.cardinality());
+
+        bitmap.swap(EWAHCompressedBitmap.bitmapOf(1));
+        Assert.assertEquals(1, bitmap.cardinality());
+    }
+
 	@Test
 	public void andCompressedSize() {
 		EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
@@ -105,7 +137,7 @@ public class EWAHCompressedBitmapTest {
 	}
 	
 	@Test
-	public void testBug090() {
+	public void testBug090() throws Exception {
 	    EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
 	    bm.setSizeInBits(8, false); // Create a bitmap with no bit set
 
@@ -760,7 +792,7 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
-    public void testAstesana() {
+    public void testAstesana() throws Exception {
     	for(int k = 5; k < 256; ++k) {
 			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
 			bm.set(1);
@@ -1094,7 +1126,7 @@ public class EWAHCompressedBitmapTest {
      * Test inspired by William Habermaas.
      */
     @Test
-    public void habermaasTest() {
+    public void habermaasTest() throws Exception {
         System.out.println("testing habermaasTest");
         BitSet bitsetaa = new BitSet();
         EWAHCompressedBitmap aa = new EWAHCompressedBitmap();
@@ -1413,7 +1445,7 @@ public class EWAHCompressedBitmapTest {
      * Test massive and not.
      */
     @Test
-    public void testMassiveAndNot() {
+    public void testMassiveAndNot() throws Exception {
         System.out.println("testing massive and not");
         final int N = 1024;
         EWAHCompressedBitmap[] ewah = new EWAHCompressedBitmap[N];
@@ -1689,7 +1721,7 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCode() throws Exception {
         System.out.println("testing hashCode");
         EWAHCompressedBitmap ewcb = EWAHCompressedBitmap.bitmapOf(50,
                 70).and(EWAHCompressedBitmap.bitmapOf(50, 1000));
@@ -1827,7 +1859,7 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
-    public void TestCloneEwahCompressedBitArray() {
+    public void TestCloneEwahCompressedBitArray() throws Exception {
         System.out.println("testing EWAH clone");
         EWAHCompressedBitmap a = new EWAHCompressedBitmap();
         a.set(410018);
