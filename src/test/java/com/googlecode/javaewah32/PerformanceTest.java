@@ -11,6 +11,7 @@ import com.carrotsearch.junitbenchmarks.IResultsConsumer;
 import com.carrotsearch.junitbenchmarks.WriterConsumer;
 import com.carrotsearch.junitbenchmarks.h2.H2Consumer;
 
+import com.googlecode.javaewah.BenchmarkConsumers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,10 +20,10 @@ import org.junit.rules.TestRule;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 
-public class PerformanceTest {
+import static com.googlecode.javaewah.BenchmarkConsumers.CONSOLE_CONSUMER;
+import static com.googlecode.javaewah.BenchmarkConsumers.H2_CONSUMER;
 
-  static final IResultsConsumer CONSOLE_CONSUMER = new WriterConsumer();
-  static final IResultsConsumer H2_CONSUMER = new H2Consumer(new File("PerformanceBenchmarks"));
+public class PerformanceTest {
 
   @Rule
   public TestRule benchmarkRun = new BenchmarkRule(CONSOLE_CONSUMER, H2_CONSUMER);
