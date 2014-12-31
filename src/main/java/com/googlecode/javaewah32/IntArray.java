@@ -13,7 +13,7 @@ import java.util.Arrays;
  *
  * @author Gregory Ssi-Yan-Kai
  */
-class IntArray implements Buffer, Cloneable {
+class IntArray implements Buffer32, Cloneable {
 
     /**
      * Creates a buffer with default size
@@ -161,7 +161,7 @@ class IntArray implements Buffer, Cloneable {
 
 
    @Override
-   public void swap(final Buffer other) {
+   public void swap(final Buffer32 other) {
        if(other instanceof IntArray) {
            int[] tmp = this.buffer;
            this.buffer = ((IntArray) other).buffer;

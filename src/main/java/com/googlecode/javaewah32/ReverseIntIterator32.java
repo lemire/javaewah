@@ -20,7 +20,7 @@ final class ReverseIntIterator32 implements IntIterator {
 
     private final ReverseEWAHIterator32 ewahIter;
     private final int sizeInBits;
-    private final Buffer buffer;
+    private final Buffer32 buffer;
     private int position;
     private boolean runningBit;
     private int runningLength;

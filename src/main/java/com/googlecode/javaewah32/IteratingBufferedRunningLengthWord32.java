@@ -295,7 +295,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
     }
 
     private BufferedRunningLengthWord32 brlw;
-    private final Buffer buffer;
+    private final Buffer32 buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
 

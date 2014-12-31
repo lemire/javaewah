@@ -20,12 +20,18 @@ public final class EWAHIterator32 implements Cloneable {
      *
      * @param buffer      the buffer
      */
-    public EWAHIterator32(final Buffer buffer) {
+    public EWAHIterator32(final Buffer32 buffer) {
         this.rlw = new RunningLengthWord32(buffer, 0);
         this.size = buffer.sizeInWords();
         this.pointer = 0;
     }
 
+    private EWAHIterator32(int pointer, RunningLengthWord32 rlw, int size){
+    	this.pointer = pointer;
+    	this.rlw = rlw;
+    	this.size = size;    	
+    }
+    
     /**
      * Allow expert developers to instantiate an EWAHIterator.
      *
@@ -42,7 +48,7 @@ public final class EWAHIterator32 implements Cloneable {
      *
      * @return the buffer
      */
-    public Buffer buffer() {
+    public Buffer32 buffer() {
         return this.rlw.buffer;
     }
 
@@ -78,27 +84,23 @@ public final class EWAHIterator32 implements Cloneable {
 
     @Override
     public EWAHIterator32 clone() throws CloneNotSupportedException {
-        EWAHIterator32 ans = (EWAHIterator32) super.clone();
-        ans.rlw = this.rlw.clone();
-        ans.size = this.size;
-        ans.pointer = this.pointer;
-        return ans;
+        return new EWAHIterator32(pointer,rlw.clone(),size);
     }
 
     /**
      * The pointer represent the location of the current running length word
      * in the array of words (embedded in the rlw attribute).
      */
-    int pointer;
+    private int pointer;
 
     /**
      * The current running length word.
      */
-    RunningLengthWord32 rlw;
+    final RunningLengthWord32 rlw;
 
     /**
      * The size in words.
      */
-    int size;
+    private final int size;
 
 }

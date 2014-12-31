@@ -20,7 +20,7 @@ final class ChunkIteratorImpl32 implements ChunkIterator {
 
     private final EWAHIterator32 ewahIter;
     private final int sizeInBits;
-    private final Buffer buffer;
+    private final Buffer32 buffer;
     private int position;
     private boolean runningBit;
     private int runningLength;

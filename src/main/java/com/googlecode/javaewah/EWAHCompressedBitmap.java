@@ -9,6 +9,7 @@ import com.googlecode.javaewah.symmetric.RunningBitmapMerge;
 import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
 
 import java.io.*;
+import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -133,11 +134,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     }
 
     /**
-     * Creates a bitmap with the specified java.nio.LongBuffer
+     * Creates a bitmap with the specified java.nio.LongBuffer backend.
+     * This might be useful for implementing memory-mapped bitmaps.
+     * 
      * @param buffer data source
      */
-    public EWAHCompressedBitmap(java.nio.LongBuffer buffer) {
-        this(new LongBuffer(buffer));
+    public EWAHCompressedBitmap(LongBuffer buffer) {
+        this(new LongBufferWrapper(buffer));
     }
 
     private EWAHCompressedBitmap(Buffer buffer) {

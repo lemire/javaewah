@@ -11,7 +11,7 @@ package com.googlecode.javaewah32;
  *
  * @author Gregory Ssi-Yan-Kai
  */
-interface Buffer {
+interface Buffer32 {
     /**
      * Returns the actual size in words
      */
@@ -152,12 +152,12 @@ interface Buffer {
     /**
      * Creates and returns a copy of the buffer
      */
-    Buffer clone() throws CloneNotSupportedException;
+    Buffer32 clone() throws CloneNotSupportedException;
 
     /**
      * Swap the content of the buffer with another.
      *
      * @param other buffer to swap with
      */
-    void swap(Buffer other);
+    void swap(Buffer32 other);
 }

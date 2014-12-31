@@ -5,7 +5,7 @@ package com.googlecode.javaewah;
  * Licensed under the Apache License, Version 2.0.
  */
 
-import java.util.Arrays;
+import java.nio.LongBuffer;
 
 /**
  * java.nio.LongBuffer wrapper.
@@ -13,9 +13,9 @@ import java.util.Arrays;
  *
  * @author Gregory Ssi-Yan-Kai
  */
-final class LongBuffer implements Buffer {
+final class LongBufferWrapper implements Buffer {
 
-    public LongBuffer(java.nio.LongBuffer buffer) {
+    public LongBufferWrapper(LongBuffer buffer) {
         this.buffer = buffer;
     }
 
@@ -136,7 +136,7 @@ final class LongBuffer implements Buffer {
     }
 
     @Override
-    public LongBuffer clone() throws CloneNotSupportedException {
+    public LongBufferWrapper clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
 
@@ -160,6 +160,6 @@ final class LongBuffer implements Buffer {
     /**
      * The buffer
      */
-    private final java.nio.LongBuffer buffer;
+    private final LongBuffer buffer;
     
 }

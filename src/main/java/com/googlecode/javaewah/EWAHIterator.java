@@ -25,6 +25,12 @@ public final class EWAHIterator implements Cloneable {
         this.pointer = 0;
     }
 
+    private EWAHIterator(int pointer, RunningLengthWord rlw, int size){
+    	this.pointer = pointer;
+    	this.rlw = rlw;
+    	this.size = size;    	
+    }
+
     /**
      * Allow expert developers to instantiate an EWAHIterator.
      *
@@ -76,27 +82,23 @@ public final class EWAHIterator implements Cloneable {
 
     @Override
     public EWAHIterator clone() throws CloneNotSupportedException {
-        EWAHIterator ans = (EWAHIterator) super.clone();
-        ans.rlw = this.rlw.clone();
-        ans.size = this.size;
-        ans.pointer = this.pointer;
-        return ans;
+        return new EWAHIterator(pointer,rlw.clone(),size);
     }
 
     /**
      * The pointer represent the location of the current running length word
      * in the array of words (embedded in the rlw attribute).
      */
-    protected int pointer;
+    private int pointer;
 
     /**
      * The current running length word.
      */
-    protected RunningLengthWord rlw;
+    final RunningLengthWord rlw;
 
     /**
      * The size in words.
      */
-    protected int size;
+    private final int size;
 
 }

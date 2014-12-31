@@ -5,15 +5,17 @@ package com.googlecode.javaewah32;
  * Licensed under the Apache License, Version 2.0.
  */
 
+import java.nio.IntBuffer;
+
 /**
  * java.nio.IntBuffer wrapper.
  * Users should not be concerned by this class.
  *
  * @author Gregory Ssi-Yan-Kai
  */
-final class IntBuffer implements Buffer {
+final class IntBufferWrapper implements Buffer32 {
 
-    public IntBuffer(java.nio.IntBuffer buffer) {
+    public IntBufferWrapper(IntBuffer buffer) {
         this.buffer = buffer;
     }
 
@@ -134,12 +136,12 @@ final class IntBuffer implements Buffer {
     }
 
     @Override
-    public IntBuffer clone() throws CloneNotSupportedException {
+    public IntBufferWrapper clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
 
     @Override
-    public void swap(final Buffer other) {
+    public void swap(final Buffer32 other) {
         int[] tmp = this.getWords();
         int tmp2 = this.actualSizeInWords;
 
@@ -158,6 +160,6 @@ final class IntBuffer implements Buffer {
     /**
      * The buffer
      */
-    private final java.nio.IntBuffer buffer;
+    private final IntBuffer buffer;
     
 }

@@ -12,6 +12,7 @@ import com.googlecode.javaewah32.symmetric.RunningBitmapMerge32;
 import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
 
 import java.io.*;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -109,15 +110,16 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
 
     /**
-     * Creates a bitmap with the specified java.nio.LongBuffer
+     * Creates a bitmap with the specified java.nio.LongBuffer backend.
+     * This might be useful for implementing memory-mapped bitmaps.
      *
      * @param buffer data source
      */
-    public EWAHCompressedBitmap32(java.nio.IntBuffer buffer) {
-        this(new IntBuffer(buffer));
+    public EWAHCompressedBitmap32(IntBuffer buffer) {
+        this(new IntBufferWrapper(buffer));
     }
 
-    private EWAHCompressedBitmap32(Buffer buffer) {
+    private EWAHCompressedBitmap32(Buffer32 buffer) {
         this.buffer = buffer;
         this.rlw = new RunningLengthWord32(this.buffer, 0);
     }
@@ -2018,7 +2020,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    final Buffer buffer;
+    final Buffer32 buffer;
 
     /**
      * The current (last) running length word.

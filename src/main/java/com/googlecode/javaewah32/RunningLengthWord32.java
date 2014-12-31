@@ -20,7 +20,7 @@ public final class RunningLengthWord32 implements Cloneable {
      * @param p position in the array where the running length word is
      *          located.
      */
-    RunningLengthWord32(final Buffer buffer, final int p) {
+    RunningLengthWord32(final Buffer32 buffer, final int p) {
         this.buffer = buffer;
         this.position = p;
     }
@@ -34,7 +34,7 @@ public final class RunningLengthWord32 implements Cloneable {
         return getNumberOfLiteralWords(this.buffer, this.position);
     }
 
-    static int getNumberOfLiteralWords(final Buffer buffer, final int position) {
+    static int getNumberOfLiteralWords(final Buffer32 buffer, final int position) {
         return (buffer.getWord(position) >>> (1 + RUNNING_LENGTH_BITS));
     }
 
@@ -47,7 +47,7 @@ public final class RunningLengthWord32 implements Cloneable {
         return getRunningBit(this.buffer, this.position);
     }
 
-    static boolean getRunningBit(final Buffer buffer, final int position) {
+    static boolean getRunningBit(final Buffer32 buffer, final int position) {
         return (buffer.getWord(position) & 1) != 0;
     }
 
@@ -60,7 +60,7 @@ public final class RunningLengthWord32 implements Cloneable {
         return getRunningLength(this.buffer, this.position);
     }
 
-    static int getRunningLength(final Buffer buffer, final int position) {
+    static int getRunningLength(final Buffer32 buffer, final int position) {
         return (buffer.getWord(position) >>> 1) & LARGEST_RUNNING_LENGTH_COUNT;
     }
 
@@ -73,7 +73,7 @@ public final class RunningLengthWord32 implements Cloneable {
         setNumberOfLiteralWords(this.buffer, this.position, number);
     }
 
-    static void setNumberOfLiteralWords(final Buffer buffer, final int position, final int number) {
+    static void setNumberOfLiteralWords(final Buffer32 buffer, final int position, final int number) {
         buffer.orWord(position, NOT_RUNNING_LENGTH_PLUS_RUNNING_BIT);
         buffer.andWord(position, (number << (RUNNING_LENGTH_BITS + 1)) | RUNNING_LENGTH_PLUS_RUNNING_BIT);
     }
@@ -87,7 +87,7 @@ public final class RunningLengthWord32 implements Cloneable {
         setRunningBit(this.buffer, this.position, b);
     }
 
-    static void setRunningBit(final Buffer buffer, final int position, final boolean b) {
+    static void setRunningBit(final Buffer32 buffer, final int position, final boolean b) {
         if (b)
             buffer.orWord(position, 1);
         else
@@ -103,7 +103,7 @@ public final class RunningLengthWord32 implements Cloneable {
         setRunningLength(this.buffer, this.position, number);
     }
 
-    static void setRunningLength(final Buffer buffer, final int position, final int number) {
+    static void setRunningLength(final Buffer32 buffer, final int position, final int number) {
         buffer.orWord(position, SHIFTED_LARGEST_RUNNING_LENGTH_COUNT);
         buffer.andWord(position, (number << 1) | NOT_SHIFTED_LARGEST_RUNNING_LENGTH_COUNT);
     }
@@ -136,7 +136,7 @@ public final class RunningLengthWord32 implements Cloneable {
     /**
      * The array of words.
      */
-    final Buffer buffer;
+    final Buffer32 buffer;
 
     /**
      * The position in array.
