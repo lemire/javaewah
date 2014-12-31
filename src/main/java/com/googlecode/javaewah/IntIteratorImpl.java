@@ -18,7 +18,7 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 final class IntIteratorImpl implements IntIterator {
 
     private final EWAHIterator ewahIter;
-    private final LongArray buffer;
+    private final Buffer buffer;
     private int position;
     private int runningLength;
     private long word;

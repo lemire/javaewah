@@ -132,7 +132,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         this(new LongArray(bufferSize));
     }
 
-    private EWAHCompressedBitmap(LongArray buffer) {
+    private EWAHCompressedBitmap(Buffer buffer) {
         this.buffer = buffer;
         this.rlw = new RunningLengthWord(this.buffer, 0);
     }
@@ -1986,7 +1986,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     /**
      * The buffer
      */
-    final LongArray buffer;
+    final Buffer buffer;
 
     /**
      * The current (last) running length word.

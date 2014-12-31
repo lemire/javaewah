@@ -280,7 +280,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
     }
 
     private BufferedRunningLengthWord brlw;
-    private final LongArray buffer;
+    private final Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator iterator;
 }

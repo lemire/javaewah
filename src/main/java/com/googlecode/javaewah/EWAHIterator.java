@@ -19,7 +19,7 @@ public final class EWAHIterator implements Cloneable {
      *
      * @param buffer      the buffer
      */
-    public EWAHIterator(final LongArray buffer) {
+    public EWAHIterator(final Buffer buffer) {
         this.rlw = new RunningLengthWord(buffer, 0);
         this.size = buffer.sizeInWords();
         this.pointer = 0;
@@ -40,7 +40,7 @@ public final class EWAHIterator implements Cloneable {
      *
      * @return the buffer
      */
-    public LongArray buffer() {
+    public Buffer buffer() {
         return this.rlw.buffer;
     }
 
