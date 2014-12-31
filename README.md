@@ -84,6 +84,11 @@ Usage
 
 See example.java.
 
+
+Please note that there are more examples in the "examples" folder (e.g.,
+for memory-file mapping).
+
+
 Maven central repository
 ------------------------
 

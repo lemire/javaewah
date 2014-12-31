@@ -78,8 +78,7 @@ public final class RunningLengthWord implements Cloneable {
         buffer.andWord(position, (number << (RUNNING_LENGTH_BITS + 1)) | RUNNING_LENGTH_PLUS_RUNNING_BIT);
     }
 
-    /**@Override
-	public 
+    /**
      * Sets the running bit.
      *
      * @param b the new running bit
