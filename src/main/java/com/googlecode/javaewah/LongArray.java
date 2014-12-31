@@ -170,14 +170,14 @@ final class LongArray implements Buffer, Cloneable {
             this.actualSizeInWords = ((LongArray)other).actualSizeInWords;
             ((LongArray)other).actualSizeInWords = tmp2;
         } else {
-            long[] tmp = this.getWords();
-            int tmp2 = this.actualSizeInWords;
-
-            this.clear();
-            this.push_back(other.getWords(), 0, other.sizeInWords());
+            long[] tmp = other.getWords();
+            int tmp2 = other.sizeInWords();
 
             other.clear();
-            other.push_back(tmp, 0, tmp2);
+            other.push_back(this.getWords(), 0, this.sizeInWords());
+
+            this.clear();
+            this.push_back(tmp, 0, tmp2);
         }
     }
 

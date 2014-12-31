@@ -290,14 +290,12 @@ public final class IteratingBufferedRunningLengthWord32 implements
         IteratingBufferedRunningLengthWord32 answer = (IteratingBufferedRunningLengthWord32) super
                 .clone();
         answer.brlw = this.brlw.clone();
-        answer.buffer = this.buffer;
         answer.iterator = this.iterator.clone();
-        answer.literalWordStartPosition = this.literalWordStartPosition;
         return answer;
     }
 
     private BufferedRunningLengthWord32 brlw;
-    private IntArray buffer;
+    private final Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
 

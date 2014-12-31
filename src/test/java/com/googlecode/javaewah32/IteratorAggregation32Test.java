@@ -168,7 +168,7 @@ public class IteratorAggregation32Test {
     *
     */
    @Test
-   public void testMat() {
+   public void testMat() throws Exception {
        System.out.println("testMat ");
        EWAHCompressedBitmap32 b = EWAHCompressedBitmap32.bitmapOf(0,3);
        EWAHCompressedBitmap32 n = IteratorUtil32.materialize(b.getIteratingRLW());
@@ -178,7 +178,7 @@ public class IteratorAggregation32Test {
        assertTrue(n.equals(b));
        EWAHCompressedBitmap32 neg = IteratorUtil32.materialize(IteratorAggregation32.not(b.getIteratingRLW()));
        neg.setSizeInBitsWithinLastWord(b.sizeInBits());
-       EWAHCompressedBitmap32 x= ((EWAHCompressedBitmap32) b.clone());
+       EWAHCompressedBitmap32 x= b.clone();
        x.not();
        assertTrue(x.equals(neg));
        for(int k = 145; k<1024; ++k)
@@ -190,7 +190,7 @@ public class IteratorAggregation32Test {
        assertTrue(n.equals(b));
        neg = IteratorUtil32.materialize(IteratorAggregation32.not(b.getIteratingRLW()));
        neg.setSizeInBitsWithinLastWord(b.sizeInBits());
-       x= ((EWAHCompressedBitmap32) b.clone());
+       x= b.clone();
        x.not();
        assertTrue(x.equals(neg));
    }

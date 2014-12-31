@@ -19,7 +19,7 @@ final class ClearIntIterator32 implements IntIterator {
 
     private final EWAHIterator32 ewahIter;
     private final int sizeInBits;
-    private final IntArray buffer;
+    private final Buffer buffer;
     private int position;
     private int runningLength;
     private int word;
