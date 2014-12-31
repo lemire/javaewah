@@ -12,6 +12,7 @@ import com.googlecode.javaewah32.symmetric.RunningBitmapMerge32;
 import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -109,9 +110,28 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         this(new IntArray(bufferSize));
     }
 
+
     /**
-     * Creates a bitmap with the specified java.nio.LongBuffer backend.
+     * Creates a bitmap with the specified ByteBuffer backend. It assumes
+     * that a bitmap was serialized at this location. It is effectively "deserialized"
+     * though the actual content is not copied.
      * This might be useful for implementing memory-mapped bitmaps.
+     * 
+     * @param buffer data source
+     */
+    public EWAHCompressedBitmap32(ByteBuffer buffer) {
+    	IntBuffer ib = buffer.asIntBuffer();
+      this.sizeInBits = ib.get(0);
+      int sizeInWords = ib.get(1);
+      int rlwposition = ib.get(2+sizeInWords);
+      ib.position(2);
+      this.buffer = new IntBufferWrapper(ib.slice(),sizeInWords);
+      this.rlw = new RunningLengthWord32(this.buffer, rlwposition);
+    }
+    
+    /**
+     * Creates a bitmap with the specified java.nio.IntBuffer backend.
+     * The content of the IntBuffer is discarded.
      *
      * @param buffer data source
      */
@@ -617,7 +637,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
         int sizeInWords = in.readInt();
-        this.buffer.clear();
+        this.buffer.clear(); //TODO: this creates a buffer with 1 word in it already!
         this.buffer.ensureCapacity(sizeInWords);
         for(int i = 0; i < sizeInWords; ++i) {
             this.buffer.push_back(in.readInt());

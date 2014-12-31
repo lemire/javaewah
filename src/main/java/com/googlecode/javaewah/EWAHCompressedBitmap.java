@@ -9,6 +9,8 @@ import com.googlecode.javaewah.symmetric.RunningBitmapMerge;
 import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -132,11 +134,29 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public EWAHCompressedBitmap(int bufferSize) {
         this(new LongArray(bufferSize));
     }
-
     /**
-     * Creates a bitmap with the specified java.nio.LongBuffer backend.
+     * Creates a bitmap with the specified ByteBuffer backend. It assumes
+     * that a bitmap was serialized at this location. It is effectively "deserialized"
+     * though the actual content is not copied.
      * This might be useful for implementing memory-mapped bitmaps.
      * 
+     * @param buffer data source
+     */
+    public EWAHCompressedBitmap(ByteBuffer buffer) {
+    	IntBuffer ib = buffer.asIntBuffer();
+      this.sizeInBits = ib.get(0);
+      int sizeInWords = ib.get(1);
+      int rlwposition = ib.get(2+sizeInWords*2);
+      LongBuffer lb = buffer.asLongBuffer();
+      lb.position(1);
+      this.buffer = new LongBufferWrapper(lb.slice(),sizeInWords);
+      this.rlw = new RunningLengthWord(this.buffer, rlwposition);
+    }
+    
+    /**
+     * Creates a bitmap with the specified java.nio.LongBuffer backend.
+     * The content of the LongBuffer is discarded.
+     *  
      * @param buffer data source
      */
     public EWAHCompressedBitmap(LongBuffer buffer) {
@@ -605,7 +625,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public void deserialize(DataInput in) throws IOException {
         this.sizeInBits = in.readInt();
         int sizeInWords = in.readInt();
-        this.buffer.clear();
+        this.buffer.clear();//TODO: this creates a buffer with 1 word in it already!
         this.buffer.ensureCapacity(sizeInWords);
         for(int i = 0; i < sizeInWords; ++i) {
             this.buffer.push_back(in.readLong());

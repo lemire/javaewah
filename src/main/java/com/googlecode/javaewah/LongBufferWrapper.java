@@ -19,6 +19,11 @@ final class LongBufferWrapper implements Buffer {
         this.buffer = buffer;
     }
 
+    public LongBufferWrapper(LongBuffer slice, int sizeInWords) {
+    	  this.buffer = slice;
+    	  this.actualSizeInWords = sizeInWords;
+		}
+    
     @Override
     public int sizeInWords() {
         return this.actualSizeInWords;

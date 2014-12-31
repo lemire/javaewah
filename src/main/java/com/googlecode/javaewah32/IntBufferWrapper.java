@@ -19,7 +19,13 @@ final class IntBufferWrapper implements Buffer32 {
         this.buffer = buffer;
     }
 
-    @Override
+    public IntBufferWrapper(IntBuffer slice, int sizeInWords) {
+    	  this.buffer = slice;
+    	  this.actualSizeInWords = sizeInWords;
+		}
+
+
+		@Override
     public int sizeInWords() {
         return this.actualSizeInWords;
     }
