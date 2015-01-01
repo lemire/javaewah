@@ -1,18 +1,16 @@
 package com.googlecode.javaewah;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
+import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
+import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
-import com.carrotsearch.junitbenchmarks.BenchmarkRule;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 import static com.googlecode.javaewah.BenchmarkConsumers.CONSOLE_CONSUMER;
 import static com.googlecode.javaewah.BenchmarkConsumers.H2_CONSUMER;
@@ -40,7 +38,7 @@ public class PerformanceTest {
         }
     }
 
-    
+
     @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
     @Test
     public void toarray() throws Exception {
@@ -57,7 +55,7 @@ public class PerformanceTest {
         }
     }
 
-    
+
     @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
     @Test
     public void cardinality() throws Exception {
@@ -86,12 +84,17 @@ public class PerformanceTest {
             ewahbuf[k] = convertToMappedBitmap(ewah[k]);
         }
     }
-    
+
     public static EWAHCompressedBitmap convertToMappedBitmap(EWAHCompressedBitmap orig) throws IOException {
-  		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-  		orig.serialize(new DataOutputStream(bos));
-  		ByteBuffer bb = ByteBuffer.wrap(bos.toByteArray());
-  		return new EWAHCompressedBitmap(bb);
+        File tmpfile = File.createTempFile("roaring", ".bin");
+        tmpfile.deleteOnExit();
+        final FileOutputStream fos = new FileOutputStream(tmpfile);
+        orig.serialize(new DataOutputStream(fos));
+        long totalcount = fos.getChannel().position();
+        fos.close();
+        RandomAccessFile memoryMappedFile = new RandomAccessFile(tmpfile, "r");
+        ByteBuffer bb = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, totalcount);
+        return new EWAHCompressedBitmap(bb);
     }
 
     static int N = 1000;
