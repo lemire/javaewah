@@ -33,11 +33,11 @@ public interface BitmapStorage {
     /**
      * if you have several literal words to copy over, this might be faster.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    void addStreamOfLiteralWords(final long[] data, final int start, final int number);
+    void addStreamOfLiteralWords(final Buffer buffer, final int start, final int number);
 
     /**
      * For experts: You want to add many zeroes or ones? This is the method
@@ -51,11 +51,11 @@ public interface BitmapStorage {
     /**
      * Like "addStreamOfLiteralWords" but negates the words being added.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    void addStreamOfNegatedLiteralWords(long[] data, final int start, final int number);
+    void addStreamOfNegatedLiteralWords(final Buffer buffer, final int start, final int number);
 
     /**
      * Empties the container.

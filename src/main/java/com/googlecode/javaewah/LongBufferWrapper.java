@@ -47,15 +47,6 @@ final class LongBufferWrapper implements Buffer {
     }
 
     @Override
-    public long[] getWords() {
-        // TODO: This is likely to be a performance bottleneck
-        long[] words = new long[this.actualSizeInWords];
-        this.buffer.rewind(); // This code may not be thread safe
-        this.buffer.get(words, 0, this.actualSizeInWords);
-        return words;
-    }
-
-    @Override
     public void clear() {
         this.actualSizeInWords = 1;
         setWord(0, 0);
@@ -81,16 +72,16 @@ final class LongBufferWrapper implements Buffer {
     }
 
     @Override
-    public void push_back(long[] data, int start, int number) {
+    public void push_back(Buffer buffer, int start, int number) {
         for(int i = 0; i < number; ++i) {
-            push_back(data[start + i]);
+            push_back(buffer.getWord(start + i));
         }
     }
 
     @Override
-    public void negative_push_back(long[] data, int start, int number) {
+    public void negative_push_back(Buffer buffer, int start, int number) {
         for(int i = 0; i < number; ++i) {
-            push_back(~data[start + i]);
+            push_back(~buffer.getWord(start + i));
         }
     }
 
@@ -149,22 +140,17 @@ final class LongBufferWrapper implements Buffer {
 
     @Override
     public void swap(final Buffer other) {
-    	if(other instanceof LongBufferWrapper) {// optimized version
-    		LongBufferWrapper o = (LongBufferWrapper) other;
-    		LongBuffer tmp = this.buffer;
-        int tmp2 = this.actualSizeInWords;
-        this.actualSizeInWords = o.actualSizeInWords;
-        this.buffer = o.buffer;
-        o.actualSizeInWords = tmp2;
-        o.buffer = tmp;
-    	} else {
-        long[] tmp = this.getWords();
-        int tmp2 = this.actualSizeInWords;
-        this.clear();
-        this.push_back(other.getWords(), 0, other.sizeInWords());
-        other.clear();
-        other.push_back(tmp, 0, tmp2);
-    	}
+        if (other instanceof LongBufferWrapper) {// optimized version
+            LongBufferWrapper o = (LongBufferWrapper) other;
+            LongBuffer tmp = this.buffer;
+            int tmp2 = this.actualSizeInWords;
+            this.actualSizeInWords = o.actualSizeInWords;
+            this.buffer = o.buffer;
+            o.actualSizeInWords = tmp2;
+            o.buffer = tmp;
+        } else {
+            other.swap(this);
+        }
     }
     
     /**

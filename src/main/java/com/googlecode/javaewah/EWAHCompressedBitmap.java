@@ -286,15 +286,15 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
     /**
      * if you have several literal words to copy over, this might be faster.
-     * 
+     *
      * Since this modifies the bitmap, this method is not thread-safe.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
     @Override
-    public void addStreamOfLiteralWords(final long[] data, final int start,
+    public void addStreamOfLiteralWords(final Buffer buffer, final int start,
                                         final int number) {
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
@@ -304,7 +304,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     : RunningLengthWord.LARGEST_LITERAL_COUNT - numberOfLiteralWords;
             this.rlw.setNumberOfLiteralWords(numberOfLiteralWords+ whatWeCanAdd);
             leftOverNumber -= whatWeCanAdd;
-            this.buffer.push_back(data, start, whatWeCanAdd);
+            this.buffer.push_back(buffer, start, whatWeCanAdd);
             this.sizeInBits += whatWeCanAdd * WORD_IN_BITS;
             if (leftOverNumber > 0) {
                 this.buffer.push_back(0);
@@ -332,15 +332,15 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
 
     /**
      * Same as addStreamOfLiteralWords, but the words are negated.
-     * 
+     *
      * Since this modifies the bitmap, this method is not thread-safe.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
     @Override
-    public void addStreamOfNegatedLiteralWords(final long[] data,
+    public void addStreamOfNegatedLiteralWords(final Buffer buffer,
                                                final int start, final int number) {
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
@@ -351,7 +351,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     - numberOfLiteralWords;
             this.rlw.setNumberOfLiteralWords(numberOfLiteralWords + whatWeCanAdd);
             leftOverNumber -= whatWeCanAdd;
-            this.buffer.negative_push_back(data, start, whatWeCanAdd);
+            this.buffer.negative_push_back(buffer, start, whatWeCanAdd);
             this.sizeInBits += whatWeCanAdd * WORD_IN_BITS;
             if (leftOverNumber > 0) {
                 this.buffer.push_back(0);

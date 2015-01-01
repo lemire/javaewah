@@ -40,7 +40,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
      * throws a NonEmptyException exception when number is greater than 0
      */
     @Override
-    public void addStreamOfLiteralWords(int[] data, int start, int number) {
+    public void addStreamOfLiteralWords(Buffer32 buffer, int start, int number) {
         if (number > 0) {
             throw nonEmptyException;
         }
@@ -60,7 +60,7 @@ public class NonEmptyVirtualStorage32 implements BitmapStorage32 {
      * throws a NonEmptyException exception when number is greater than 0
      */
     @Override
-    public void addStreamOfNegatedLiteralWords(int[] data, int start,
+    public void addStreamOfNegatedLiteralWords(Buffer32 buffer, int start,
                                                int number) {
         if (number > 0) {
             throw nonEmptyException;

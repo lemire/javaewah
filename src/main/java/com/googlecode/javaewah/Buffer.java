@@ -37,12 +37,6 @@ interface Buffer {
     long getLastWord();
 
     /**
-     * Returns the words contained in the buffer
-     * @return the long array
-     */
-    long[] getWords();
-
-    /**
      * Resets the buffer
      * The buffer is not fully cleared and any new set operations should
      * overwrite stale data
@@ -77,21 +71,21 @@ interface Buffer {
     void push_back(long word);
 
     /**
-     * Appends the specified array of words to the end of the buffer.
-     * @param data   the array of words
+     * Appends the specified buffer words to the end of the buffer.
+     * @param buffer the buffer
      * @param start  the position of the first word to add
      * @param number the number of words to add
      */
-    void push_back(long[] data, int start, int number);
+    void push_back(Buffer buffer, int start, int number);
 
     /**
      * Same as push_back, but the words are negated.
      *
-     * @param data   the array of words
+     * @param buffer the buffer
      * @param start  the position of the first word to add
      * @param number the number of words to add
      */
-    void negative_push_back(long[] data, int start, int number);
+    void negative_push_back(Buffer buffer, int start, int number);
 
     /**
      * Removes the last word from the buffer

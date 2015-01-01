@@ -522,7 +522,10 @@ public class EWAHCompressedBitmap32Test {
         bitmap2.setSizeInBits(WORD_IN_BITS * 2, true);
 
         Assert.assertEquals(bitmap1, bitmap2);
-        Assert.assertArrayEquals(bitmap1.buffer.getWords(), bitmap2.buffer.getWords());
+        Assert.assertEquals(bitmap1.buffer.sizeInWords(), bitmap2.buffer.sizeInWords());
+        for (int i = 0; i < bitmap1.buffer.sizeInWords(); i++) {
+            Assert.assertEquals(bitmap1.buffer.getWord(i), bitmap2.buffer.getWord(i));
+        }
     }
 
     @Test
@@ -541,7 +544,10 @@ public class EWAHCompressedBitmap32Test {
         bitmap2.setSizeInBits(WORD_IN_BITS * 3 / 2, true);
 
         Assert.assertEquals(bitmap1, bitmap2);
-        Assert.assertArrayEquals(bitmap1.buffer.getWords(), bitmap2.buffer.getWords());
+        Assert.assertEquals(bitmap1.buffer.sizeInWords(), bitmap2.buffer.sizeInWords());
+        for (int i = 0; i < bitmap1.buffer.sizeInWords(); i++) {
+            Assert.assertEquals(bitmap1.buffer.getWord(i), bitmap2.buffer.getWord(i));
+        }
     }
 
     @Test
