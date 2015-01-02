@@ -237,6 +237,9 @@ http://lemire.me/docs/javaewah/
 Further reading
 ---------------
 
+Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes, Data & Knowledge Engineering 69 (1), 2010. 
+http://arxiv.org/abs/0901.3751
+
 Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience, 2014.
 http://arxiv.org/abs/1402.4466
 
