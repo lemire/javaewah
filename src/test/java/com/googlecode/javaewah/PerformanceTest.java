@@ -20,7 +20,7 @@ public class PerformanceTest {
     @Rule
     public TestRule benchmarkRun = new BenchmarkRule(CONSOLE_CONSUMER, H2_CONSUMER);
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void bigunion() throws Exception {
         for (int k = 1; k < N; k += 10) {
@@ -29,7 +29,7 @@ public class PerformanceTest {
         }
     }
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void bigunionbuf() throws Exception {
         for (int k = 1; k < N; k += 10) {
@@ -39,7 +39,7 @@ public class PerformanceTest {
     }
 
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void toarray() throws Exception {
         for (int k = 1; k < N * 100; ++k) {
@@ -47,7 +47,7 @@ public class PerformanceTest {
         }
     }
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void toarraybuf() throws Exception {
         for (int k = 1; k < N * 100; ++k) {
@@ -56,7 +56,7 @@ public class PerformanceTest {
     }
 
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void cardinality() throws Exception {
         for (int k = 1; k < N * 100; ++k) {
@@ -64,7 +64,7 @@ public class PerformanceTest {
         }
     }
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void cardinalitybuf() throws Exception {
         for (int k = 1; k < N * 100; ++k) {
@@ -73,7 +73,7 @@ public class PerformanceTest {
     }
 
 
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void createBitmapOrdered() {
     	long besttime = Long.MAX_VALUE;
@@ -86,7 +86,7 @@ public class PerformanceTest {
     	if(besttime > aft - bef) besttime = aft-bef;
     }
     
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @BenchmarkOptions(benchmarkRounds = 3, warmupRounds = 3)
     @Test
     public void createBitmapUnordered() {
     	long besttime = Long.MAX_VALUE;
