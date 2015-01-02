@@ -1184,7 +1184,27 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
        }
         return -1;
     }
-        
+
+    /**
+     * Set the bit at position i to false.
+     * 
+     * Though you can clear the bits in any order (e.g., clear(100), clear(10), clear(1),
+     * you will typically get better performance if you clear the bits in increasing order (e.g., clear(1), clear(10), clear(100)).
+     * 
+     * Clearing a bit that is larger than the biggest bit is a constant time operation.
+     * Clearing a bit that is smaller than the biggest bit can require time proportional
+     * to the compressed size of the bitmap, as the bitmap may need to be rewritten.
+     * 
+     * Since this modifies the bitmap, this method is not thread-safe.
+     *
+     * @param i the index
+     * @return true if the value was unset
+     * @throws IndexOutOfBoundsException if i is negative or greater than Integer.MAX_VALUE - 64
+     */
+    public boolean clear(final int i) {
+    	return set(i, false);
+    }
+
     /**
      * Set the bit at position i to true.
      * 
@@ -1203,15 +1223,25 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * @throws IndexOutOfBoundsException if i is negative or greater than Integer.MAX_VALUE - 64
      */
     public boolean set(final int i) {
+        return set(i, true);
+    }
+    
+    /**
+     * For internal use.
+     *
+     * @param i     the index
+     * @param value the value 
+     */
+    private boolean set(int i, boolean value) {    	
         if ((i > Integer.MAX_VALUE - WORD_IN_BITS) || (i < 0))
             throw new IndexOutOfBoundsException(
-                    "Set values should be between 0 and "
+                    "Position should be between 0 and "
                             + (Integer.MAX_VALUE - WORD_IN_BITS)
             );
         if (i < this.sizeInBits) {
-            locateAndSet(i);
+            locateAndSet(i, value);
         } else {
-            extendAndSet(i);
+            extendAndSet(i, value);
         }
         return true;
     }
@@ -1220,28 +1250,35 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * For internal use.
      *
      * @param i the index
+     * @param value the value
      */
-    private void extendAndSet(int i) {
+    private void extendAndSet(int i, boolean value) {
         final int dist = distanceInWords(i);
         this.sizeInBits = i + 1;
-        if (dist > 0) {
-            if (dist > 1) {
-                fastaddStreamOfEmptyWords(false, dist - 1);
+        if (value) {
+            if (dist > 0) {
+                if (dist > 1) {
+                    fastaddStreamOfEmptyWords(false, dist - 1);
+                }
+                insertLiteralWord(1l << (i % WORD_IN_BITS));
+                return;
             }
-            insertLiteralWord(1l << (i % WORD_IN_BITS));
-            return;
-        }
-        if (this.rlw.getNumberOfLiteralWords() == 0) {
-            this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
-            insertLiteralWord(1l << (i % WORD_IN_BITS));
-            return;
-        }
-        this.buffer.orLastWord(1l << (i % WORD_IN_BITS));
-        if (this.buffer.getLastWord() == ~0l) {
-            this.buffer.removeLastWord();
-            this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
-            // next we add one clean word
-            insertEmptyWord(true);
+            if (this.rlw.getNumberOfLiteralWords() == 0) {
+                this.rlw.setRunningLength(this.rlw.getRunningLength() - 1);
+                insertLiteralWord(1l << (i % WORD_IN_BITS));
+                return;
+            }
+            this.buffer.orLastWord(1l << (i % WORD_IN_BITS));
+            if (this.buffer.getLastWord() == ~0l) {
+                this.buffer.removeLastWord();
+                this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
+                // next we add one clean word
+               insertEmptyWord(true);
+            }
+        } else {
+            if (dist > 0) {
+               fastaddStreamOfEmptyWords(false, dist);
+            }
         }
     }
 
@@ -1249,8 +1286,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      * For internal use.
      *
      * @param i the index
+     * @param value the value
      */
-    private void locateAndSet(int i) {
+    private void locateAndSet(int i, boolean value) {
         int nbits = 0;
         for(int pos = 0; pos < this.buffer.sizeInWords(); ) {
             long rl = RunningLengthWord.getRunningLength(this.buffer, pos);
@@ -1258,13 +1296,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             long lw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, pos);
             long rbits = rl * WORD_IN_BITS;
             if(i < nbits + rbits) {
-                setInRunningLength(i, nbits, pos, rl, rb, lw);
+                setInRunningLength(value, i, nbits, pos, rl, rb, lw);
                 return;
             }
             nbits += rbits;
             long lbits = lw * WORD_IN_BITS;
             if(i < nbits + lbits) {
-                setInLiteralWords(i, nbits, pos, rl, rb, lw);
+                setInLiteralWords(value, i, nbits, pos, rl, rb, lw);
                 return;
             }
             nbits += lbits;
@@ -1272,13 +1310,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
     }
 
-    private void setInRunningLength(int i, int nbits, int pos, long rl, boolean rb, long lw) {
-        if(!rb) {
+    private void setInRunningLength(boolean value, int i, int nbits, int pos, long rl, boolean rb, long lw) {
+        if(value != rb) {
             int wordPosition = (i - nbits) / WORD_IN_BITS + 1;
             int addedWords = (wordPosition==rl) ? 1 : 2;
             this.buffer.expand(pos+1, addedWords);
             long mask = 1l << i % WORD_IN_BITS;
-            this.buffer.setWord(pos+1, mask);
+            this.buffer.setWord(pos+1, value ? mask : ~mask);
             if(this.rlw.position >= pos+1) {
                 this.rlw.position += addedWords;
             }
@@ -1294,24 +1332,29 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
     }
 
-    private void setInLiteralWords(int i, int nbits, int pos, long rl, boolean rb, long lw) {
+    private void setInLiteralWords(boolean value, int i, int nbits, int pos, long rl, boolean rb, long lw) {
         int wordPosition = (i - nbits) / WORD_IN_BITS + 1;
         long mask = 1l << i % WORD_IN_BITS;
-        this.buffer.orWord(pos + wordPosition, mask);
-        if(this.buffer.getWord(pos + wordPosition) == ~0l) {
-            boolean canMergeInCurrentRLW = mergeLiteralWordInCurrentRunningLength(rb, rl, wordPosition);
+        if(value) {
+            this.buffer.orWord(pos + wordPosition, mask);
+        } else {
+            this.buffer.andWord(pos + wordPosition, ~mask);
+        }
+        long emptyWord = value ? ~0l : 0l;
+        if(this.buffer.getWord(pos + wordPosition) == emptyWord) {
+            boolean canMergeInCurrentRLW = mergeLiteralWordInCurrentRunningLength(value, rb, rl, wordPosition);
             boolean canMergeInNextRLW = mergeLiteralWordInNextRunningLength(lw, pos, wordPosition);
             if(canMergeInCurrentRLW && canMergeInNextRLW) {
                 long nextRl = RunningLengthWord.getRunningLength(this.buffer, pos + 2);
                 long nextLw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, pos + 2);
                 this.buffer.collapse(pos,  2);
-                setRLWInfo(pos, true, rl + 1 + nextRl, nextLw);
+                setRLWInfo(pos, value, rl + 1 + nextRl, nextLw);
                 if(this.rlw.position >= pos+2) {
                     this.rlw.position -= 2;
                 }
             } else if(canMergeInCurrentRLW) {
                 this.buffer.collapse(pos + 1, 1);
-                setRLWInfo(pos, true, rl+1, lw-1);
+                setRLWInfo(pos, value, rl+1, lw-1);
                 if(this.rlw.position >= pos+2) {
                     this.rlw.position--;
                 }
@@ -1321,13 +1364,13 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 long nextLw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, nextRLWPos);
                 this.buffer.collapse(pos+wordPosition, 1);
                 setRLWInfo(pos, rb, rl, lw-1);
-                setRLWInfo(pos+wordPosition, true, nextRl+1, nextLw);
+                setRLWInfo(pos+wordPosition, value, nextRl+1, nextLw);
                 if(this.rlw.position >= nextRLWPos) {
                     this.rlw.position -= lw + 1 - wordPosition;
                 }
             } else {
                 setRLWInfo(pos, rb, rl, wordPosition-1);
-                setRLWInfo(pos+wordPosition, true, 1l, lw-wordPosition);
+                setRLWInfo(pos+wordPosition, value, 1l, lw-wordPosition);
                 if(this.rlw.position == pos) {
                     this.rlw.position += wordPosition;
                 }
@@ -1335,8 +1378,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         }
     }
 
-    private boolean mergeLiteralWordInCurrentRunningLength(boolean rb, long rl, int wordPosition) {
-        return (rb || rl==0) && wordPosition==1;
+    private boolean mergeLiteralWordInCurrentRunningLength(boolean value, boolean rb, long rl, int wordPosition) {
+        return (value==rb || rl==0) && wordPosition==1;
     }
 
     private boolean mergeLiteralWordInNextRunningLength(long lw, int pos, int wordPosition) {
