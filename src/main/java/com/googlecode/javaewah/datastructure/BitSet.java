@@ -2,6 +2,8 @@ package com.googlecode.javaewah.datastructure;
 
 import com.googlecode.javaewah.IntIterator;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -19,12 +21,15 @@ import java.util.Iterator;
  * <li>You can compute the cardinality of an intersection and union without writing it out
  * or modifying your BitSets (see methods such as andcardinality).</li>
  * <li>You can recover wasted memory with trim().</li>
+ * <li>It does not implicitly expand: you have to explicitly call resize. This helps to keep memory usage in check.</li>
+ * <li>It supports memory-file mapping (see the ImmutableBitSet class).</li>
+ * <li>It supports faster and more efficient serialization functions (serialize and deserialize).</li>
  * </ul>
  *
  * @author Daniel Lemire
  * @since 0.8.0
  */
-public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
+public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,WordArray {
     /**
      * Construct a bitset with the specified number of bits (initially all
      * false). The number of bits is rounded up to the nearest multiple of
@@ -36,14 +41,18 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
         this.data = new long[(sizeInBits + 63) / 64];
     }
 
-    /**
+    public BitSet() {
+        this.data = new long[0];
+		}
+
+		/**
      * Compute bitwise AND.
      *
      * @param bs other bitset
      */
-    public void and(BitSet bs) {
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            this.data[k] &= bs.data[k];
+    public void and(WordArray bs) {
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            this.data[k] &= bs.getWord(k);
         }
     }
 
@@ -56,10 +65,10 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @param bs other bitset
      * @return cardinality
      */
-    public int andcardinality(BitSet bs) {
+    public int andcardinality(WordArray bs) {
         int sum = 0;
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            sum += Long.bitCount(this.data[k] & bs.data[k]);
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            sum += Long.bitCount(this.getWord(k) & bs.getWord(k));
         }
         return sum;
     }
@@ -72,9 +81,9 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      *
      * @param bs other bitset
      */
-    public void andNot(BitSet bs) {
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            this.data[k] &= ~bs.data[k];
+    public void andNot(WordArray bs) {
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            this.data[k] &= ~bs.getWord(k);
         }
     }
 
@@ -84,10 +93,10 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @param bs other bitset
      * @return cardinality
      */
-    public int andNotcardinality(BitSet bs) {
+    public int andNotcardinality(WordArray bs) {
         int sum = 0;
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            sum += Long.bitCount(this.data[k] & (~bs.data[k]));
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            sum += Long.bitCount(this.getWord(k) & (~bs.getWord(k)));
         }
         return sum;
     }
@@ -113,11 +122,11 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
     }
 
     @Override
-    public BitSet clone() throws CloneNotSupportedException {
+    public BitSet clone()  {
         BitSet b;
         try {
             b = (BitSet) super.clone();
-            b.data = Arrays.copyOf(this.data, this.data.length);
+            b.data = Arrays.copyOf(this.data, this.getNumberOfWords());
             return b;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -126,19 +135,26 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BitSet))
-            return false;
-        BitSet bs = (BitSet) o;
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            if (this.data[k] != bs.data[k]) return false;
-        }
-        BitSet longer = bs.size() < this.size() ? this : bs;
-        for (int k = Math.min(this.data.length, bs.data.length); k < Math
-                .max(this.data.length, bs.data.length); ++k) {
-            if (longer.data[k] != 0) return false;
-        }
-        return true;
-    }
+  		if (o instanceof WordArray) {
+  			WordArray bs = (WordArray) o;
+  			for (int k = 0; k < Math.min(this.getNumberOfWords(),
+  					bs.getNumberOfWords()); ++k) {
+  				if (this.getWord(k) != bs.getWord(k))
+  					return false;
+  			}
+  			WordArray longer = bs.getNumberOfWords() < this.getNumberOfWords() ? this
+  					: bs;
+  			for (int k = Math.min(this.getNumberOfWords(),
+  					bs.getNumberOfWords()); k < Math.max(this.getNumberOfWords(),
+  	  					bs.getNumberOfWords()); ++k) {
+  				if (longer.getWord(k) != 0) {
+  					return false;
+  				}
+  			}
+  			return true;
+  		}
+  		return false;    
+  	}
 
     /**
      * Check whether a bitset contains a set bit.
@@ -152,6 +168,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
     }
 
     /**
+     * Get the value of the bit.  This might throw an exception if size() is insufficient, consider calling resize().
      * @param i index
      * @return value of the bit
      */
@@ -161,16 +178,13 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     @Override
     public int hashCode() {
-        int b = 31;
-        int hash1 = 0;
-        int hash2 = 0;
-        for (long aData : this.data) {
-            if (aData != 0) {
-                hash1 = hash1 * b + (int) aData;
-                hash2 = hash2 * b + (int) (aData >>> 32);
-            }
-        }
-        return hash1 ^ hash2;
+    	int b = 31;
+      long hash = 0;
+      for(int k = 0; k < data.length; ++k) {
+      	  long aData = this.getWord(k);
+          hash = hash * b + aData;
+      }
+      return (int) hash;
     }
 
     /**
@@ -231,9 +245,9 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @param bs other bitset
      * @return true if they have a non-empty intersection (result of AND)
      */
-    public boolean intersects(BitSet bs) {
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            if ((this.data[k] & bs.data[k]) != 0) return true;
+    public boolean intersects(WordArray bs) {
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            if ((this.getWord(k) & bs.getWord(k)) != 0) return true;
         }
         return false;
     }
@@ -247,7 +261,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      */
     public int nextSetBit(final int i) {
         int x = i / 64;
-        if (x >= this.data.length)
+        if (x >= this.getNumberOfWords())
             return -1;
         long w = this.data[x];
         w >>>= (i % 64);
@@ -255,7 +269,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
             return i + Long.numberOfTrailingZeros(w);
         }
         ++x;
-        for (; x < this.data.length; ++x) {
+        for (; x < this.getNumberOfWords(); ++x) {
             if (this.data[x] != 0) {
                 return x
                         * 64
@@ -274,7 +288,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      */
     public int nextUnsetBit(final int i) {
         int x = i / 64;
-        if (x >= this.data.length)
+        if (x >= this.getNumberOfWords())
             return -1;
         long w = ~this.data[x];
         w >>>= (i % 64);
@@ -282,7 +296,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
             return i + Long.numberOfTrailingZeros(w);
         }
         ++x;
-        for (; x < this.data.length; ++x) {
+        for (; x < this.getNumberOfWords(); ++x) {
             if (this.data[x] != ~0) {
                 return x
                         * 64
@@ -300,11 +314,11 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      *
      * @param bs other bitset
      */
-    public void or(BitSet bs) {
-        if (this.size() < bs.size())
-            this.resize(bs.size());
-        for (int k = 0; k < this.data.length; ++k) {
-            this.data[k] |= bs.data[k];
+    public void or(WordArray bs) {
+        if (this.getNumberOfWords() < bs.getNumberOfWords())
+            this.resize(bs.getNumberOfWords()*64);
+        for (int k = 0; k < this.getNumberOfWords(); ++k) {
+            this.data[k] |= bs.getWord(k);
         }
     }
 
@@ -316,27 +330,20 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @param bs other bitset
      * @return cardinality
      */
-    public int orcardinality(BitSet bs) {
+    public int orcardinality(WordArray bs) {
         int sum = 0;
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            sum += Long.bitCount(this.data[k] | bs.data[k]);
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            sum += Long.bitCount(this.getWord(k) | bs.getWord(k));
         }
-        BitSet longer = bs.size() < this.size() ? this : bs;
-        for (int k = Math.min(this.data.length, bs.data.length); k < Math
-                .max(this.data.length, bs.data.length); ++k) {
-            sum += Long.bitCount(longer.data[k]);
+        WordArray longer = bs.getNumberOfWords() < this.getNumberOfWords() ? this : bs;
+        for (int k = Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); k < Math
+                .max(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            sum += Long.bitCount(longer.getWord(k));
         }
         return sum;
     }
 
-    @Override
-    public void readExternal(ObjectInput in) throws IOException,
-            ClassNotFoundException {
-        int length = in.readInt();
-        this.data = new long[length];
-        for (int k = 0; k < length; ++k)
-            this.data[k] = in.readLong();
-    }
+
 
     /**
      * Resize the bitset
@@ -348,7 +355,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
     }
 
     /**
-     * Set to true
+     * Set to true. This might throw an exception if size() is insufficient, consider calling resize().
      *
      * @param i index of the bit
      */
@@ -357,6 +364,8 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
     }
 
     /**
+     * Set to some value. This might throw an exception if size() is insufficient, consider calling resize().
+     *
      * @param i index
      * @param b value of the bit
      */
@@ -373,16 +382,16 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @return the size in bits.
      */
     public int size() {
-        return this.data.length * 64;
+        return this.getNumberOfWords() * 64;
     }
 
     /**
      * Recovers wasted memory
      */
     public void trim() {
-        for (int k = this.data.length - 1; k >= 0; --k)
-            if (this.data[k] != 0) {
-                if (k + 1 < this.data.length)
+        for (int k = this.getNumberOfWords() - 1; k >= 0; --k)
+            if (this.getWord(k) != 0) {
+                if (k + 1 < this.getNumberOfWords())
                     this.data = Arrays.copyOf(this.data, k + 1);
                 return;
             }
@@ -425,11 +434,41 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(this.data.length);
+        serialize(out);
+    }
+
+		@Override
+		public void readExternal(ObjectInput in) throws IOException,
+				ClassNotFoundException {
+			deserialize(in);
+		}
+
+    /**
+     * Serialize.
+     *
+     * The current bitmap is not modified.
+     *
+     * @param out the DataOutput stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void serialize(DataOutput out) throws IOException {
+        out.writeLong(this.getNumberOfWords());
         for (long w : this.data)
             out.writeLong(w);
     }
 
+    /**
+     * Deserialize.
+     *
+     * @param in the DataInput stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void deserialize(DataInput in) throws IOException {
+      int length = (int) in.readLong();
+      this.data = new long[length];
+      for (int k = 0; k < length; ++k)
+          this.data[k] = in.readLong();
+    }
     /**
      * Compute bitwise XOR.
      * 
@@ -438,11 +477,11 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      *
      * @param bs other bitset
      */
-    public void xor(BitSet bs) {
-        if (this.size() < bs.size())
-            this.resize(bs.size());
-        for (int k = 0; k < this.data.length; ++k) {
-            this.data[k] ^= bs.data[k];
+    public void xor(WordArray bs) {
+        if (this.getNumberOfWords() < bs.getNumberOfWords())
+            this.resize(bs.getNumberOfWords()*64);
+        for (int k = 0; k < this.getNumberOfWords(); ++k) {
+            this.data[k] ^= bs.getWord(k);
         }
     }
 
@@ -454,24 +493,70 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable {
      * @param bs other bitset
      * @return cardinality
      */
-    public int xorcardinality(BitSet bs) {
+    public int xorcardinality(WordArray bs) {
         int sum = 0;
-        for (int k = 0; k < Math.min(this.data.length, bs.data.length); ++k) {
-            sum += Long.bitCount(this.data[k] ^ bs.data[k]);
+        for (int k = 0; k < Math.min(this.getNumberOfWords(), bs.getNumberOfWords()); ++k) {
+            sum += Long.bitCount(this.getWord(k) ^ bs.getWord(k));
         }
-        BitSet longer = bs.size() < this.size() ? this : bs;
+        WordArray longer = bs.getNumberOfWords() < this.getNumberOfWords() ? this : bs;
 
-        int start = Math.min(this.data.length, bs.data.length);
-        int end = Math.max(this.data.length, bs.data.length);
+        int start = Math.min(this.getNumberOfWords(), bs.getNumberOfWords());
+        int end = Math.max(this.getNumberOfWords(), bs.getNumberOfWords());
         for (int k = start; k < end; ++k) {
-            sum += Long.bitCount(longer.data[k]);
+            sum += Long.bitCount(longer.getWord(k));
         }
 
         return sum;
     }
+		@Override
+		public int getNumberOfWords() {
+			return data.length;
+		}
 
-    private long[] data;
+		@Override
+		public long getWord(int index) {
+			return this.data[index];
+		}
 
-    static final long serialVersionUID = 7997698588986878753L;
+    /**
+     * Return a bitmap with the bit set to true at the given positions.
+     * 
+     * (This is a convenience method.)
+     *
+     * @param setBits list of set bit positions
+     * @return the bitmap
+     */
+    public static BitSet bitmapOf(int... setBits) {
+    	int maxv = 0;
+    	for (int k : setBits)
+    		if(maxv < k) maxv = k;
+    	BitSet a = new BitSet(maxv + 1);
+      for (int k : setBits)
+          a.set(k);
+      return a;
+    }
+		
+    @Override
+    public String toString() {
+        StringBuilder answer = new StringBuilder();
+        IntIterator i = this.intIterator();
+        answer.append("{");
+        if (i.hasNext())
+            answer.append(i.next());
+        while (i.hasNext()) {
+            answer.append(",");
+            answer.append(i.next());
+        }
+        answer.append("}");
+        return answer.toString();
+    }
+
+    long[] data;
+
+    static final long serialVersionUID = 7997698588986878754L;
+
+
+
+
 
 }
