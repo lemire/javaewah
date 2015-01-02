@@ -61,6 +61,11 @@ Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap i
 Benchmark
 ---------
 
+
+To run a simple benchmark, use the following command:
+
+         $ mvn -Dtest=PerformanceTest test
+
 For a simple comparison between this library and other libraries such as
 WAH, ConciseSet, BitSet and other options, please see
 
@@ -148,12 +153,7 @@ API Documentation
 
 http://lemire.me/docs/javaewah/
 
-Benchmark
------------------
 
-To run a simple benchmark, use the following command:
-
-         $ mvn -Dtest=PerformanceTest test
 
 
 Further reading

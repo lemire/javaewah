@@ -73,6 +73,34 @@ public class PerformanceTest {
     }
 
 
+    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @Test
+    public void createBitmapOrdered() {
+    	long besttime = Long.MAX_VALUE;
+    	EWAHCompressedBitmap r = new EWAHCompressedBitmap();
+    	long bef = System.nanoTime();
+    	for (int k = 0; k < 65536; k++) {
+    		r.set(k * 32);
+    	}
+    	long aft = System.nanoTime();
+    	if(besttime > aft - bef) besttime = aft-bef;
+    }
+    
+    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 3)
+    @Test
+    public void createBitmapUnordered() {
+    	long besttime = Long.MAX_VALUE;
+    	EWAHCompressedBitmap r = new EWAHCompressedBitmap();
+    	long bef = System.nanoTime();
+    	for (int k = 65536 - 1; k >= 0; k--) {
+    		r.set(k * 32);
+    	}
+    	long aft = System.nanoTime();
+    	if (besttime > aft - bef)
+    		besttime = aft - bef;
+    }
+
+
     @BeforeClass
     public static void prepare() throws IOException {
         for (int k = 0; k < N; ++k) {
@@ -94,6 +122,7 @@ public class PerformanceTest {
         fos.close();
         RandomAccessFile memoryMappedFile = new RandomAccessFile(tmpfile, "r");
         ByteBuffer bb = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, totalcount);
+        memoryMappedFile.close();
         return new EWAHCompressedBitmap(bb);
     }
 
