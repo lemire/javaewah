@@ -29,7 +29,7 @@ public class MemoryMapTest
 	
 	@Test
 	public void basicFileTest() throws IOException {
-		File tmpfile = File.createTempFile("roaring", "bin");
+		File tmpfile = File.createTempFile("javaewah", "bin");
 		tmpfile.deleteOnExit();
 		final FileOutputStream fos = new FileOutputStream(tmpfile);
 		EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
