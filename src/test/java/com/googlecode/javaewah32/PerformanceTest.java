@@ -115,7 +115,7 @@ public class PerformanceTest {
   }
 
     public static EWAHCompressedBitmap32 convertToMappedBitmap(EWAHCompressedBitmap32 orig) throws IOException {
-        File tmpfile = File.createTempFile("roaring", ".bin");
+        File tmpfile = File.createTempFile("javaewah", ".bin");
         tmpfile.deleteOnExit();
         final FileOutputStream fos = new FileOutputStream(tmpfile);
         orig.serialize(new DataOutputStream(fos));
