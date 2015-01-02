@@ -15,8 +15,8 @@ import com.googlecode.javaewah.datastructure.ImmutableBitSet;
 
 public class BitSetSimpleExample {
 	public static void main(String[] args) throws IOException {
-		BitSet Bitmap1 = BitSet.bitmapOf(0, 2, 55, 64, 1 << 30);
-		BitSet Bitmap2 = BitSet.bitmapOf(1, 3, 64, 1 << 30);
+		BitSet Bitmap1 = BitSet.bitmapOf(0, 2, 55, 64, 512);
+		BitSet Bitmap2 = BitSet.bitmapOf(1, 3, 64, 512);
 		System.out.println("bitmap 1: " + Bitmap1);
 		System.out.println("bitmap 2: " + Bitmap2);
 		// or

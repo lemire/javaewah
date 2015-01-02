@@ -19,8 +19,8 @@ public class BitSetTest
 
 	@Test
 	public void simpleExample() throws IOException {
-		BitSet Bitmap1 = BitSet.bitmapOf(0, 2, 55, 64, 1 << 30);
-		BitSet Bitmap2 = BitSet.bitmapOf(1, 3, 64, 1 << 30);
+		BitSet Bitmap1 = BitSet.bitmapOf(0, 2, 55, 64, 512);
+		BitSet Bitmap2 = BitSet.bitmapOf(1, 3, 64, 512);
 		System.out.println("bitmap 1: " + Bitmap1);
 		System.out.println("bitmap 2: " + Bitmap2);
 		// or
