@@ -33,11 +33,11 @@ public interface BitmapStorage32 {
     /**
      * if you have several literal words to copy over, this might be faster.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    void addStreamOfLiteralWords(final int[] data, final int start,
+    void addStreamOfLiteralWords(final Buffer32 buffer, final int start,
                                         final int number);
 
     /**
@@ -52,11 +52,11 @@ public interface BitmapStorage32 {
     /**
      * Like "addStreamOfLiteralWords" but negates the words being added.
      *
-     * @param data   the literal words
+     * @param buffer the buffer wrapping the literal words
      * @param start  the starting point in the array
      * @param number the number of literal words to add
      */
-    void addStreamOfNegatedLiteralWords(int[] data, final int start,
+    void addStreamOfNegatedLiteralWords(final Buffer32 buffer, final int start,
                                                final int number);
 
     /**

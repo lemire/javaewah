@@ -52,11 +52,6 @@ final class LongArray implements Buffer, Cloneable {
     public long getLastWord() {
         return getWord(this.actualSizeInWords - 1);
     }
-    
-    @Override
-    public long[] getWords() {
-        return this.buffer;
-    }
 
     @Override
     public void clear() {
@@ -86,17 +81,24 @@ final class LongArray implements Buffer, Cloneable {
     }
 
     @Override
-    public void push_back(long[] data, int start, int number) {
+    public void push_back(Buffer buffer, int start, int number) {
         resizeBuffer(number);
-        System.arraycopy(data, start, this.buffer, this.actualSizeInWords, number);
+        if(buffer instanceof LongArray) {
+            long[] data = ((LongArray)buffer).buffer;
+            System.arraycopy(data, start, this.buffer, this.actualSizeInWords, number);
+        } else {
+            for(int i = 0; i < number; ++i) {
+                this.buffer[this.actualSizeInWords + i] = buffer.getWord(start + i);
+            }
+        }
         this.actualSizeInWords += number;
     }
-    
+
     @Override
-    public void negative_push_back(long[] data, int start, int number) {
+    public void negative_push_back(Buffer buffer, int start, int number) {
         resizeBuffer(number);
         for (int i = 0; i < number; ++i) {
-            this.buffer[this.actualSizeInWords + i] = ~data[start + i];
+            this.buffer[this.actualSizeInWords + i] = ~buffer.getWord(start + i);
         }
         this.actualSizeInWords += number;
     }
@@ -170,14 +172,18 @@ final class LongArray implements Buffer, Cloneable {
             this.actualSizeInWords = ((LongArray)other).actualSizeInWords;
             ((LongArray)other).actualSizeInWords = tmp2;
         } else {
-            long[] tmp = other.getWords();
+            long[] tmp = new long[other.sizeInWords()];
+            for(int i = 0; i < other.sizeInWords(); ++i) {
+                tmp[i] = other.getWord(i);
+            }
             int tmp2 = other.sizeInWords();
 
             other.clear();
-            other.push_back(this.getWords(), 0, this.sizeInWords());
+            other.removeLastWord();
+            other.push_back(this, 0, this.sizeInWords());
 
-            this.clear();
-            this.push_back(tmp, 0, tmp2);
+            this.buffer = tmp;
+            this.actualSizeInWords = tmp2;
         }
     }
 

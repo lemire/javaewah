@@ -237,7 +237,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
      * @param container where we write the data
      */
     public void writeLiteralWords(int numWords, BitmapStorage32 container) {
-        container.addStreamOfLiteralWords(this.buffer.getWords(),
+        container.addStreamOfLiteralWords(this.buffer,
                 this.literalWordStartPosition, numWords);
     }
 
@@ -250,7 +250,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
      */
     public void writeNegatedLiteralWords(int numWords,
                                          BitmapStorage32 container) {
-        container.addStreamOfNegatedLiteralWords(this.buffer.getWords(),
+        container.addStreamOfNegatedLiteralWords(this.buffer,
                 this.literalWordStartPosition, numWords);
     }
 
@@ -272,7 +272,7 @@ public final class IteratingBufferedRunningLengthWord32 implements
             container.addStreamOfEmptyWords(
                     runningLengthWord.getRunningBit(),
                     runningLength);
-            container.addStreamOfLiteralWords(iterator.buffer().getWords(),
+            container.addStreamOfLiteralWords(iterator.buffer(),
                     iterator.literalWords()
                             + runningLengthWord.literalWordOffset,
                     runningLengthWord.getNumberOfLiteralWords()
