@@ -1,7 +1,7 @@
 package com.googlecode.javaewah.synth;
 
 /*
- * Copyright 2009-2014, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
+ * Copyright 2009-2015, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
  * Licensed under the Apache License, Version 2.0.
  */
 
