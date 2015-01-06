@@ -81,6 +81,46 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
+    public void clearStressTest() {
+        System.out.println("clear stress test");
+        int n = 10 * WORD_IN_BITS;
+        for (int k = 0; k < 100; ++k) {
+            List<Integer> setPositions = new ArrayList<Integer>(n);
+            List<Integer> clearPositions = new ArrayList<Integer>(n);
+            for (int i = 0; i < n; ++i) {
+                setPositions.add(i);
+                clearPositions.add(i);
+            }
+            Collections.shuffle(setPositions);
+            Collections.shuffle(clearPositions);
+            EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf();
+            for (int i = 0; i < n; ++i) {
+                bitmap.set(setPositions.get(i));
+                bitmap.clear(clearPositions.get(i));
+            }
+            for (int i = 0; i < n; ++i) {
+                bitmap.clear(i);
+            }
+            Assert.assertEquals(0, bitmap.cardinality());
+            Assert.assertEquals(WORD_IN_BITS / 8, bitmap.sizeInBytes());
+        }
+    }
+
+    @Test
+    public void clear() {
+        EWAHCompressedBitmap bitmap = EWAHCompressedBitmap.bitmapOf(0, 1, 3, 199, 666);
+        Assert.assertEquals(667, bitmap.sizeInBits());
+        bitmap.clear(900);
+        Assert.assertEquals(901, bitmap.sizeInBits());
+        for (int i = 667; i < 901; ++i) {
+            Assert.assertFalse(bitmap.get(i));
+        }
+        Assert.assertTrue(bitmap.get(199));
+        bitmap.clear(199);
+        Assert.assertFalse(bitmap.get(199));
+    }
+
+    @Test
     public void equalToSelf() {
         EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
                 64, 1 << 30);
