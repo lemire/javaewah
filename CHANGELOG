@@ -1,3 +1,6 @@
+version 1.0.0 (January 6th 2015)
+ - Both EWAHCompressedBitmap and BitSet can now support memory-file mapping. For best performance, we recommend the very latest OpenJDK.
+
 version 0.9.2 (December 4th 2014)
  - Fixed issue #47
 

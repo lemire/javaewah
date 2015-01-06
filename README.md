@@ -51,7 +51,8 @@ compress better but be comparatively slower.
 
 
 
-Java 6 or better is required.
+Java 6 or better is required. We found the very latest OpenJDK release
+offered the best performance.
 
 Real-world usage
 ----------------
@@ -184,7 +185,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
 	     <artifactId>JavaEWAH</artifactId>
-	     <version>0.9.2</version>
+	     <version>1.0.0</version>
          </dependency>
      </dependencies>
 
