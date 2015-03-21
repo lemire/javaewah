@@ -32,8 +32,7 @@ final class ReverseIntIterator implements IntIterator {
         this.ewahIter = ewahIter;
         this.sizeInBits = sizeInBits;
         this.buffer = ewahIter.buffer();
-        this.position = sizeInBits;
-        this.runningLength = Integer.MAX_VALUE;
+        this.runningLength = sizeInBits - 1;
         this.hasNext = this.moveToPreviousRLW();
     }
 
@@ -69,26 +68,33 @@ final class ReverseIntIterator implements IntIterator {
     private void setRLW(RunningLengthWord rlw) {
         this.wordLength = rlw.getNumberOfLiteralWords();
         this.wordPosition = this.ewahIter.position();
-        this.runningLength = this.position - WORD_IN_BITS * (int) (rlw.getRunningLength() + this.wordLength);
+        this.position = this.runningLength;
+        this.runningLength -= WORD_IN_BITS * (rlw.getRunningLength() + this.wordLength);
+        if (this.position == this.sizeInBits - 1) {
+            final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
+            if(usedBitsInLast > 0) {
+                this.runningLength += WORD_IN_BITS - usedBitsInLast;
+            }
+        }
         this.runningBit = rlw.getRunningBit();
-        this.position--;
     }
 
     private boolean runningHasNext() {
-        return this.runningBit && this.runningLength <= this.position;
+        return this.runningBit && this.runningLength < this.position;
     }
 
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordLength > 0) {
             this.word = Long.reverse(this.buffer.getWord(this.wordPosition + this.wordLength--));
+            int usedBits = WORD_IN_BITS;
             if (this.position == this.sizeInBits - 1) {
-                final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
-                if (usedBitsInLast > 0) {
-                    this.word = (this.word >>> (WORD_IN_BITS - usedBitsInLast));
+                usedBits = this.sizeInBits % WORD_IN_BITS;
+                if (usedBits > 0) {
+                    this.word = (this.word >>> (WORD_IN_BITS - usedBits));
                 }
             }
             this.literalPosition = this.position;
-            this.position -= WORD_IN_BITS;
+            this.position -= usedBits;
         }
         return this.word != 0;
     }

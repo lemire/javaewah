@@ -681,6 +681,19 @@ public class EWAHCompressedBitmap32Test {
         }
         Assert.assertFalse(iterator.hasNext());
     }
+
+    @Test
+    public void reverseIntIteratorOverMultipleRLWs() {
+        EWAHCompressedBitmap32 b = EWAHCompressedBitmap32.bitmapOf(1000, 100000, 100000 + WORD_IN_BITS);
+        IntIterator iterator = b.reverseIntIterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(100000 + WORD_IN_BITS, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(100000, iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(1000, iterator.next());
+        Assert.assertFalse(iterator.hasNext());
+    }
     
     @Test
     public void isEmpty() {
