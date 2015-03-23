@@ -1,5 +1,7 @@
-JavaEWAH [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
+JavaEWAH
 ==========================================================
+[![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
+[![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 
 (c) 2009-2014
 Daniel Lemire (http://lemire.me/en/), 
