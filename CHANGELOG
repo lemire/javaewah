@@ -1,3 +1,6 @@
+version 1.0.1 (March 23rd 2015)
+ - Fixed: Some bug about EWAHCompressedBitmap.reverseIntIterator() (#53)
+
 version 1.0.0 (January 6th 2015)
  - Both EWAHCompressedBitmap and BitSet can now support memory-file mapping. For best performance, we recommend the very latest OpenJDK.
 
