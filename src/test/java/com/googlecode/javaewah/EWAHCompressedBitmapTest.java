@@ -81,6 +81,13 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
+    public void xorCardinality() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
+        EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);
+        Assert.assertEquals(4, b1.xorCardinality(b2));
+    }
+
+    @Test
     public void clearStressTest() {
         System.out.println("clear stress test");
         int n = 10 * WORD_IN_BITS;
@@ -125,6 +132,13 @@ public class EWAHCompressedBitmapTest {
         EWAHCompressedBitmap ewahBitmap = EWAHCompressedBitmap.bitmapOf(0, 2, 55,
                 64, 1 << 30);
         Assert.assertTrue(ewahBitmap.equals(ewahBitmap));
+    }
+
+    @Test
+    public void notEqualTo() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
+        EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);
+        Assert.assertFalse(b1.equals(b2));
     }
 
     @Test

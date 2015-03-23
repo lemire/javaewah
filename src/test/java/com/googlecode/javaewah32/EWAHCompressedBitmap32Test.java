@@ -25,6 +25,13 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+    public void xorCardinality() {
+        EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
+        EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);
+        Assert.assertEquals(4, b1.xorCardinality(b2));
+    }
+
+    @Test
     public void clearStressTest() {
         System.out.println("clear stress test");
         int n = 10 * WORD_IN_BITS;
@@ -69,6 +76,13 @@ public class EWAHCompressedBitmap32Test {
         EWAHCompressedBitmap32 ewahBitmap = EWAHCompressedBitmap32.bitmapOf(0, 2, 55,
                 64, 1 << 30);
         Assert.assertTrue(ewahBitmap.equals(ewahBitmap));
+    }
+
+    @Test
+    public void notEqualTo() {
+        EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
+        EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);
+        Assert.assertFalse(b1.equals(b2));
     }
 
     @Test
