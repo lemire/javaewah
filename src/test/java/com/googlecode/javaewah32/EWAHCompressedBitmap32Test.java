@@ -889,7 +889,7 @@ public class EWAHCompressedBitmap32Test {
 	}
 
     @Test
-    public void testClearIntIterator() {
+    public void clearIntIterator() {
         EWAHCompressedBitmap32 x = EWAHCompressedBitmap32.bitmapOf(1, 3, 7, 8, 10);
         x.setSizeInBits(500, true);
         x.setSizeInBits(501, false);
@@ -906,9 +906,9 @@ public class EWAHCompressedBitmap32Test {
     @Test
     public void clearIntIteratorOverBitmapOfZeros() {
         EWAHCompressedBitmap32 x = EWAHCompressedBitmap32.bitmapOf();
-        x.setSizeInBits(3, false);
+        x.setSizeInBits(WORD_IN_BITS, false);
         IntIterator iterator = x.clearIntIterator();
-        for (int i : Arrays.asList(0, 1, 2)) {
+        for (int i = 0; i < WORD_IN_BITS; ++i) {
             Assert.assertTrue(iterator.hasNext());
             Assert.assertEquals(i, iterator.next());
         }
