@@ -32,6 +32,24 @@ public class EWAHCompressedBitmap32Test {
     }
 
     @Test
+    public void andNotCardinality() {
+        EWAHCompressedBitmap32 b = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
+        Assert.assertEquals(0, b.andNotCardinality(b));
+    }
+
+    @Test
+    public void getFirstSetBit() {
+        EWAHCompressedBitmap32 b = EWAHCompressedBitmap32.bitmapOf();
+        Assert.assertEquals(-1, b.getFirstSetBit());
+        b.set(0);
+        Assert.assertEquals(0, b.getFirstSetBit());
+        b.clear();
+        b.setSizeInBits(WORD_IN_BITS, false);
+        b.setSizeInBits(2*WORD_IN_BITS, true);
+        Assert.assertEquals(WORD_IN_BITS, b.getFirstSetBit());
+    }
+
+    @Test
     public void clearStressTest() {
         System.out.println("clear stress test");
         int n = 10 * WORD_IN_BITS;
