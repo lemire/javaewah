@@ -2,6 +2,7 @@ package com.googlecode.javaewah.datastructure;
 
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.googlecode.javaewah.IntIterator;
@@ -108,7 +109,7 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
           if (this.data.get(k) != 0) return false;
       return true;
   }
-
+  
   /**
    * @param i index
    * @return value of the bit

@@ -11,6 +11,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 
@@ -57,7 +59,60 @@ public class BitSetTest
 			throw new RuntimeException("Will not happen");
 
 	}
+	
+	@Test
+	public void testFlipRanges() throws IOException {
+		int N = 256;
+		for(int end = 1; end < N; ++end ) {
+			for(int start = 0; start< end; ++start) {
+				BitSet bs1 = new BitSet(N);
+				for(int k = start; k < end; ++k) {
+					bs1.flip(k);
+				}
+				BitSet bs2 = new BitSet(N);
+				bs2.flip(start, end);
+				Assert.assertEquals(bs2.cardinality(), end-start);
+				Assert.assertEquals(bs1, bs2);
+			}
+		}
+	}
 
+	@Test
+	public void testSetRanges() throws IOException {
+		int N = 256;
+		for(int end = 1; end < N; ++end ) {
+			for(int start = 0; start< end; ++start) {
+				BitSet bs1 = new BitSet(N);
+				for(int k = start; k < end; ++k) {
+					bs1.set(k);
+				}
+				BitSet bs2 = new BitSet(N);
+				bs2.set(start, end);
+				Assert.assertEquals(bs1, bs2);
+			}
+		}
+	}
+	
+
+	@Test
+	public void testClearRanges() throws IOException {
+		int N = 256;
+		for(int end = 1; end < N; ++end ) {
+			for(int start = 0; start< end; ++start) {
+				BitSet bs1 = new BitSet(N);
+				bs1.set(0, N);
+				for(int k = start; k < end; ++k) {
+					bs1.clear(k);
+				}
+				BitSet bs2 = new BitSet(N);
+				bs2.set(0, N);
+				bs2.clear(start, end);
+				Assert.assertEquals(bs1, bs2);
+			}
+		}
+	}
+
+	
 	@Test
 	public void serializationExample() throws IOException {
 		File tmpfile = File.createTempFile("javaewah", "bin");

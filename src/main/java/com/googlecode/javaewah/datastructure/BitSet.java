@@ -120,6 +120,37 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
     public void clear() {
         Arrays.fill(this.data, 0);
     }
+    
+    /**
+     * Set the bit to false. 
+     * See {@link #unset(int)}
+     * 
+     * @param index location of the bit
+     */
+    public void clear(int index) {
+    	unset(index);
+    }
+
+    /**
+     * Set the bits in the range of indexes to false. 
+     *  This might throw an exception if size() is insufficient, consider calling resize().
+     *  
+     * @param start location of the first bit to set to zero
+     * @param end location of the last bit to set to zero (not included)
+     */
+    public void clear(int start, int end) {
+      if (start == end) return;
+      int firstword = start / 64;
+      int endword   = (end - 1 ) / 64;
+      if(firstword == endword) {
+      	this.data[firstword] &= ~((~0L << start) & (~0L >>> -end));
+        return;     	
+      }
+      this.data[firstword] &= ~(~0L << start);
+      for (int i = firstword+1; i < endword; i++)
+      	this.data[i] = 0;
+      this.data[endword] &= ~(~0L >>> -end);
+    }
 
     @Override
     public BitSet clone()  {
@@ -166,6 +197,32 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
             if (l != 0) return false;
         return true;
     }
+    /**
+     * Flip the bit. This might throw an exception if size() is insufficient, consider calling resize().
+     *
+     * @param i index of the bit
+     */
+    public void flip(final int i) {
+        this.data[i / 64] ^= (1l << (i % 64));
+    }
+
+    /**
+     * Flip the bits in the range of indexes. 
+     *  This might throw an exception if size() is insufficient, consider calling resize().
+     *  
+     * @param start location of the first bit 
+     * @param end location of the last bit (not included)
+     */
+    public void flip(int start, int end) {
+      if (start == end) return;
+      int firstword = start / 64;
+      int endword   = (end - 1 ) / 64;
+      this.data[firstword] ^= ~(~0L << start);
+      for (int i = firstword; i < endword; i++)
+      	this.data[i] = ~this.data[i];
+      this.data[endword] ^= ~0L >>> -end;
+    }
+
 
     /**
      * Get the value of the bit.  This might throw an exception if size() is insufficient, consider calling resize().
@@ -376,6 +433,46 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
             unset(i);
     }
 
+    
+    /**
+     * Set the bits in the range of indexes true. 
+     *  This might throw an exception if size() is insufficient, consider calling resize().
+     *  
+     * @param start location of the first bit 
+     * @param end location of the last bit (not included)
+     */
+    public void set(int start, int end) {
+      if (start == end) return;
+      int firstword = start / 64;
+      int endword   = (end - 1 ) / 64;
+      if(firstword == endword) {
+        this.data[firstword] |= (~0L << start) & (~0L >>> -end);
+        return;     	
+      }
+      this.data[firstword] |= ~0L << start;
+      for (int i = firstword+1; i < endword; i++)
+      	this.data[i] = ~0;
+      this.data[endword] |= ~0L >>> -end;
+    }
+    
+
+    
+    /**
+     * Set the bits in the range of indexes to the specified Boolean value. 
+     *  This might throw an exception if size() is insufficient, consider calling resize().
+     *  
+     * @param start location of the first bit 
+     * @param end location of the last bit (not included)
+     * @param v Boolean value
+     */
+    public void set(int start, int end, boolean v) {
+    	if(v)
+    		set(start,end);
+    	else 
+    		clear(start,end);
+    }
+    
+    
     /**
      * Query the size
      *

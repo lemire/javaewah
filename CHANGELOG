@@ -1,3 +1,6 @@
+upcoming
+ - More complete BitSet API.
+
 version 1.0.1 (March 23rd 2015)
  - Fixed: Some bug about EWAHCompressedBitmap.reverseIntIterator() (#53)
 
