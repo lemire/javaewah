@@ -1,5 +1,6 @@
-upcoming
+version 1.0.2 (April 10th 2015)
  - More complete BitSet API.
+ - Fixed issue #54 clear(int i) would clear ALL map
 
 version 1.0.1 (March 23rd 2015)
  - Fixed: Some bug about EWAHCompressedBitmap.reverseIntIterator() (#53)
