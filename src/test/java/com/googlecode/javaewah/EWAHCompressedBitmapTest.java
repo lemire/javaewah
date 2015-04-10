@@ -81,6 +81,19 @@ public class EWAHCompressedBitmapTest {
     }
 
     @Test
+    public void issue54() {
+        EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+        for (int i = 1500; i <1600; i ++) {
+            bm.set(i);
+        }
+        for (int i = 1500; i < 1535; i ++) {
+            bm.clear(i);
+        }
+        bm.clear(1535);
+        Assert.assertFalse(bm.isEmpty());
+    }
+
+    @Test
     public void xorCardinality() {
         EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
         EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);

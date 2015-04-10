@@ -1343,7 +1343,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         long emptyWord = value ? ~0l : 0l;
         if(this.buffer.getWord(pos + wordPosition) == emptyWord) {
             boolean canMergeInCurrentRLW = mergeLiteralWordInCurrentRunningLength(value, rb, rl, wordPosition);
-            boolean canMergeInNextRLW = mergeLiteralWordInNextRunningLength(lw, pos, wordPosition);
+            boolean canMergeInNextRLW = mergeLiteralWordInNextRunningLength(value, lw, pos, wordPosition);
             if(canMergeInCurrentRLW && canMergeInNextRLW) {
                 long nextRl = RunningLengthWord.getRunningLength(this.buffer, pos + 2);
                 long nextLw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, pos + 2);
@@ -1382,12 +1382,12 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         return (value==rb || rl==0) && wordPosition==1;
     }
 
-    private boolean mergeLiteralWordInNextRunningLength(long lw, int pos, int wordPosition) {
+    private boolean mergeLiteralWordInNextRunningLength(boolean value, long lw, int pos, int wordPosition) {
         int nextRLWPos = (int) (pos + lw + 1);
         if(lw==wordPosition && nextRLWPos<this.buffer.sizeInWords()) {
             long nextRl = RunningLengthWord.getRunningLength(this.buffer, nextRLWPos);
             boolean nextRb = RunningLengthWord.getRunningBit(this.buffer, nextRLWPos);
-            return (nextRb || nextRl == 0);
+            return (value==nextRb || nextRl == 0);
         }
         return false;
     }

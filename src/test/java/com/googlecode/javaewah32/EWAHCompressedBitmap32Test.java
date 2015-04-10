@@ -25,6 +25,19 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 public class EWAHCompressedBitmap32Test {
 
     @Test
+    public void issue54() {
+        EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
+        for (int i = 1500; i <1600; i ++) {
+            bm.set(i);
+        }
+        for (int i = 1500; i < 1535; i ++) {
+            bm.clear(i);
+        }
+        bm.clear(1535);
+        Assert.assertFalse(bm.isEmpty());
+    }
+
+    @Test
     public void xorCardinality() {
         EWAHCompressedBitmap32 b1 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89);
         EWAHCompressedBitmap32 b2 = EWAHCompressedBitmap32.bitmapOf(0,1,2,3,5,8,13,21,34,55,89,144,233,377,610);
