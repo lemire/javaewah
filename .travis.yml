@@ -8,6 +8,10 @@ jdk:
 
 install: true
 
+branches:
+  only:
+    - master
+
 script: mvn clean test jacoco:report
 
 after_success:

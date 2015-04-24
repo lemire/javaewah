@@ -218,7 +218,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
       int firstword = start / 64;
       int endword   = (end - 1 ) / 64;
       this.data[firstword] ^= ~(~0L << start);
-      for (int i = firstword; i < endword; i++)
+      for (int i = firstword ; i < endword; i++)
       	this.data[i] = ~this.data[i];
       this.data[endword] ^= ~0L >>> -end;
     }
