@@ -1,10 +1,6 @@
 JavaEWAH
 ==========================================================
 [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
-[![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
-[![][maven img]][maven]
-[![][release img]][release]
-[![][license img]][license]
 
 (c) 2009-2015
 Daniel Lemire (http://lemire.me/en/), 
@@ -248,6 +244,14 @@ http://arxiv.org/abs/0901.3751
 
 Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience, 2014.
 http://arxiv.org/abs/1402.4466
+
+
+Help needed
+------------
+
+We need help writing more tests.
+
+[![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 
 Acknowledgement
 ---------------
