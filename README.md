@@ -2,8 +2,11 @@ JavaEWAH
 ==========================================================
 [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
 [![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
+[![][maven img]][maven]
+[![][release img]][release]
+[![][license img]][license]
 
-(c) 2009-2014
+(c) 2009-2015
 Daniel Lemire (http://lemire.me/en/), 
 Cliff Moon, 
 David McIntosh (https://github.com/mctofu),
