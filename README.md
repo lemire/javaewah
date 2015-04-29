@@ -1,6 +1,9 @@
 JavaEWAH
 ==========================================================
 [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
+[![][maven img]][maven]
+[![][license img]][license]
+
 
 (c) 2009-2015
 Daniel Lemire (http://lemire.me/en/), 
@@ -249,7 +252,7 @@ http://arxiv.org/abs/1402.4466
 Help needed
 ------------
 
-We need help writing more tests.
+JavaEWAH has been used in production for many years. However, we still need help writing more tests.
 
 [![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 
@@ -259,3 +262,9 @@ Acknowledgement
 Special thanks to Shen Liang for optimization advice.
 
 This work was supported by NSERC grant number 26143.
+
+[maven img]:https://maven-badges.herokuapp.com/maven-central/com.googlecode.javaewah/JavaEWAH/badge.svg
+[maven]:http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.googlecode.javaewah%22%20
+
+[license]:LICENSE-2.0.txt
+[license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
