@@ -3,6 +3,7 @@ JavaEWAH
 [![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
 [![][maven img]][maven]
 [![][license img]][license]
+[![docs-badge][]][docs]
 
 
 (c) 2009-2015
@@ -268,3 +269,7 @@ This work was supported by NSERC grant number 26143.
 
 [license]:LICENSE-2.0.txt
 [license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
+
+
+[docs-badge]:https://img.shields.io/badge/API-docs-blue.svg?style=flat-square
+[docs]:http://lemire.me/docs/javaewah/
