@@ -104,7 +104,7 @@ for details.
 Usage
 -----
 
-
+```java
         EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0, 2, 55, 64, 1 << 30);
         EWAHCompressedBitmap ewahBitmap2 = EWAHCompressedBitmap.bitmapOf(1, 3, 64,
                 1 << 30);
@@ -158,12 +158,13 @@ Usage
         EWAHCompressedBitmap threshold2 = EWAHCompressedBitmap.threshold(2,
                 ewahBitmap1, ewahBitmap2, ewahBitmap3, ewahBitmap4);
         System.out.println("threshold 2 : " + threshold2);
-
+```
 See example.java.
 
 You can use our drop-in replacement for the BitSet class in a memory-mapped file
 context as follows: 
 
+```java
 		final FileOutputStream fos = new FileOutputStream(tmpfile);
 		BitSet Bitmap = BitSet.bitmapOf(0, 2, 55, 64, 512);
 		Bitmap.serialize(new DataOutputStream(fos));
@@ -171,7 +172,7 @@ context as follows:
 		ByteBuffer bb = memoryMappedFile.getChannel().map(
 				FileChannel.MapMode.READ_ONLY, 0, totalcount);
 		ImmutableBitSet mapped = new ImmutableBitSet(bb.asLongBuffer());
-
+```
 
 
 There are more examples in the "examples" folder (e.g.,
@@ -186,6 +187,7 @@ http://repo1.maven.org/maven2/com/googlecode/javaewah/JavaEWAH/
 
 You can also specify the dependency in the Maven "pom.xml" file:
 
+```xml
     <dependencies>
          <dependency>
 	     <groupId>com.googlecode.javaewah</groupId>
@@ -193,6 +195,7 @@ You can also specify the dependency in the Maven "pom.xml" file:
 	     <version>1.0.2</version>
          </dependency>
      </dependencies>
+```
 
 Naturally, you should replace "version" by the version
 you desire.
@@ -222,7 +225,7 @@ Question: How do I check the value of a bit?
 Answer: If you need to routinely check the value of a given bit quickly, then 
 EWAH might not be the right format. However, if you must do it, you can proceed as
 follows:
-
+```java
           /**
            * Suppose you have the following bitmap:
            */
@@ -231,7 +234,7 @@ follows:
            * We want to know if bit 64 is set:
            */
           boolean is64set = b.get(64);
-
+```
 API Documentation
 -----------------
 
