@@ -244,59 +244,109 @@ public final class FastAggregation32 {
     }
 
     /**
-     * Simple algorithm that computes the OR aggregate naively.
+     * Simple algorithm that computes the OR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap32 or(final EWAHCompressedBitmap32... bitmaps) {
-        EWAHCompressedBitmap32 bitmapor = new EWAHCompressedBitmap32();
-        for(EWAHCompressedBitmap32 b : bitmaps) {
-            bitmapor = bitmapor.or(b);
+        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
+                new Comparator<EWAHCompressedBitmap32>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        Collections.addAll(pq, bitmaps);
+        if(pq.isEmpty()) return new EWAHCompressedBitmap32();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap32 x1 = pq.poll();
+            EWAHCompressedBitmap32 x2 = pq.poll();
+            pq.add(x1.or(x2));
         }
-        return bitmapor;
+        return pq.poll();
     }
     
     /**
-     * Simple algorithm that computes the XOR aggregate naively.
+     * Simple algorithm that computes the XOR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap32 xor(final EWAHCompressedBitmap32... bitmaps) {
-        EWAHCompressedBitmap32 bitmapxor = new EWAHCompressedBitmap32();
-        for(EWAHCompressedBitmap32 b : bitmaps) {
-            bitmapxor = bitmapxor.xor(b);
+        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(bitmaps.length,
+                new Comparator<EWAHCompressedBitmap32>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        Collections.addAll(pq, bitmaps);
+        if(pq.isEmpty()) return new EWAHCompressedBitmap32();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap32 x1 = pq.poll();
+            EWAHCompressedBitmap32 x2 = pq.poll();
+            pq.add(x1.xor(x2));
         }
-        return bitmapxor;
+        return pq.poll();
     }
     
     /**
-     * Simple algorithm that computes the OR aggregate naively.
+     * Simple algorithm that computes the OR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap32 or(final Iterator<EWAHCompressedBitmap32> bitmaps) {
-        EWAHCompressedBitmap32 bitmapor = new EWAHCompressedBitmap32();
-        while(bitmaps.hasNext()) {
-            bitmapor = bitmapor.or(bitmaps.next());
+        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(
+                new Comparator<EWAHCompressedBitmap32>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        while(bitmaps.hasNext())
+            pq.add(bitmaps.next());
+        if(pq.isEmpty()) return new EWAHCompressedBitmap32();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap32 x1 = pq.poll();
+            EWAHCompressedBitmap32 x2 = pq.poll();
+            pq.add(x1.or(x2));
         }
-        return bitmapor;
+        return pq.poll();
     }
     
     /**
-     * Simple algorithm that computes the XOR aggregate naively.
+     * Simple algorithm that computes the XOR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap32 xor(final Iterator<EWAHCompressedBitmap32> bitmaps) {
-        EWAHCompressedBitmap32 bitmapxor = new EWAHCompressedBitmap32();
-        while(bitmaps.hasNext()) {
-            bitmapxor = bitmapxor.xor(bitmaps.next());
+        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(
+                new Comparator<EWAHCompressedBitmap32>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        while(bitmaps.hasNext())
+            pq.add(bitmaps.next());
+        if(pq.isEmpty()) return new EWAHCompressedBitmap32();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap32 x1 = pq.poll();
+            EWAHCompressedBitmap32 x2 = pq.poll();
+            pq.add(x1.xor(x2));
         }
-        return bitmapxor;
+        return pq.poll();
     }
     
     

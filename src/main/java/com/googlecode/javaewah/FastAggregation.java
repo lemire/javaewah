@@ -163,6 +163,7 @@ public final class FastAggregation {
 
     /**
      * Compute the xor aggregate using a temporary uncompressed bitmap.
+     * 
      *
      * @param container where the aggregate is written
      * @param bufSize   buffer size used during the computation in 64-bit
@@ -272,63 +273,116 @@ public final class FastAggregation {
     }
     
     /**
-     * Simple algorithm that computes the OR aggregate naively.
+     * Simple algorithm that computes the OR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap or(final EWAHCompressedBitmap... bitmaps) {
-        EWAHCompressedBitmap bitmapor = new EWAHCompressedBitmap();
-        for(EWAHCompressedBitmap b : bitmaps) {
-            bitmapor = bitmapor.or(b);
+        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
+                new Comparator<EWAHCompressedBitmap>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        Collections.addAll(pq, bitmaps);
+        if(pq.isEmpty()) return new EWAHCompressedBitmap();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap x1 = pq.poll();
+            EWAHCompressedBitmap x2 = pq.poll();
+            pq.add(x1.or(x2));
         }
-        return bitmapor;
+        return pq.poll();
     }
     
     /**
-     * Simple algorithm that computes the XOR aggregate naively.
+     * Simple algorithm that computes the XOR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap xor(final EWAHCompressedBitmap... bitmaps) {
-        EWAHCompressedBitmap bitmapxor = new EWAHCompressedBitmap();
-        for(EWAHCompressedBitmap b : bitmaps) {
-            bitmapxor = bitmapxor.xor(b);
+        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(bitmaps.length,
+                new Comparator<EWAHCompressedBitmap>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        Collections.addAll(pq, bitmaps);
+        if(pq.isEmpty()) return new EWAHCompressedBitmap();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap x1 = pq.poll();
+            EWAHCompressedBitmap x2 = pq.poll();
+            pq.add(x1.xor(x2));
         }
-        return bitmapxor;
+        return pq.poll();
     }
+    
     /**
-     * Simple algorithm that computes the OR aggregate naively.
+     * Simple algorithm that computes the OR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap or(final Iterator<EWAHCompressedBitmap> bitmaps) {
-        EWAHCompressedBitmap bitmapor = new EWAHCompressedBitmap();
-        while(bitmaps.hasNext()) {
-            bitmapor = bitmapor.or(bitmaps.next());
+        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(
+                new Comparator<EWAHCompressedBitmap>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        while(bitmaps.hasNext())
+            pq.add(bitmaps.next());
+        if(pq.isEmpty()) return new EWAHCompressedBitmap();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap x1 = pq.poll();
+            EWAHCompressedBitmap x2 = pq.poll();
+            pq.add(x1.or(x2));
         }
-        return bitmapor;
+        return pq.poll();
     }
     
     /**
-     * Simple algorithm that computes the XOR aggregate naively.
+     * Simple algorithm that computes the XOR aggregate.
      * 
      * @param bitmaps input bitmaps
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap xor(final Iterator<EWAHCompressedBitmap> bitmaps) {
-        EWAHCompressedBitmap bitmapxor = new EWAHCompressedBitmap();
-        while(bitmaps.hasNext()) {
-            bitmapxor = bitmapxor.xor(bitmaps.next());
+        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(
+                new Comparator<EWAHCompressedBitmap>() {
+                    @Override
+                    public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
+                        return a.sizeInBytes()
+                                - b.sizeInBytes();
+                    }
+                }
+        );
+        while(bitmaps.hasNext())
+            pq.add(bitmaps.next());
+        if(pq.isEmpty()) return new EWAHCompressedBitmap();
+        while (pq.size() > 1) {
+            EWAHCompressedBitmap x1 = pq.poll();
+            EWAHCompressedBitmap x2 = pq.poll();
+            pq.add(x1.xor(x2));
         }
-        return bitmapxor;
+        return pq.poll();
     }
 
 
     /**
      * Uses a priority queue to compute the xor aggregate.
+     * 
+     * This algorithm runs in linearithmic time (O(n log n)) with respect to the number of bitmaps.
      *
      * @param <T>     a class extending LogicalElement (like a compressed
      *                bitmap)
@@ -360,6 +414,8 @@ public final class FastAggregation {
      * Uses a priority queue to compute the xor aggregate.
      * 
      * The content of the container is overwritten.
+     * 
+     * This algorithm runs in linearithmic time (O(n log n)) with respect to the number of bitmaps.
      *
      * @param container where we write the result
      * @param bitmaps   to be aggregated
