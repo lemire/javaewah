@@ -1,3 +1,8 @@
+version 1.0.3 (August 12th 2015)
+ - Simplified the multi-bitmap OR code, this should ensure more predictable performance
+ - Added functions to aggregate bitmaps provided by iterators.
+
+
 version 1.0.2 (April 10th 2015)
  - More complete BitSet API.
  - Fixed issue #54 clear(int i) would clear ALL map

@@ -1972,19 +1972,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     "You should provide at least two bitmaps, provided "
                             + bitmaps.length
             );
-        int size = 0;
-        int sinbits = 0;
-        for (EWAHCompressedBitmap32 b : bitmaps) {
-            size += b.sizeInBytes();
-            if (sinbits < b.sizeInBits())
-                sinbits = b.sizeInBits();
-        }
-        if (size * 8 > sinbits) {
-            FastAggregation32.bufferedorWithContainer(container,
-                    65536, bitmaps);
-        } else {
-            FastAggregation32.orToContainer(container, bitmaps);
-        }
+        FastAggregation32.orToContainer(container, bitmaps);
     }
 
     /**
@@ -2003,19 +1991,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     "You should provide at least two bitmaps, provided "
                             + bitmaps.length
             );
-        int size = 0;
-        int sinbits = 0;
-        for (EWAHCompressedBitmap32 b : bitmaps) {
-            size += b.sizeInBytes();
-            if (sinbits < b.sizeInBits())
-                sinbits = b.sizeInBits();
-        }
-        if (size * 8 > sinbits) {
-            FastAggregation32.bufferedxorWithContainer(container,
-                    65536, bitmaps);
-        } else {
-            FastAggregation32.xorToContainer(container, bitmaps);
-        }
+        FastAggregation32.xorToContainer(container, bitmaps);
     }
 
     /**
@@ -2033,12 +2009,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     public static EWAHCompressedBitmap32 or(
             final EWAHCompressedBitmap32... bitmaps) {
-        if (bitmaps.length == 1)
-            return bitmaps[0];
-        int largestSize = calculateInitialSize(bitmaps);
-        final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32((int) (largestSize * 1.5));
-        orWithContainer(container, bitmaps);
-        return container;
+        return FastAggregation32.or(bitmaps);
     }
 
     /**
@@ -2056,12 +2027,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     public static EWAHCompressedBitmap32 xor(
             final EWAHCompressedBitmap32... bitmaps) {
-        if (bitmaps.length == 1)
-            return bitmaps[0];
-        int largestSize = calculateInitialSize(bitmaps);
-        final EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32((int) (largestSize * 1.5));
-        xorWithContainer(container, bitmaps);
-        return container;
+        return FastAggregation32.xor(bitmaps);
     }
 
     /**

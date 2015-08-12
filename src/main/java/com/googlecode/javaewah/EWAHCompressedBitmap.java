@@ -1952,18 +1952,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     "You should provide at least two bitmaps, provided "
                             + bitmaps.length
             );
-        long size = 0L;
-        long sinBits = 0L;
-        for (EWAHCompressedBitmap b : bitmaps) {
-            size += b.sizeInBytes();
-            if (sinBits < b.sizeInBits())
-                sinBits = b.sizeInBits();
-        }
-        if (size * 8 > sinBits) {
-            FastAggregation.bufferedorWithContainer(container, 65536, bitmaps);
-        } else {
-            FastAggregation.orToContainer(container, bitmaps);
-        }
+        FastAggregation.orToContainer(container, bitmaps);
     }
 
     /**
@@ -1982,18 +1971,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     "You should provide at least two bitmaps, provided "
                             + bitmaps.length
             );
-        long size = 0L;
-        long sizeInBits = 0L;
-        for (EWAHCompressedBitmap b : bitmaps) {
-            size += b.sizeInBytes();
-            if (sizeInBits < b.sizeInBits())
-                sizeInBits = b.sizeInBits();
-        }
-        if (size * 8 > sizeInBits) {
-            FastAggregation.bufferedxorWithContainer(container, 65536, bitmaps);
-        } else {
-            FastAggregation.xorToContainer(container, bitmaps);
-        }
+        FastAggregation.xorToContainer(container, bitmaps);
     }
 
     /**

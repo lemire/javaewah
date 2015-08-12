@@ -3,6 +3,7 @@ package com.googlecode.javaewah;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 
 /*
@@ -208,6 +209,8 @@ public final class FastAggregation {
 
     /**
      * Uses a priority queue to compute the or aggregate.
+     * 
+     * This algorithm runs in linearithmic time (O(n log n)) with respect to the number of bitmaps.
      *
      * @param <T>     a class extending LogicalElement (like a compressed
      *                bitmap)
@@ -238,6 +241,8 @@ public final class FastAggregation {
      * Uses a priority queue to compute the or aggregate.
      * 
      * The content of the container is overwritten.
+     * 
+     * This algorithm runs in linearithmic time (O(n log n)) with respect to the number of bitmaps.
      *
      * @param container where we write the result
      * @param bitmaps   to be aggregated
@@ -265,6 +270,62 @@ public final class FastAggregation {
         }
         pq.poll().orToContainer(pq.poll(), container);
     }
+    
+    /**
+     * Simple algorithm that computes the OR aggregate naively.
+     * 
+     * @param bitmaps input bitmaps
+     * @return new bitmap containing the aggregate
+     */
+    public static EWAHCompressedBitmap or(final EWAHCompressedBitmap... bitmaps) {
+        EWAHCompressedBitmap bitmapor = new EWAHCompressedBitmap();
+        for(EWAHCompressedBitmap b : bitmaps) {
+            bitmapor = bitmapor.or(b);
+        }
+        return bitmapor;
+    }
+    
+    /**
+     * Simple algorithm that computes the XOR aggregate naively.
+     * 
+     * @param bitmaps input bitmaps
+     * @return new bitmap containing the aggregate
+     */
+    public static EWAHCompressedBitmap xor(final EWAHCompressedBitmap... bitmaps) {
+        EWAHCompressedBitmap bitmapxor = new EWAHCompressedBitmap();
+        for(EWAHCompressedBitmap b : bitmaps) {
+            bitmapxor = bitmapxor.xor(b);
+        }
+        return bitmapxor;
+    }
+    /**
+     * Simple algorithm that computes the OR aggregate naively.
+     * 
+     * @param bitmaps input bitmaps
+     * @return new bitmap containing the aggregate
+     */
+    public static EWAHCompressedBitmap or(final Iterator<EWAHCompressedBitmap> bitmaps) {
+        EWAHCompressedBitmap bitmapor = new EWAHCompressedBitmap();
+        while(bitmaps.hasNext()) {
+            bitmapor = bitmapor.or(bitmaps.next());
+        }
+        return bitmapor;
+    }
+    
+    /**
+     * Simple algorithm that computes the XOR aggregate naively.
+     * 
+     * @param bitmaps input bitmaps
+     * @return new bitmap containing the aggregate
+     */
+    public static EWAHCompressedBitmap xor(final Iterator<EWAHCompressedBitmap> bitmaps) {
+        EWAHCompressedBitmap bitmapxor = new EWAHCompressedBitmap();
+        while(bitmaps.hasNext()) {
+            bitmapxor = bitmapxor.xor(bitmaps.next());
+        }
+        return bitmapxor;
+    }
+
 
     /**
      * Uses a priority queue to compute the xor aggregate.
