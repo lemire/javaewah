@@ -44,12 +44,12 @@ final class ReverseIntIterator implements IntIterator {
     @Override
     public int next() {
         final int answer;
-        if (runningHasNext()) {
-            answer = this.position--;
-        } else {
+        if (literalHasNext()) {
             final long t = this.word & -this.word;
             answer = this.literalPosition - Long.bitCount(t - 1);
             this.word ^= t;
+        } else {
+            answer = this.position--;
         }
         this.hasNext = this.moveToPreviousRLW();
         return answer;
