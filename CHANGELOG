@@ -1,3 +1,6 @@
+version 1.0.5 (August 14th 2015)
+ - Fixed bug in reverse iterators.
+
 version 1.0.4 (August 12th 2015)
  - Using priority queues for OR and XOR aggregation.
 
