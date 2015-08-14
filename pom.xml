@@ -64,8 +64,8 @@
    </dependency>
    </dependencies>
    <issueManagement>
-    <system>Google Code Issue Tracking</system>
-    <url>http://code.google.com/p/javaewah/issues/list</url>
+    <system>GitHub Issue Tracking</system>
+    <url>https://github.com/lemire/javaewah/issues</url>
   </issueManagement>
    <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -149,7 +149,7 @@
     </plugins>
   </build>
    <name>JavaEWAH</name>
-   <url>http://code.google.com/p/javaewah/</url>
+   <url>https://github.com/lemire/javaewah</url>
    <description>The bit array data structure is implemented in Java as the BitSet class. Unfortunately, this fails to scale without compression.
 
 JavaEWAH is a word-aligned compressed variant of the Java bitset class. It uses a 64-bit run-length encoding (RLE) compression scheme.
