@@ -1,3 +1,6 @@
+version 1.0.6 (August 15th 2015)
+ - Fixed bug in reverse iterators.
+
 version 1.0.5 (August 14th 2015)
  - Fixed bug in reverse iterators.
 
