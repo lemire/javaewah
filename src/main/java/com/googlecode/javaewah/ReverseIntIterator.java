@@ -74,6 +74,12 @@ final class ReverseIntIterator implements IntIterator {
             final int usedBitsInLast = this.sizeInBits % WORD_IN_BITS;
             if(usedBitsInLast > 0) {
                 this.runningLength += WORD_IN_BITS - usedBitsInLast;
+                if(this.wordLength > 0) {
+                    this.word = Long.reverse(this.buffer.getWord(this.wordPosition + this.wordLength--));
+                    this.word = (this.word >>> (WORD_IN_BITS - usedBitsInLast));
+                    this.literalPosition = this.position;
+                    this.position -= usedBitsInLast;
+                }
             }
         }
         this.runningBit = rlw.getRunningBit();
@@ -86,15 +92,8 @@ final class ReverseIntIterator implements IntIterator {
     private boolean literalHasNext() {
         while (this.word == 0 && this.wordLength > 0) {
             this.word = Long.reverse(this.buffer.getWord(this.wordPosition + this.wordLength--));
-            int usedBits = WORD_IN_BITS;
-            if (this.position == this.sizeInBits - 1) {
-                usedBits = this.sizeInBits % WORD_IN_BITS;
-                if (usedBits > 0) {
-                    this.word = (this.word >>> (WORD_IN_BITS - usedBits));
-                }
-            }
             this.literalPosition = this.position;
-            this.position -= usedBits;
+            this.position -= WORD_IN_BITS;
         }
         return this.word != 0;
     }
