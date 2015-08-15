@@ -329,7 +329,7 @@ public final class FastAggregation32 {
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap32 xor(final Iterator<EWAHCompressedBitmap32> bitmaps) {
-        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(
+        PriorityQueue<EWAHCompressedBitmap32> pq = new PriorityQueue<EWAHCompressedBitmap32>(32,
                 new Comparator<EWAHCompressedBitmap32>() {
                     @Override
                     public int compare(EWAHCompressedBitmap32 a, EWAHCompressedBitmap32 b) {

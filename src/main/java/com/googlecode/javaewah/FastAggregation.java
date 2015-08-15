@@ -331,7 +331,7 @@ public final class FastAggregation {
      * @return new bitmap containing the aggregate
      */
     public static EWAHCompressedBitmap or(final Iterator<EWAHCompressedBitmap> bitmaps) {
-        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(
+        PriorityQueue<EWAHCompressedBitmap> pq = new PriorityQueue<EWAHCompressedBitmap>(32,
                 new Comparator<EWAHCompressedBitmap>() {
                     @Override
                     public int compare(EWAHCompressedBitmap a, EWAHCompressedBitmap b) {
