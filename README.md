@@ -211,6 +211,10 @@ https://github.com/jolby/clojure-ewah-bitmap
 Frequent questions
 ------------------
 
+Question: How do I build javaewah without testing or signing?
+
+        mvn clean install -DskipTests -Dgpg.skip=true
+
 Question: Will JavaEWAH support long values?
 
 Answer: It might, but it does not at the moment. 
