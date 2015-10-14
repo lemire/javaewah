@@ -430,6 +430,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 rlwj.discardFirstWords(nbre_literal);
             }
         }
+  
         if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING) {
             final boolean i_remains = rlwi.size() > 0;
             final IteratingBufferedRunningLengthWord remaining = i_remains ? rlwi : rlwj;
@@ -801,24 +802,21 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     @Override
     public int hashCode() {
         int karprabin = 0;
-        final int B = 31;
+        final int B = 0x9e3779b1;
         final EWAHIterator i = this.getEWAHIterator();
         while (i.hasNext()) {
             i.next();
             if (i.rlw.getRunningBit()) {
-                karprabin += B
-                        * karprabin
-                        + (i.rlw.getRunningLength() & ((1l << 32) - 1));
-                karprabin += B * karprabin
-                        + (i.rlw.getRunningLength() >>> 32);
+                final long rl = i.rlw.getRunningLength();
+                karprabin += B * (rl & 0xFFFFFFFF);
+                karprabin += B * ((rl>>>32) & 0xFFFFFFFF);
             }
-            for (int k = 0; k < i.rlw.getNumberOfLiteralWords(); ++k) {
-                karprabin += B
-                        * karprabin
-                        + (this.buffer.getWord(i.literalWords() + k) & ((1l << 32) - 1));
-                karprabin += B
-                        * karprabin
-                        + (this.buffer.getWord(i.literalWords() + k) >>> 32);
+            final int nlw = i.rlw.getNumberOfLiteralWords();
+            final int lw = i.literalWords();
+            for (int k = 0; k < nlw ; ++k) {
+                long W = this.buffer.getWord(lw + k);
+                karprabin += B * (W & 0xFFFFFFFF);
+                karprabin += B * ((W>>>32) & 0xFFFFFFFF);
             }
         }
         return karprabin;
