@@ -606,8 +606,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      */
     public void serialize(DataOutput out) throws IOException {
         out.writeInt(this.sizeInBits);
-        out.writeInt(this.buffer.sizeInWords());
-        for(int i = 0; i < this.buffer.sizeInWords(); ++i) {
+        final int siw = this.buffer.sizeInWords();
+        out.writeInt(siw);
+        for(int i = 0; i < siw; ++i) {
             out.writeLong(this.buffer.getWord(i));
         }
         out.writeInt(this.rlw.position);
@@ -766,14 +767,16 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         while (i.hasNext()) {
             RunningLengthWord localrlw = i.next();
             if (localrlw.getRunningBit()) {
-                for (int j = 0; j < localrlw.getRunningLength(); ++j) {
+                final long N = localrlw.getRunningLength();
+                for (long j = 0; j < N; ++j) {
                     for (int c = 0; c < WORD_IN_BITS; ++c)
                         v.add(pos++);
                 }
             } else {
                 pos += WORD_IN_BITS * localrlw.getRunningLength();
             }
-            for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
+            final int nlw = localrlw.getNumberOfLiteralWords();
+            for (int j = 0; j < nlw; ++j) {
                 long data = i.buffer().getWord(i.literalWords() + j);
                 while (data != 0) {
                     final long T = data & -data;
@@ -945,7 +948,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         while (true) {
             final RunningLengthWord rlw1 = i.next();
             rlw1.setRunningBit(!rlw1.getRunningBit());
-            for (int j = 0; j < rlw1.getNumberOfLiteralWords(); ++j) {
+            int nlw = rlw1.getNumberOfLiteralWords();
+            for (int j = 0; j < nlw; ++j) {
                 int position = i.literalWords() + j;
 				i.buffer().negateWord(position);
             }
@@ -1159,7 +1163,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      */
     public int getFirstSetBit() {
         int nword = 0;
-        for(int pos = 0; pos < this.buffer.sizeInWords(); ++pos) {
+        final int siw = this.buffer.sizeInWords();
+        for(int pos = 0; pos < siw; ++pos) {
            long rl = RunningLengthWord.getRunningLength(this.buffer, pos);
            boolean rb = RunningLengthWord.getRunningBit(this.buffer, pos);
            if((rl > 0) && rb) {
@@ -1283,7 +1288,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      */
     private void locateAndSet(int i, boolean value) {
         int nbits = 0;
-        for(int pos = 0; pos < this.buffer.sizeInWords(); ) {
+        final int siw = this.buffer.sizeInWords();
+        for(int pos = 0; pos < siw; ) {
             long rl = RunningLengthWord.getRunningLength(this.buffer, pos);
             boolean rb = RunningLengthWord.getRunningBit(this.buffer, pos);
             long lw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, pos);
