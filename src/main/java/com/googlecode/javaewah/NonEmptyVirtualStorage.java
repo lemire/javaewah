@@ -45,9 +45,8 @@ public class NonEmptyVirtualStorage implements BitmapStorage {
      */
     @Override
     public void addStreamOfLiteralWords(Buffer buffer, int start, int number) {
-        if (number > 0) {
-            throw nonEmptyException;
-        }
+        for(int x = start; x < start + number ; ++x)
+           if(buffer.getWord(x)!=0) throw nonEmptyException;
     }
 
     /**
