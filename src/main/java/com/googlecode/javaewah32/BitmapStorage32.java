@@ -66,9 +66,10 @@ public interface BitmapStorage32 {
 
     /**
      * Sets the size in bits of the bitmap as an *uncompressed* bitmap.
-     * This can only be used to reduce the size of the bitmaps within
+     * Normally, this is used to reduce the size of the bitmaps within
      * the scope of the last word. Specifically, this means that
      * (sizeInBits()+31)/32 must be equal to (size+31)/32.
+     * If needed, the bitmap can be further padded with zeroes. 
      *  
      * @param size         the size in bits
      */

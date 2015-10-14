@@ -425,10 +425,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         }
         
         if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING) {
-            final boolean i_remains = rlwi.size() > 0;
-            final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi
-                    : rlwj;
-            remaining.dischargeAsEmpty(container);
             container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(),
                     a.sizeInBits()));
         }
@@ -543,8 +539,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         final IteratingBufferedRunningLengthWord32 remaining = i_remains ? rlwi : rlwj;
         if (i_remains)
             remaining.discharge(container);
-        else if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING)
-            remaining.dischargeAsEmpty(container);
         if (ADJUST_CONTAINER_SIZE_WHEN_AGGREGATING)
             container.setSizeInBitsWithinLastWord(Math.max(sizeInBits(),
                     a.sizeInBits()));
@@ -1407,6 +1401,11 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      */
     @Override
     public void setSizeInBitsWithinLastWord(final int size) {
+        // TODO: This method could be replaced with setSizeInBits
+        if ((size + WORD_IN_BITS - 1) / WORD_IN_BITS > (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS) {
+            setSizeInBits(size,false);
+            return;
+        }
         if ((size + WORD_IN_BITS - 1) / WORD_IN_BITS != (this.sizeInBits + WORD_IN_BITS - 1) / WORD_IN_BITS)
             throw new RuntimeException(
                     "You can only reduce the size of the bitmap within the scope of the last word. To extend the bitmap, please call setSizeInbits(int,boolean): "
