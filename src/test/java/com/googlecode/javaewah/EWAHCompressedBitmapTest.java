@@ -217,120 +217,120 @@ public class EWAHCompressedBitmapTest {
         Assert.assertEquals(1, bitmap.cardinality());
     }
 
-	@Test
-	public void andCompressedSize() {
-		EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
-		EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
-		
-		b1.set(0);
-		b1.set(WORD_IN_BITS);
-		b2.set(1);
-		b2.set(WORD_IN_BITS+1);
-		
-		EWAHCompressedBitmap result = b1.and(b2);
-		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
-	}
-	
-	@Test
-	public void orCompressedSize() {
-		EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
-		EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
-		
-		b1.set(0);
-		b1.set(WORD_IN_BITS);
-		b2.setSizeInBits(1, false);
-		b2.setSizeInBits(WORD_IN_BITS, true);
+    @Test
+    public void andCompressedSize() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
+        EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
+        
+        b1.set(0);
+        b1.set(WORD_IN_BITS);
+        b2.set(1);
+        b2.set(WORD_IN_BITS+1);
+        
+        EWAHCompressedBitmap result = b1.and(b2);
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+    }
+    
+    @Test
+    public void orCompressedSize() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
+        EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
+        
+        b1.set(0);
+        b1.set(WORD_IN_BITS);
+        b2.setSizeInBits(1, false);
+        b2.setSizeInBits(WORD_IN_BITS, true);
 
-		EWAHCompressedBitmap result = b1.or(b2);
-		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
-	}
-	
-	@Test
-	public void xorCompressedSize() {
-		EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
-		EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
-		
-		b1.set(0);
-		b1.set(WORD_IN_BITS);
-		b2.setSizeInBits(1, false);
-		b2.setSizeInBits(WORD_IN_BITS, true);
+        EWAHCompressedBitmap result = b1.or(b2);
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+    }
+    
+    @Test
+    public void xorCompressedSize() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
+        EWAHCompressedBitmap b2 = EWAHCompressedBitmap.bitmapOf();
+        
+        b1.set(0);
+        b1.set(WORD_IN_BITS);
+        b2.setSizeInBits(1, false);
+        b2.setSizeInBits(WORD_IN_BITS, true);
 
-		EWAHCompressedBitmap result = b1.xor(b2);
-		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
-	}
-	
-	@Test
-	public void andNotCompressedSize() {
-		EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
-		
-		b1.set(0);
-		b1.set(WORD_IN_BITS);
+        EWAHCompressedBitmap result = b1.xor(b2);
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+    }
+    
+    @Test
+    public void andNotCompressedSize() {
+        EWAHCompressedBitmap b1 = EWAHCompressedBitmap.bitmapOf();
+        
+        b1.set(0);
+        b1.set(WORD_IN_BITS);
 
-		EWAHCompressedBitmap result = b1.andNot(b1);
-		Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
-	}
-	
-	@Test
-	public void testBug091() {
-	    String v1 = "0000000000000000000000000000000000000000000000000000000000111101";
-	    String v2 = "0000000000000000001111011111111111111111111111111110001111000000";
+        EWAHCompressedBitmap result = b1.andNot(b1);
+        Assert.assertEquals(2 * WORD_IN_BITS / 8, result.sizeInBytes());
+    }
+    
+    @Test
+    public void testBug091() {
+        String v1 = "0000000000000000000000000000000000000000000000000000000000111101";
+        String v2 = "0000000000000000001111011111111111111111111111111110001111000000";
 
-	    EWAHCompressedBitmap bm1 = strToBitmap(v1);
-	    EWAHCompressedBitmap bm2 = strToBitmap(v2);
+        EWAHCompressedBitmap bm1 = strToBitmap(v1);
+        EWAHCompressedBitmap bm2 = strToBitmap(v2);
 
-	    bm1 = bm1.and(bm2); // bm1 should now have no bit set
+        bm1 = bm1.and(bm2); // bm1 should now have no bit set
 
-	    EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
-	    bm.setSizeInBits(bm1.sizeInBits(), false); // Create a bitmap with no bit set
+        EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+        bm.setSizeInBits(bm1.sizeInBits(), false); // Create a bitmap with no bit set
 
-	    Assert.assertEquals(0,bm1.cardinality());
-	    Assert.assertEquals(0,bm1.cardinality());
-	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
-	    Assert.assertTrue(bm.equals(bm1));
-	}
+        Assert.assertEquals(0,bm1.cardinality());
+        Assert.assertEquals(0,bm1.cardinality());
+        Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
+        Assert.assertTrue(bm.equals(bm1));
+    }
 
-	private EWAHCompressedBitmap strToBitmap(String str) {
-	    EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
-	    for (int i = 0; i < str.length(); i++) {
-	        if (str.charAt(i)=='1') {
-	            bm.set(i);
-	        }
-	    }
-	    bm.setSizeInBits(str.length(), false);
-	    return bm;
-	}
-	
-	@Test
-	public void testBug090() throws Exception {
-	    EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
-	    bm.setSizeInBits(8, false); // Create a bitmap with no bit set
+    private EWAHCompressedBitmap strToBitmap(String str) {
+        EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i)=='1') {
+                bm.set(i);
+            }
+        }
+        bm.setSizeInBits(str.length(), false);
+        return bm;
+    }
+    
+    @Test
+    public void testBug090() throws Exception {
+        EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+        bm.setSizeInBits(8, false); // Create a bitmap with no bit set
 
-	    EWAHCompressedBitmap bm1 = bm.clone();
-	    bm1.not(); // Create a bitmap with all bits set
-	    bm1 = bm1.and(bm); // Clear all bits
+        EWAHCompressedBitmap bm1 = bm.clone();
+        bm1.not(); // Create a bitmap with all bits set
+        bm1 = bm1.and(bm); // Clear all bits
 
-	    Assert.assertEquals(0,bm.cardinality());
-	    Assert.assertEquals(0,bm1.cardinality());
-	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
-	    Assert.assertTrue(bm.equals(bm1));
-	}
+        Assert.assertEquals(0,bm.cardinality());
+        Assert.assertEquals(0,bm1.cardinality());
+        Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
+        Assert.assertTrue(bm.equals(bm1));
+    }
 
-	@Test
-	public void testBug090b() throws Exception {
-	    EWAHCompressedBitmap bm1 = new EWAHCompressedBitmap();
-	    bm1.setSizeInBits(8, false); // Create a bitmap with no bit set
-	    System.out.println(bm1.toDebugString());
+    @Test
+    public void testBug090b() throws Exception {
+        EWAHCompressedBitmap bm1 = new EWAHCompressedBitmap();
+        bm1.setSizeInBits(8, false); // Create a bitmap with no bit set
+        System.out.println(bm1.toDebugString());
         EWAHCompressedBitmap bm2 = new EWAHCompressedBitmap();
         bm2.setSizeInBits(64, false); // Create a bitmap with no bit set
         EWAHCompressedBitmap bm3 = new EWAHCompressedBitmap();
         Assert.assertTrue(bm1.equals(bm2));
-	    Assert.assertTrue(bm2.equals(bm1));
+        Assert.assertTrue(bm2.equals(bm1));
         Assert.assertTrue(bm2.equals(bm3));
         Assert.assertTrue(bm3.equals(bm2));
         Assert.assertTrue(bm1.equals(bm3));
         Assert.assertTrue(bm3.equals(bm1));
-	}
-	
+    }
+    
     @Test
     public void jugovacTest() {
         EWAHCompressedBitmap bm1 = new EWAHCompressedBitmap(1);
@@ -1033,42 +1033,42 @@ public class EWAHCompressedBitmapTest {
 
     @Test
     public void testAstesana() throws Exception {
-    	for(int k = 5; k < 256; ++k) {
-			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
-			bm.set(1);
-			bm.setSizeInBits(k, false);
-			EWAHCompressedBitmap bm1 = bm.clone();
-			bm1.not();
-			EWAHCompressedBitmap x = bm1.and(bm1);
-			Assert.assertEquals(x.cardinality(), k-1);
-			x = bm1.andNot(bm1);
-			Assert.assertEquals(x.cardinality(), 0);
-			x = bm1.xor(bm1);
-			Assert.assertEquals(x.cardinality(), 0);
-			x = bm1.or(bm1);
-			Assert.assertEquals(x.cardinality(), k-1);
-    	}
+        for(int k = 5; k < 256; ++k) {
+            EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+            bm.set(1);
+            bm.setSizeInBits(k, false);
+            EWAHCompressedBitmap bm1 = bm.clone();
+            bm1.not();
+            EWAHCompressedBitmap x = bm1.and(bm1);
+            Assert.assertEquals(x.cardinality(), k-1);
+            x = bm1.andNot(bm1);
+            Assert.assertEquals(x.cardinality(), 0);
+            x = bm1.xor(bm1);
+            Assert.assertEquals(x.cardinality(), 0);
+            x = bm1.or(bm1);
+            Assert.assertEquals(x.cardinality(), k-1);
+        }
     }
     @Test
     public void testAstesana2() {
-		for (int k = 1; k < 256; ++k) {
-			// Create two equivalent bitmaps
-			EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
-			bm.set(0);
-			bm.setSizeInBits(k, false);
-			EWAHCompressedBitmap bm3 = new EWAHCompressedBitmap();
-			bm3.set(0);
-			bm3.setSizeInBits(k, false);
-			// Perform two negation ->
-			// should change nothing
-			bm.not();
-			bm.not();
-			// Verify it changes nothing
-			Assert.assertArrayEquals(bm.toArray(), bm3.toArray());
-			Assert.assertEquals(bm.sizeInBits(), bm3.sizeInBits());
+        for (int k = 1; k < 256; ++k) {
+            // Create two equivalent bitmaps
+            EWAHCompressedBitmap bm = new EWAHCompressedBitmap();
+            bm.set(0);
+            bm.setSizeInBits(k, false);
+            EWAHCompressedBitmap bm3 = new EWAHCompressedBitmap();
+            bm3.set(0);
+            bm3.setSizeInBits(k, false);
+            // Perform two negation ->
+            // should change nothing
+            bm.not();
+            bm.not();
+            // Verify it changes nothing
+            Assert.assertArrayEquals(bm.toArray(), bm3.toArray());
+            Assert.assertEquals(bm.sizeInBits(), bm3.sizeInBits());
 
-			Assert.assertTrue(bm.equals(bm3));
-		}
+            Assert.assertTrue(bm.equals(bm3));
+        }
     }
 
     @Test
@@ -1967,7 +1967,7 @@ public class EWAHCompressedBitmapTest {
         EWAHCompressedBitmap ewcb = EWAHCompressedBitmap.bitmapOf(50,
                 70).and(EWAHCompressedBitmap.bitmapOf(50, 1000));
         EWAHCompressedBitmap expectedBitmap = EWAHCompressedBitmap.bitmapOf(50);
-		expectedBitmap.setSizeInBits(1000, false);
+        expectedBitmap.setSizeInBits(1000, false);
         Assert.assertEquals(expectedBitmap, ewcb);
         Assert.assertEquals(expectedBitmap.hashCode(), ewcb.hashCode());
         ewcb.addWord(~0l);
