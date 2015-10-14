@@ -1,3 +1,6 @@
+version 1.0.8 (October 14th 2015)
+ - Improving the performance of intersections and differences in some cases.
+
 version 1.0.7 (August 15th 2015)
  - Fixing backward compatibility issue with versions prior to JDK 8.
 
