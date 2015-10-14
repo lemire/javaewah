@@ -258,6 +258,23 @@ public class EWAHCompressedBitmap32Test {
 	    Assert.assertEquals(bm.sizeInBits(),bm1.sizeInBits());
 	    Assert.assertTrue(bm.equals(bm1));
 	}
+
+	@Test
+	public void testBug090b() throws Exception {
+	    EWAHCompressedBitmap32 bm1 = new EWAHCompressedBitmap32();
+	    bm1.setSizeInBits(8, false); // Create a bitmap with no bit set
+	    System.out.println(bm1.toDebugString());
+	    EWAHCompressedBitmap32 bm2 = new EWAHCompressedBitmap32();
+	    bm2.setSizeInBits(32, false); // Create a bitmap with no bit set
+	    EWAHCompressedBitmap32 bm3 = new EWAHCompressedBitmap32();
+	    Assert.assertTrue(bm1.equals(bm2));
+	    Assert.assertTrue(bm2.equals(bm1));
+	    Assert.assertTrue(bm2.equals(bm3));
+	    Assert.assertTrue(bm3.equals(bm2));
+	    Assert.assertTrue(bm1.equals(bm3));
+	    Assert.assertTrue(bm3.equals(bm1));
+	}
+
 	
 	@Test
     public void jugovacTest() {
