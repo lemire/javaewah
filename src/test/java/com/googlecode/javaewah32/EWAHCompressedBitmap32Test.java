@@ -275,6 +275,34 @@ public class EWAHCompressedBitmap32Test {
         Assert.assertTrue(bm3.equals(bm1));
     }
 
+    @Test
+    public void shiftTest() {
+        System.out.println("testing shifts");
+        for (int k = 2; k <= 4096; k *= 2) {
+            int[] bitsToSet = createSortedIntArrayOfBitsToSet(k,
+                    434455 + 5 * k);
+            EWAHCompressedBitmap32 ewah = new EWAHCompressedBitmap32();
+            for (int i : bitsToSet) {
+                ewah.set(i);
+            }
+            for(int b = 0; b < 128; ++b) {
+                EWAHCompressedBitmap32 ewahs = ewah.shift(b);
+                int[] sb = ewahs.toArray();
+                for(int z = 0; z < sb.length; ++z)
+                    if(sb[z] != bitsToSet[z] + b) throw new RuntimeException("bug");
+            }
+            for(int z = 0; z < 256;++z) {
+                ewah.set(z);
+            }
+            bitsToSet = ewah.toArray();
+            for(int b = 0; b < 128; ++b) {
+                EWAHCompressedBitmap32 ewahs = ewah.shift(b);
+                int[] sb = ewahs.toArray();
+                for(int z = 0; z < sb.length; ++z)
+                    if(sb[z] != bitsToSet[z] + b) throw new RuntimeException("bug");
+            }
+        }
+    }
     
     @Test
     public void testBug090c() throws Exception {

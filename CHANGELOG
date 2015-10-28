@@ -1,3 +1,6 @@
+version 1.1.0 (October 28th 2015)
+ - Added "shift" function to shift a whole bitmap by b bits
+
 version 1.0.8 (October 14th 2015)
  - Improving the performance of intersections and differences in some cases.
 

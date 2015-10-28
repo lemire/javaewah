@@ -63,7 +63,8 @@ public final class IteratorUtil32 {
                 c.addStreamOfEmptyWords(i.getRunningBit(),
                         i.getRunningLength());
             }
-            for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
+            int il = i.getNumberOfLiteralWords();
+            for (int k = 0; k < il ; ++k)
                 c.addWord(i.getLiteralWordAt(k));
             if (!i.next())
                 break;
@@ -81,7 +82,8 @@ public final class IteratorUtil32 {
             if (i.getRunningBit())
                 answer += i.getRunningLength()
                         * EWAHCompressedBitmap32.WORD_IN_BITS;
-            for (int k = 0; k < i.getNumberOfLiteralWords(); ++k)
+            int il = i.getNumberOfLiteralWords();
+            for (int k = 0; k < il; ++k)
                 answer += Integer.bitCount(i.getLiteralWordAt(k));
             if (!i.next())
                 break;

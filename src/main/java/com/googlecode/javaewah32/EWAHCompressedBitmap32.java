@@ -2055,6 +2055,72 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     }
 
     /**
+     * Generate a new bitmap  a new bitmap shifted by "b" bits. 
+     * If b is positive, the position of all set bits is increased by 
+     * b. The negative case is not supported.
+     *
+     * @param b number of bits
+     * @return new shifted bitmap
+     */
+    public EWAHCompressedBitmap32 shift(final int b) {
+        if (b < 0)
+            throw new IllegalArgumentException(
+                    "Negative shifts unsupported at the moment."); // TODO: add
+                                                                   // support
+        int sz = this.buffer.sizeInWords();
+        int newsz = b > 0 ? sz + (b + (WORD_IN_BITS - 1)) / WORD_IN_BITS : sz;
+        EWAHCompressedBitmap32 answer = new EWAHCompressedBitmap32(newsz);
+        IteratingRLW32 i = this.getIteratingRLW();
+        int fullwords = b / WORD_IN_BITS;
+        int shift = b % WORD_IN_BITS;
+        answer.addStreamOfEmptyWords(false, fullwords);
+        if (shift == 0) {
+            // could possibly be faster
+            while (true) {
+                int rl = i.getRunningLength();
+                answer.addStreamOfEmptyWords(i.getRunningBit(), rl);
+                int x = i.getNumberOfLiteralWords();
+                for (int k = 0; k < x; ++k) {
+                    answer.addLiteralWord(i.getLiteralWordAt(k));
+                }
+                if (!i.next()) {
+                    break;
+                }
+            }
+        } else {
+            int w = 0;
+            while (true) {
+                int rl = i.getRunningLength();
+                if (rl > 0) {
+                    if (i.getRunningBit()) {
+                        int sw = w | (-1 << shift);
+                        answer.addWord(sw);
+                        w = -1 >>> (WORD_IN_BITS - shift);
+                    } else {
+                        answer.addWord(w);
+                        w = 0;
+                    }
+                    if (rl > 1) {
+                        answer.addStreamOfEmptyWords(i.getRunningBit(), rl - 1);
+                    }
+                }
+                int x = i.getNumberOfLiteralWords();
+                for (int k = 0; k < x; ++k) {
+                    int neww = i.getLiteralWordAt(k);
+                    int sw = w | (neww << shift);
+                    answer.addWord(sw);
+                    w = neww >>> (WORD_IN_BITS - shift);
+                }
+                if (!i.next()) {
+                    answer.addWord(w);
+                    break;
+                }
+            }
+        }
+        answer.sizeInBits = this.sizeInBits + b;
+        return answer;
+    }
+    /**
      * The buffer
      */
     final Buffer32 buffer;
