@@ -2512,6 +2512,16 @@ public class EWAHCompressedBitmap32Test {
         for (int i : x.toList())
             Assert.assertTrue(y.get(i));
     }
+    
+
+    @Test
+    public void insertTest() {
+        EWAHCompressedBitmap32 ewah = new EWAHCompressedBitmap32();
+        for(int k = 0; k < 1<<20; ++k)
+          ewah.addLiteralWord(0xF0);
+        Assert.assertEquals(ewah.cardinality(), 4 * (1<<20));
+    }
+    
 
     /**
      * Convenience function to assess equality between an array and an

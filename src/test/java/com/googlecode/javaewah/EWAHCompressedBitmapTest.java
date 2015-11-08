@@ -2581,6 +2581,15 @@ public class EWAHCompressedBitmapTest {
             Assert.assertTrue(y.get(i));
     }
 
+    
+    @Test
+    public void insertTest() {
+        EWAHCompressedBitmap ewah = new EWAHCompressedBitmap();
+        for(int k = 0; k < 1<<20; ++k)
+          ewah.addLiteralWord(0xF0);
+        Assert.assertEquals(ewah.cardinality(), 4 * (1<<20));
+    }
+    
     /**
      * Convenience function to assess equality between an array and an
      * iterator over Integers

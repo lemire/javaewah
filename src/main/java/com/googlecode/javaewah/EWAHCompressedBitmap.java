@@ -279,9 +279,10 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             this.rlw.position = this.buffer.sizeInWords() - 1;
             this.rlw.setNumberOfLiteralWords(1);
             this.buffer.push_back(newData);
+        } else {
+            this.rlw.setNumberOfLiteralWords(numberSoFar + 1);
+            this.buffer.push_back(newData);
         }
-        this.rlw.setNumberOfLiteralWords(numberSoFar + 1);
-        this.buffer.push_back(newData);
     }
 
     /**
