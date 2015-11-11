@@ -1,3 +1,6 @@
+version 1.1.2 (November 11th 2015)
+ - Fixed issue 58:  ChunkIterator not iterating correctly?
+
 version 1.1.1 (November 7th 2015)
  - Fixed issue 57: "The function insertLiteralWord in EWAHCompressedBitmap32 should have its last two lines in an else block. Otherwise, we get an IndexOutOfBoundsException when the number of literal words are more than RunningLengthWord32.LARGEST_LITERAL_COUNT"
 
