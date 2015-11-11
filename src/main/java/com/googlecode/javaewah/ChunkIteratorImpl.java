@@ -93,7 +93,7 @@ final class ChunkIteratorImpl implements ChunkIterator {
     }
 
     private boolean literalHasNext() {
-        while (this.word == 0 && this.wordPosition < this.wordLength) {
+        while (this.word == 0 && this.wordMask == 0 && this.wordPosition < this.wordLength) {
             this.word = this.buffer.getWord(this.wordPosition++);
             this.wordMask = 1l;
         }
