@@ -873,6 +873,14 @@ public class EWAHCompressedBitmap32Test {
     }
 
     @Test
+    public void issue59() {
+        EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(243, 260, 1000);
+        ChunkIterator iter = bitmap.chunkIterator();
+        iter.move(245);
+        Assert.assertEquals(15, iter.nextLength());
+    }
+
+    @Test
     public void chunkIterator() {
         EWAHCompressedBitmap32 bitmap = EWAHCompressedBitmap32.bitmapOf(0, 1, 2, 3, 4, 7, 8, 9, 10);
 

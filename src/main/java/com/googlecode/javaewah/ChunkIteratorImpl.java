@@ -97,7 +97,7 @@ final class ChunkIteratorImpl implements ChunkIterator {
             this.word = this.buffer.getWord(this.wordPosition++);
             this.wordMask = 1l;
         }
-        return this.word != 0 || (!hasNextRLW() && this.position < this.sizeInBits);
+        return this.word != 0 || this.wordMask != 0 || (!hasNextRLW() && this.position < this.sizeInBits);
     }
 
     private boolean hasNextRLW() {
