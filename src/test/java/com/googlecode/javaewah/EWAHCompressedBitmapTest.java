@@ -21,7 +21,48 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+    
+    @Test
+    public void shiftbug001() {
+        EWAHCompressedBitmap bm1 = EWAHCompressedBitmap.bitmapOf(10, 11, 12, 13);
+        EWAHCompressedBitmap bm2 =  bm1.shift(1);
 
+        EWAHCompressedBitmap bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap bm4 = EWAHCompressedBitmap.bitmapOf(10,11,12,13,14);
+        Assert.assertEquals(bm3, bm4);
+    }
+    
+    @Test
+    public void shiftbug002() {
+        EWAHCompressedBitmap bm1 = EWAHCompressedBitmap.bitmapOf(10, 11, 12, 13, 63);
+        EWAHCompressedBitmap bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap bm4 = EWAHCompressedBitmap.bitmapOf(10,11,12,13,14, 63, 64);
+        Assert.assertEquals(bm3, bm4);
+    }
+    
+    @Test
+    public void shiftbug003() {
+        EWAHCompressedBitmap bm1 = EWAHCompressedBitmap.bitmapOf(10, 11, 12, 13, 62);
+        EWAHCompressedBitmap bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap bm4 = EWAHCompressedBitmap.bitmapOf(10,11,12,13,14, 62, 63);
+        Assert.assertEquals(bm3, bm4);
+    }
+
+    @Test
+    public void shiftbug004() {
+        EWAHCompressedBitmap bm1 = EWAHCompressedBitmap.bitmapOf(10, 11, 12, 13, 64);
+        EWAHCompressedBitmap bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap bm4 = EWAHCompressedBitmap.bitmapOf(10,11,12,13,14, 64, 65);
+        Assert.assertEquals(bm3, bm4);
+    }
+
+    
     @Test
     public void example() throws Exception {
         EWAHCompressedBitmap ewahBitmap1 = EWAHCompressedBitmap.bitmapOf(0, 2, 55, 64, 1 << 30);

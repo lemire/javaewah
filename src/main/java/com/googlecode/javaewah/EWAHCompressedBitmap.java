@@ -2083,6 +2083,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 }
             }
         } else {
+            // whether the shift should justify a new word
+            final boolean shiftextension = ((this.sizeInBits + WORD_IN_BITS - 1) % WORD_IN_BITS) + shift >= WORD_IN_BITS;
             long w = 0;
             while (true) {
                 long rl = i.getRunningLength();
@@ -2107,7 +2109,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     w = neww >>> (WORD_IN_BITS - shift);
                 }
                 if (!i.next()) {
-                    answer.addWord(w);
+                    if(shiftextension) answer.addWord(w);
                     break;
                 }
             }

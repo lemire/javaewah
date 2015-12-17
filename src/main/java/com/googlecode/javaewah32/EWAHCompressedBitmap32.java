@@ -2092,6 +2092,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             int w = 0;
             while (true) {
                 int rl = i.getRunningLength();
+                // whether the shift should justify a new word
+                final boolean shiftextension = ((this.sizeInBits + WORD_IN_BITS - 1) % WORD_IN_BITS) + shift >= WORD_IN_BITS;
                 if (rl > 0) {
                     if (i.getRunningBit()) {
                         int sw = w | (-1 << shift);
@@ -2113,7 +2115,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     w = neww >>> (WORD_IN_BITS - shift);
                 }
                 if (!i.next()) {
-                    answer.addWord(w);
+                    if(shiftextension) answer.addWord(w);
                     break;
                 }
             }

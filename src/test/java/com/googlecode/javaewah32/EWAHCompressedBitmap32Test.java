@@ -24,6 +24,50 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
 
+    
+    @Test
+    public void shiftbug001() {
+        EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(10, 11, 12, 13);
+        EWAHCompressedBitmap32 bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap32 bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap32 bm4 = EWAHCompressedBitmap32.bitmapOf(10,11,12,13,14);
+        Assert.assertEquals(bm3, bm4);
+    }
+
+    
+    @Test
+    public void shiftbug002() {
+        EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(10, 11, 12, 13, 31);
+        EWAHCompressedBitmap32 bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap32 bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap32 bm4 = EWAHCompressedBitmap32.bitmapOf(10,11,12,13,14, 31, 32);
+        Assert.assertEquals(bm3, bm4);
+    }
+    
+    
+    @Test
+    public void shiftbug003() {
+        EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(10, 11, 12, 13, 30);
+        EWAHCompressedBitmap32 bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap32 bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap32 bm4 = EWAHCompressedBitmap32.bitmapOf(10,11,12,13,14, 30, 31);
+        Assert.assertEquals(bm3, bm4);
+    }
+
+    @Test
+    public void shiftbug004() {
+        EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(10, 11, 12, 13, 32);
+        EWAHCompressedBitmap32 bm2 =  bm1.shift(1);
+
+        EWAHCompressedBitmap32 bm3 = bm1.or(bm2);
+        EWAHCompressedBitmap32 bm4 = EWAHCompressedBitmap32.bitmapOf(10,11,12,13,14, 32, 33);
+        Assert.assertEquals(bm3, bm4);
+    }
+
+    
     @Test
     public void issue54() {
         EWAHCompressedBitmap32 bm = new EWAHCompressedBitmap32();
