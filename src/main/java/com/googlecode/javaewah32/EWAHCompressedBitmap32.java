@@ -2076,18 +2076,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         int shift = b % WORD_IN_BITS;
         answer.addStreamOfEmptyWords(false, fullwords);
         if (shift == 0) {
-            // could possibly be faster
-            while (true) {
-                int rl = i.getRunningLength();
-                answer.addStreamOfEmptyWords(i.getRunningBit(), rl);
-                int x = i.getNumberOfLiteralWords();
-                for (int k = 0; k < x; ++k) {
-                    answer.addLiteralWord(i.getLiteralWordAt(k));
-                }
-                if (!i.next()) {
-                    break;
-                }
-            }
+            answer.buffer.push_back(this.buffer, 0, sz);
         } else {
             int w = 0;
             while (true) {

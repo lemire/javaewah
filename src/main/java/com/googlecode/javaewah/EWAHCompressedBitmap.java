@@ -2070,18 +2070,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         int shift = b % WORD_IN_BITS;
         answer.addStreamOfEmptyWords(false, fullwords);
         if (shift == 0) {
-            // could possibly be faster
-            while (true) {
-                long rl = i.getRunningLength();
-                answer.addStreamOfEmptyWords(i.getRunningBit(), rl);
-                int x = i.getNumberOfLiteralWords();
-                for (int k = 0; k < x; ++k) {
-                    answer.addLiteralWord(i.getLiteralWordAt(k));
-                }
-                if (!i.next()) {
-                    break;
-                }
-            }
+            answer.buffer.push_back(this.buffer, 0, sz);
         } else {
             // whether the shift should justify a new word
             final boolean shiftextension = ((this.sizeInBits + WORD_IN_BITS - 1) % WORD_IN_BITS) + shift >= WORD_IN_BITS;

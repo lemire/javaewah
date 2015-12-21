@@ -24,7 +24,19 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
 
-    
+    @Test
+    public void shiftByWordSizeBits() {
+        int[] positions = { 10, 11, 12, 13 };
+        EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(positions);
+        EWAHCompressedBitmap32 bm2 = bm1.shift(WORD_IN_BITS);
+
+        EWAHCompressedBitmap32 bm3 = EWAHCompressedBitmap32.bitmapOf();
+        for (int pos : positions) {
+            bm3.set(pos + WORD_IN_BITS);
+        }
+        Assert.assertEquals(bm3, bm2);
+    }
+
     @Test
     public void shiftbug001() {
         EWAHCompressedBitmap32 bm1 = EWAHCompressedBitmap32.bitmapOf(10, 11, 12, 13);
