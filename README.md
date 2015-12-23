@@ -272,6 +272,13 @@ You can also specify the dependency in the Maven "pom.xml" file:
 Naturally, you should replace "version" by the version
 you desire.
 
+Ubuntu (Linux)
+------------------
+
+To install javaewah on Ubuntu, type:
+
+          sudo apt-get install libjavaewah-java
+
 Travis (Continuous integration)
 -------------------------------
 
