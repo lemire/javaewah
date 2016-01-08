@@ -67,7 +67,7 @@ final class ChunkIteratorImpl32 implements ChunkIterator {
                 this.nextBit = null;
                 updateNext();
                 this.hasNext = moveToNextRLW();
-            } while(this.nextLength < 0);
+            } while(this.nextLength <= 0 && this.hasNext);
         }
     }
 
