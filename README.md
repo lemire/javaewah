@@ -6,7 +6,7 @@ JavaEWAH
 [![docs-badge][]][docs]
 
 
-(c) 2009-2015
+(c) 2009-2016
 Daniel Lemire (http://lemire.me/en/),
 Cliff Moon,
 David McIntosh (https://github.com/mctofu),

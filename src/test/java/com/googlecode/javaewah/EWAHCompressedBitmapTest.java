@@ -1,7 +1,7 @@
 package com.googlecode.javaewah;
 
 /*
- * Copyright 2009-2015, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
+ * Copyright 2009-2016, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
  * Licensed under the Apache License, Version 2.0.
  */
 
@@ -990,6 +990,25 @@ public class EWAHCompressedBitmapTest {
         ChunkIterator iter = bitmap.chunkIterator();
         iter.move(245);
         Assert.assertEquals(15, iter.nextLength());
+    }
+
+    @Test
+    public void issue61() {
+        EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+        bitmap.set(210696);
+        bitmap.set(210984);
+        bitmap.set(210985);
+        ChunkIterator iter = bitmap.chunkIterator();
+        iter.move(210984);
+        Assert.assertEquals(2, iter.nextLength());
+
+        bitmap = new EWAHCompressedBitmap();
+        bitmap.set(210696);
+        bitmap.set(210698);
+        bitmap.set(210699);
+        iter = bitmap.chunkIterator();
+        iter.move(210698);
+        Assert.assertEquals(2, iter.nextLength());
     }
 
     @Test

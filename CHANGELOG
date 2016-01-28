@@ -1,5 +1,6 @@
-upcoming
+version 1.1.5 (January 8th 2015)
  - faster shift function (gssiyankai)
+ - ChunkIterator not iterating correctly #61
 
 version 1.1.4 (December 17th 2015)
  - Fixed issue 60: bitmap shift then or

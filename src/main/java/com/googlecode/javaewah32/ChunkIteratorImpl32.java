@@ -1,7 +1,7 @@
 package com.googlecode.javaewah32;
 
 /*
- * Copyright 2009-2015, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
+ * Copyright 2009-2016, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
  * Licensed under the Apache License, Version 2.0.
  */
 
@@ -67,7 +67,7 @@ final class ChunkIteratorImpl32 implements ChunkIterator {
                 this.nextBit = null;
                 updateNext();
                 this.hasNext = moveToNextRLW();
-            } while(this.nextLength < 0);
+            } while(this.nextLength <= 0 && this.hasNext);
         }
     }
 
