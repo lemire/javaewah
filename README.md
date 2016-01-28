@@ -321,7 +321,7 @@ follows:
 API Documentation
 -----------------
 
-http://lemire.me/docs/javaewah/
+http://www.javadoc.io/doc/com.googlecode.javaewah/JavaEWAH/
 
 
 
@@ -358,4 +358,4 @@ This work was supported by NSERC grant number 26143.
 
 
 [docs-badge]:https://img.shields.io/badge/API-docs-blue.svg?style=flat-square
-[docs]:http://lemire.me/docs/javaewah/
+[docs]:http://www.javadoc.io/doc/com.googlecode.javaewah/JavaEWAH/
