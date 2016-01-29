@@ -4,6 +4,7 @@ JavaEWAH
 [![][maven img]][maven]
 [![][license img]][license]
 [![docs-badge][]][docs]
+[![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 
 
 (c) 2009-2016
@@ -318,6 +319,7 @@ follows:
            */
           boolean is64set = b.get(64);
 ```
+
 API Documentation
 -----------------
 
@@ -336,12 +338,6 @@ Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and inter
 http://arxiv.org/abs/1402.4466
 
 
-Help needed
-------------
-
-JavaEWAH has been used in production for many years. However, we still need help writing more tests.
-
-[![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 
 Acknowledgement
 ---------------
