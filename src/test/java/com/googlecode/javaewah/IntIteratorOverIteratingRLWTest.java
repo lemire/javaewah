@@ -2,11 +2,14 @@ package com.googlecode.javaewah;
 
 import org.junit.Test;
 
+
 import static org.junit.Assert.*;
 /*
  * Copyright 2009-2016, Daniel Lemire, Cliff Moon, David McIntosh, Robert Becho, Google Inc., Veronika Zenz, Owen Kaser, Gregory Ssi-Yan-Kai, Rory Graves
  * Licensed under the Apache License, Version 2.0.
  */
+
+import java.util.Iterator;
 
 /**
  * Tests for utility class.
@@ -22,8 +25,8 @@ public class IntIteratorOverIteratingRLWTest {
         EWAHCompressedBitmap e = new EWAHCompressedBitmap();
         for (int i = 64; i < 128; ++i)
             e.set(i);
-        IntIteratorOverIteratingRLW ii = new IntIteratorOverIteratingRLW(
-                e.getIteratingRLW());
+        
+        IntIterator ii = IteratorUtil.toSetBitsIntIterator(e.getIteratingRLW());
         assertTrue(ii.hasNext());
         int ctr = 0;
         while (ii.hasNext()) {
@@ -31,6 +34,29 @@ public class IntIteratorOverIteratingRLWTest {
             ii.next();
         }
         assertEquals(64, ctr);
+        Iterator iii = IteratorUtil.toSetBitsIterator(e.getIteratingRLW());
+        assertTrue(iii.hasNext());
+        ctr = 0;
+        while (iii.hasNext()) {
+            ++ctr;
+            iii.next();
+        }
+        assertEquals(64, ctr);
+
+    }
+    
+    @Test
+    public void testMaterialize() {
+        EWAHCompressedBitmap e = new EWAHCompressedBitmap();
+        for (int i = 64; i < 128; ++i)
+            e.set(333 * i);
+        assertEquals(e.cardinality(), IteratorUtil.cardinality(e.getIteratingRLW()));
+        EWAHCompressedBitmap newe = new EWAHCompressedBitmap();
+        IteratorUtil.materialize(e.getIteratingRLW(), newe);
+        assertEquals(e,newe);
+        newe.clear();
+        IteratorUtil.materialize(e.getIteratingRLW(), newe,4096);
+        assertEquals(e,newe);
     }
 
     @Test
