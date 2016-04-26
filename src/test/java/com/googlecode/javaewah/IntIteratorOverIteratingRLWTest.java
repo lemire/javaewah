@@ -16,6 +16,35 @@ import java.util.Iterator;
  */
 @SuppressWarnings("javadoc")
 public class IntIteratorOverIteratingRLWTest {
+	
+	@Test
+	public void iteratorAggregation() {
+		EWAHCompressedBitmap e1 = EWAHCompressedBitmap.bitmapOf(0, 2, 1000, 10001);
+		EWAHCompressedBitmap e2 = new EWAHCompressedBitmap();
+		for (int k = 64; k < 450; ++k)
+			e2.set(k);
+		EWAHCompressedBitmap e3 = new EWAHCompressedBitmap();
+		for (int k = 64; k < 450; ++k)
+			e2.set(400 * k);
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedand(e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedand(1024, e1, e2, e3));
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedor(e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedor(1024, e1, e2, e3));
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedxor(e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedxor(1024, e1, e2, e3));
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedand(500, e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedand(1024, e1, e2, e3));
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedor(500, e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedor(1024, e1, e2, e3));
+		assertEquals(IteratorUtil.materialize(
+				IteratorAggregation.bufferedxor(500, e1.getIteratingRLW(), e2.getIteratingRLW(), e3.getIteratingRLW())),
+				FastAggregation.bufferedxor(1024, e1, e2, e3));
+	}
 
     @Test
     // had problems with bitmaps beginning with two consecutive clean runs
