@@ -1,4 +1,7 @@
-version 1.1.5 (January 8th 2015)
+version 1.1.6 (April 26th 2016)
+ - Mostly just better testing
+
+version 1.1.5 (January 8th 2016)
  - faster shift function (gssiyankai)
  - ChunkIterator not iterating correctly #61
 
