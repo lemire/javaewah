@@ -6,6 +6,7 @@ package com.googlecode.javaewah32;
  */
 
 import com.googlecode.javaewah.ChunkIterator;
+import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import org.junit.Assert;
@@ -1201,6 +1202,11 @@ public class EWAHCompressedBitmap32Test {
 			public Object next() {
 				return bitmaps[k++];
 			}
+			
+			@Override
+			public void remove() {
+				// nothing
+			}
     	};
     }
 
@@ -1223,22 +1229,28 @@ public class EWAHCompressedBitmap32Test {
         EWAHCompressedBitmap32 or3 = FastAggregation32.bufferedor(1024, bitmaps);
         EWAHCompressedBitmap32 or4 = FastAggregation32.or(bitmaps);
         EWAHCompressedBitmap32 or5 = FastAggregation32.or(toIterator(bitmaps));
+        EWAHCompressedBitmap32 or6 = new EWAHCompressedBitmap32();
+        FastAggregation32.orToContainer(or6,  bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
 
         assertEquals(or1,or2);
         assertEquals(or2,or3);        
         assertEquals(or3,or4);        
-        assertEquals(or4,or5);       
+        assertEquals(or4,or5);        
+        assertEquals(or5,or6);       
 
         EWAHCompressedBitmap32 xor1 = FastAggregation32.bufferedxor(1024, bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
         EWAHCompressedBitmap32 xor2 = FastAggregation32.xor(bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
         EWAHCompressedBitmap32 xor3 = FastAggregation32.bufferedxor(1024, bitmaps);
         EWAHCompressedBitmap32 xor4 = FastAggregation32.xor(bitmaps);
         EWAHCompressedBitmap32 xor5 = FastAggregation32.xor(toIterator(bitmaps));
+        EWAHCompressedBitmap32 xor6 = new EWAHCompressedBitmap32();
+        FastAggregation32.xorToContainer(or6,  bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
 
         assertEquals(xor1,xor2);
         assertEquals(xor2,xor3);        
         assertEquals(xor3,xor4);        
-        assertEquals(xor4,xor5);       
+        assertEquals(xor4,xor5);        
+        assertEquals(xor5,xor6);       
     }
 
     @SuppressWarnings({"deprecation", "boxing"})

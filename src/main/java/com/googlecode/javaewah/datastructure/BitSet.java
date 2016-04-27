@@ -321,7 +321,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
         if (x >= this.getNumberOfWords())
             return -1;
         long w = this.data[x];
-        w >>>= (i % 64);
+        w >>>= i;
         if (w != 0) {
             return i + Long.numberOfTrailingZeros(w);
         }
@@ -348,7 +348,7 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
         if (x >= this.getNumberOfWords())
             return -1;
         long w = ~this.data[x];
-        w >>>= (i % 64);
+        w >>>= i;
         if (w != 0) {
             return i + Long.numberOfTrailingZeros(w);
         }

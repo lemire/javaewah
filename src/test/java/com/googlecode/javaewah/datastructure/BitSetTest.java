@@ -17,6 +17,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.googlecode.javaewah.IntIterator;
+
 
 public class BitSetTest
 {
@@ -41,6 +43,21 @@ public class BitSetTest
 		assertEquals(Bitmap1.cardinality(),5);
 		assertEquals(Bitmap2.cardinality(),4);
 		assertFalse(Bitmap1.hashCode()==Bitmap2.hashCode());
+		IntIterator is = Bitmap1.intIterator();
+		int c1 = 0;
+		while(is.hasNext()) {
+			c1++;
+			is.next();
+		}
+		assertEquals(Bitmap1.cardinality(),c1);
+
+		IntIterator iu = Bitmap1.unsetIntIterator();
+		int c2 = 0;
+		while(iu.hasNext()) {
+			c2++;
+			iu.next();
+		}
+		assertEquals(Bitmap1.getNumberOfWords() * 64 - Bitmap1.cardinality(),c2);
 	}
 
 	@Test
@@ -97,7 +114,23 @@ public class BitSetTest
 
 		if (!rmap.equals(Bitmap1))
 			throw new RuntimeException("Will not happen");
+		IntIterator is = Bitmap1.intIterator();
+		int c1 = 0;
+		while(is.hasNext()) {
+			c1++;
+			is.next();
+		}
+		assertEquals(Bitmap1.cardinality(),c1);
 
+		IntIterator iu = Bitmap1.unsetIntIterator();
+		int c2 = 0;
+		while(iu.hasNext()) {
+			c2++;
+			iu.next();
+		}
+		assertEquals(Bitmap1.getNumberOfWords() * 64 - Bitmap1.cardinality(),c2);
+		Bitmap1.clear();
+		assertEquals(Bitmap1.cardinality(),0);
 	}
 	
 	@Test
