@@ -1244,7 +1244,7 @@ public class EWAHCompressedBitmap32Test {
         EWAHCompressedBitmap32 xor4 = FastAggregation32.xor(bitmaps);
         EWAHCompressedBitmap32 xor5 = FastAggregation32.xor(toIterator(bitmaps));
         EWAHCompressedBitmap32 xor6 = new EWAHCompressedBitmap32();
-        FastAggregation32.xorToContainer(or6,  bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        FastAggregation32.xorToContainer(xor6,  bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
 
         assertEquals(xor1,xor2);
         assertEquals(xor2,xor3);        
