@@ -26,6 +26,9 @@ public final class FastAggregation {
     /**
      * Compute the and aggregate using a temporary uncompressed bitmap.
      *
+     * This function does not seek to match the "sizeinbits" attributes
+     * of the input bitmaps.
+     *
      * @param bitmaps the source bitmaps
      * @param bufSize buffer size used during the computation in 64-bit
      *                words (per input bitmap)
@@ -40,6 +43,9 @@ public final class FastAggregation {
 
     /**
      * Compute the and aggregate using a temporary uncompressed bitmap.
+     * 
+     * This function does not seek to match the "sizeinbits" attributes
+     * of the input bitmaps.
      *
      * @param container where the aggregate is written
      * @param bufSize   buffer size used during the computation in 64-bit

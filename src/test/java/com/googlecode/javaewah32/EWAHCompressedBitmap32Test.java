@@ -24,6 +24,15 @@ import static com.googlecode.javaewah32.EWAHCompressedBitmap32.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmap32Test {
+	
+	@Test
+	public void swaptest() {
+		EWAHCompressedBitmap32 x = EWAHCompressedBitmap32.bitmapOf(1,2,3);
+		EWAHCompressedBitmap32 y = EWAHCompressedBitmap32.bitmapOf(1,2,3,4);
+		x.swap(y);
+		Assert.assertEquals(x.cardinality(),4);
+		Assert.assertEquals(y.cardinality(),3);
+	}
 
     @Test
     public void shiftByWordSizeBits() {
@@ -1211,8 +1220,32 @@ public class EWAHCompressedBitmap32Test {
     }
 
     @Test
+    public void fastand() {
+        int[][] data = { {5, 6, 7, 8, 9}, {1, 5}, {2, 5}};
+
+        EWAHCompressedBitmap32[] bitmaps = new EWAHCompressedBitmap32[data.length];
+        
+        for (int i = 0; i < bitmaps.length; ++i) {
+        	bitmaps[i] = new EWAHCompressedBitmap32();
+            for (int j : data[i]) {
+            	bitmaps[i].set(j);
+            }
+            bitmaps[i].setSizeInBits(1000, false);
+        }
+        EWAHCompressedBitmap32 and1 = FastAggregation32.bufferedand(1024, bitmaps[0],bitmaps[1],bitmaps[2]);
+        EWAHCompressedBitmap32 and2 = new  EWAHCompressedBitmap32();
+        FastAggregation32.bufferedandWithContainer(and2, 32, bitmaps[0],bitmaps[1],bitmaps[2]);
+        EWAHCompressedBitmap32 and3 = EWAHCompressedBitmap32.and(bitmaps[0],bitmaps[1],bitmaps[2]);
+        System.out.println(and1.sizeInBits());
+        System.out.println(and2.sizeInBits());
+        System.out.println(and3.sizeInBits());
+        assertEqualsPositions(and1, and2);
+        assertEqualsPositions(and2, and3);
+    }
+
+
+    @Test
     public void fastagg() {
-        System.out.println("testing OKaserBugReportJuly2013");
         int[][] data = {{}, {5, 6, 7, 8, 9}, {1}, {2}};
 
         EWAHCompressedBitmap32[] bitmaps = new EWAHCompressedBitmap32[data.length];
@@ -1253,6 +1286,7 @@ public class EWAHCompressedBitmap32Test {
         assertEquals(xor5,xor6);       
     }
 
+    
     @SuppressWarnings({"deprecation", "boxing"})
     @Test
     public void OKaserBugReportJuly2013() {

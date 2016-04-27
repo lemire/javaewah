@@ -21,6 +21,16 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
+	
+	@Test
+	public void swaptest() {
+		EWAHCompressedBitmap x = EWAHCompressedBitmap.bitmapOf(1,2,3);
+		EWAHCompressedBitmap y = EWAHCompressedBitmap.bitmapOf(1,2,3,4);
+		x.swap(y);
+		Assert.assertEquals(x.cardinality(),4);
+		Assert.assertEquals(y.cardinality(),3);
+	}
+
 
     @Test
     public void shiftByWordSizeBits() {
@@ -1291,10 +1301,34 @@ public class EWAHCompressedBitmapTest {
 			}
     	};
     }
+    
+    @Test
+    public void fastand() {
+        int[][] data = { {5, 6, 7, 8, 9}, {1, 5}, {2, 5}};
+
+        EWAHCompressedBitmap[] bitmaps = new EWAHCompressedBitmap[data.length];
+        
+        for (int i = 0; i < bitmaps.length; ++i) {
+        	bitmaps[i] = new EWAHCompressedBitmap();
+            for (int j : data[i]) {
+            	bitmaps[i].set(j);
+            }
+            bitmaps[i].setSizeInBits(1000, false);
+        }
+        EWAHCompressedBitmap and1 = FastAggregation.bufferedand(1024, bitmaps[0],bitmaps[1],bitmaps[2]);
+        EWAHCompressedBitmap and2 = new  EWAHCompressedBitmap();
+        FastAggregation.bufferedandWithContainer(and2, 32, bitmaps[0],bitmaps[1],bitmaps[2]);
+        EWAHCompressedBitmap and3 = EWAHCompressedBitmap.and(bitmaps[0],bitmaps[1],bitmaps[2]);
+        System.out.println(and1.sizeInBits());
+        System.out.println(and2.sizeInBits());
+        System.out.println(and3.sizeInBits());
+        assertEqualsPositions(and1, and2);
+        assertEqualsPositions(and2, and3);
+    }
+
 
     @Test
     public void fastagg() {
-        System.out.println("testing OKaserBugReportJuly2013");
         int[][] data = {{}, {5, 6, 7, 8, 9}, {1}, {2}};
 
         EWAHCompressedBitmap[] bitmaps = new EWAHCompressedBitmap[data.length];
