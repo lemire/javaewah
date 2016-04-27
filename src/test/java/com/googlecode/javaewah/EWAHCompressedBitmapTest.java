@@ -1267,8 +1267,61 @@ public class EWAHCompressedBitmapTest {
                 toBeOred);
         Assert.assertEquals(rightcard, e2.cardinality());
         EWAHCompressedBitmap foo = new EWAHCompressedBitmap();
-        FastAggregation.legacy_orWithContainer(foo, toBeOred);
+        FastAggregation.orToContainer(foo, toBeOred);
         Assert.assertEquals(rightcard, foo.cardinality());
+    }
+    
+    public static Iterator toIterator(final EWAHCompressedBitmap[] bitmaps) {
+    	return new Iterator() {
+    		int k = 0;
+
+			@Override
+			public boolean hasNext() {
+				return k < bitmaps.length;
+			}
+
+			@Override
+			public Object next() {
+				return bitmaps[k++];
+			}
+    	};
+    }
+
+    @Test
+    public void fastagg() {
+        System.out.println("testing OKaserBugReportJuly2013");
+        int[][] data = {{}, {5, 6, 7, 8, 9}, {1}, {2}};
+
+        EWAHCompressedBitmap[] bitmaps = new EWAHCompressedBitmap[data.length];
+        
+        for (int i = 0; i < bitmaps.length; ++i) {
+        	bitmaps[i] = new EWAHCompressedBitmap();
+            for (int j : data[i]) {
+            	bitmaps[i].set(j);
+            }
+            bitmaps[i].setSizeInBits(1000, false);
+        }
+        EWAHCompressedBitmap or1 = FastAggregation.bufferedor(1024, bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap or2 = FastAggregation.or(bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap or3 = FastAggregation.bufferedor(1024, bitmaps);
+        EWAHCompressedBitmap or4 = FastAggregation.or(bitmaps);
+        EWAHCompressedBitmap or5 = FastAggregation.or(toIterator(bitmaps));
+
+        assertEquals(or1,or2);
+        assertEquals(or2,or3);        
+        assertEquals(or3,or4);        
+        assertEquals(or4,or5);       
+
+        EWAHCompressedBitmap xor1 = FastAggregation.bufferedxor(1024, bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap xor2 = FastAggregation.xor(bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap xor3 = FastAggregation.bufferedxor(1024, bitmaps);
+        EWAHCompressedBitmap xor4 = FastAggregation.xor(bitmaps);
+        EWAHCompressedBitmap xor5 = FastAggregation.xor(toIterator(bitmaps));
+
+        assertEquals(xor1,xor2);
+        assertEquals(xor2,xor3);        
+        assertEquals(xor3,xor4);        
+        assertEquals(xor4,xor5);       
     }
 
     @Test

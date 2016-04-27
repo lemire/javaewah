@@ -127,7 +127,7 @@ public class IteratorAggregationTest {
                     EWAHCompressedBitmap tanswer = EWAHCompressedBitmap
                             .or(x);
                     EWAHCompressedBitmap container = new EWAHCompressedBitmap();
-                    FastAggregation.legacy_orWithContainer(container, x);
+                    FastAggregation.orToContainer(container, x);
                     assertTrue(container.equals(tanswer));
                     EWAHCompressedBitmap x1 = IteratorUtil
                             .materialize(IteratorAggregation

@@ -1188,6 +1188,59 @@ public class EWAHCompressedBitmap32Test {
         }
     }
 
+    public static Iterator toIterator(final EWAHCompressedBitmap32[] bitmaps) {
+    	return new Iterator() {
+    		int k = 0;
+
+			@Override
+			public boolean hasNext() {
+				return k < bitmaps.length;
+			}
+
+			@Override
+			public Object next() {
+				return bitmaps[k++];
+			}
+    	};
+    }
+
+    @Test
+    public void fastagg() {
+        System.out.println("testing OKaserBugReportJuly2013");
+        int[][] data = {{}, {5, 6, 7, 8, 9}, {1}, {2}};
+
+        EWAHCompressedBitmap32[] bitmaps = new EWAHCompressedBitmap32[data.length];
+        
+        for (int i = 0; i < bitmaps.length; ++i) {
+        	bitmaps[i] = new EWAHCompressedBitmap32();
+            for (int j : data[i]) {
+            	bitmaps[i].set(j);
+            }
+            bitmaps[i].setSizeInBits(1000, false);
+        }
+        EWAHCompressedBitmap32 or1 = FastAggregation32.bufferedor(1024, bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap32 or2 = FastAggregation32.or(bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap32 or3 = FastAggregation32.bufferedor(1024, bitmaps);
+        EWAHCompressedBitmap32 or4 = FastAggregation32.or(bitmaps);
+        EWAHCompressedBitmap32 or5 = FastAggregation32.or(toIterator(bitmaps));
+
+        assertEquals(or1,or2);
+        assertEquals(or2,or3);        
+        assertEquals(or3,or4);        
+        assertEquals(or4,or5);       
+
+        EWAHCompressedBitmap32 xor1 = FastAggregation32.bufferedxor(1024, bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap32 xor2 = FastAggregation32.xor(bitmaps[0],bitmaps[1],bitmaps[2],bitmaps[3]);
+        EWAHCompressedBitmap32 xor3 = FastAggregation32.bufferedxor(1024, bitmaps);
+        EWAHCompressedBitmap32 xor4 = FastAggregation32.xor(bitmaps);
+        EWAHCompressedBitmap32 xor5 = FastAggregation32.xor(toIterator(bitmaps));
+
+        assertEquals(xor1,xor2);
+        assertEquals(xor2,xor3);        
+        assertEquals(xor3,xor4);        
+        assertEquals(xor4,xor5);       
+    }
+
     @SuppressWarnings({"deprecation", "boxing"})
     @Test
     public void OKaserBugReportJuly2013() {
@@ -1211,7 +1264,7 @@ public class EWAHCompressedBitmap32Test {
 
         long rightcard = bruteForceAnswer.size();
         EWAHCompressedBitmap32 foo = new EWAHCompressedBitmap32();
-        FastAggregation32.legacy_orWithContainer(foo, toBeOred);
+        FastAggregation32.orToContainer(foo, toBeOred);
         Assert.assertEquals(rightcard, foo.cardinality());
         EWAHCompressedBitmap32 e1 = FastAggregation.or(toBeOred);
         Assert.assertEquals(rightcard, e1.cardinality());

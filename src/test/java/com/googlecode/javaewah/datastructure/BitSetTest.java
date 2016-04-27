@@ -1,5 +1,7 @@
 package com.googlecode.javaewah.datastructure;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -18,25 +20,63 @@ import org.junit.Test;
 
 public class BitSetTest
 {
+	
+	
+	public static ImmutableBitSet toImmutableBitSet(BitSet b) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		b.serialize(new DataOutputStream(bos));
+		ByteBuffer bb = ByteBuffer.wrap(bos.toByteArray());
+		ImmutableBitSet rmap = new ImmutableBitSet(bb.asLongBuffer());
+		System.out.println("bitmap 1 (mapped) : " + rmap);
+		if (!rmap.equals(b))
+			throw new RuntimeException("Will not happen");
+		return rmap;	
+	}
+	@Test
+	public void simpleImmuExample() throws IOException {
+		ImmutableBitSet Bitmap1 = toImmutableBitSet(BitSet.bitmapOf(0, 2, 55, 64, 512));
+		ImmutableBitSet Bitmap2 = toImmutableBitSet(BitSet.bitmapOf(1, 3, 64, 512));
+		System.out.println("bitmap 1: " + Bitmap1);
+		System.out.println("bitmap 2: " + Bitmap2);
+		assertEquals(Bitmap1.cardinality(),5);
+		assertEquals(Bitmap2.cardinality(),4);
+		assertFalse(Bitmap1.hashCode()==Bitmap2.hashCode());
+	}
 
 	@Test
 	public void simpleExample() throws IOException {
 		BitSet Bitmap1 = BitSet.bitmapOf(0, 2, 55, 64, 512);
 		BitSet Bitmap2 = BitSet.bitmapOf(1, 3, 64, 512);
+		Bitmap1.trim();
+		Bitmap2.trim();
+		assertTrue(Bitmap1.intersects(Bitmap2));
+		assertFalse(Bitmap1.hashCode()==Bitmap2.hashCode());
 		System.out.println("bitmap 1: " + Bitmap1);
 		System.out.println("bitmap 2: " + Bitmap2);
 		// or
 		BitSet orbitmap = Bitmap1.clone();
+		int orcard = Bitmap1.orcardinality(Bitmap2);
 		orbitmap.or(Bitmap2);
+		assertEquals(orbitmap.cardinality(),orcard);
 		System.out.println("bitmap 1 OR bitmap 2: " + orbitmap);
 		// and
 		BitSet andbitmap = Bitmap1.clone();
+		int andcard = Bitmap1.andcardinality(Bitmap2);
 		andbitmap.and(Bitmap2);
+		assertEquals(andbitmap.cardinality(),andcard);
 		System.out.println("bitmap 1 AND bitmap 2: " + andbitmap);
 		// xor
 		BitSet xorbitmap = Bitmap1.clone();
+		int xorcard = Bitmap1.xorcardinality(Bitmap2);
 		xorbitmap.xor(Bitmap2);
+		assertEquals(xorbitmap.cardinality(),xorcard);
 		System.out.println("bitmap 1 XOR bitmap 2:" + xorbitmap);
+		BitSet andnotbitmap = Bitmap1.clone();
+		int andnotcard = Bitmap1.andNotcardinality(Bitmap2);
+		andnotbitmap.andNot(Bitmap2);
+		assertEquals(andnotbitmap.cardinality(),andnotcard);
+		System.out.println("bitmap 1 ANDNOT bitmap 2:" + andnotbitmap);
+
 		// serialization
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		// Note: you could use a file output steam instead of ByteArrayOutputStream

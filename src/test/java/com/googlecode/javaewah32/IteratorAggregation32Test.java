@@ -131,7 +131,7 @@ public class IteratorAggregation32Test {
                             .or(x);
                     EWAHCompressedBitmap32 container = new EWAHCompressedBitmap32();
                     FastAggregation32
-                            .legacy_orWithContainer(
+                            .orToContainer(
                                     container, x);
                     assertTrue(container.equals(tanswer));
                     EWAHCompressedBitmap32 x1 = IteratorUtil32
