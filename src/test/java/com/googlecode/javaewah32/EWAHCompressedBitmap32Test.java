@@ -6,7 +6,6 @@ package com.googlecode.javaewah32;
  */
 
 import com.googlecode.javaewah.ChunkIterator;
-import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.FastAggregation;
 import com.googlecode.javaewah.IntIterator;
 import org.junit.Assert;

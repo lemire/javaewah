@@ -205,6 +205,20 @@ public class BitSetTest
 		memoryMappedFile.close();
 		if (!mapped.equals(Bitmap))
 			throw new RuntimeException("Will not happen");
+		assertEquals(mapped.size(),Bitmap.size());
+		assertEquals(mapped.empty(),Bitmap.empty());
+		for(int k = 0; k <= 512; ++k)
+		  assertEquals(mapped.get(k),Bitmap.get(k));
+
+		assertTrue(mapped.asBitSet().equals(Bitmap));
+		assertTrue(mapped.clone().asBitSet().equals(Bitmap));
+		BitSet t = new BitSet();
+		t.resize(mapped.size());
+		for(int i : mapped)
+			t.set(i);
+		assertTrue(t.equals(Bitmap));
+		
+
 	}
 
 }

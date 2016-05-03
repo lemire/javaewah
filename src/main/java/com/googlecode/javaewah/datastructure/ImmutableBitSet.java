@@ -109,6 +109,8 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
   }
   
   /**
+   * get value of bit i
+   * 
    * @param i index
    * @return value of the bit
    */
