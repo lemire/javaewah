@@ -52,7 +52,13 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
             }
         }
     }
-
+	@Override
+	public void discardLiteralWords(long x) {
+		this.iteratingBrlw.discardLiteralWords(x);
+        if (this.iteratingBrlw.getNumberOfLiteralWords() == 0)
+            this.next();		
+	}
+	
     @Override
     public void discardRunningWords() {
         this.iteratingBrlw.discardRunningWords();
@@ -138,4 +144,5 @@ public class BufferedIterator implements IteratingRLW, Cloneable {
 
     private IteratingBufferedRunningLengthWord iteratingBrlw;
     private CloneableIterator<EWAHIterator> masterIterator;
+
 }

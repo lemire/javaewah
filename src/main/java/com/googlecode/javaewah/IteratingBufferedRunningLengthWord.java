@@ -69,7 +69,18 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
             }
         }
     }
-
+	@Override
+	public void discardLiteralWords(long x) {
+		this.literalWordStartPosition += x;
+		this.brlw.numberOfLiteralWords -= x;
+		if (this.brlw.numberOfLiteralWords == 0) {
+			if (!this.iterator.hasNext()) {
+				return;
+			}
+			this.brlw.reset(this.iterator.next());
+			this.literalWordStartPosition = this.iterator.literalWords();
+		}
+	}
     @Override
     public void discardRunningWords() {
         this.brlw.runningLength = 0;
@@ -283,4 +294,5 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
     private final Buffer buffer;
     private int literalWordStartPosition;
     private EWAHIterator iterator;
+
 }

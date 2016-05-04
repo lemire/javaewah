@@ -54,6 +54,14 @@ public class BufferedIterator32 implements IteratingRLW32, Cloneable {
             }
         }
     }
+    
+	@Override
+	public void discardLiteralWords(int x) {
+		this.iteratingBrlw.discardLiteralWords(x);
+        if (this.iteratingBrlw.getNumberOfLiteralWords() == 0)
+            this.next();
+	}
+
 
     @Override
     public void discardRunningWords() {

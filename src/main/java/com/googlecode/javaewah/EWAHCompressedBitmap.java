@@ -427,8 +427,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 for (int k = 0; k < nbre_literal; ++k) {
                     container.addWord(rlwi.getLiteralWordAt(k) & rlwj.getLiteralWordAt(k));
                 }
-                rlwi.discardFirstWords(nbre_literal);
-                rlwj.discardFirstWords(nbre_literal);
+                rlwi.discardLiteralWords(nbre_literal);
+                rlwj.discardLiteralWords(nbre_literal);
             }
         }
   
@@ -523,8 +523,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
                     container.addWord(rlwi.getLiteralWordAt(k) & (~rlwj.getLiteralWordAt(k)));
-                rlwi.discardFirstWords(nbre_literal);
-                rlwj.discardFirstWords(nbre_literal);
+                rlwi.discardLiteralWords(nbre_literal);
+                rlwj.discardLiteralWords(nbre_literal);
             }
         }
         final boolean i_remains = rlwi.size() > 0;
@@ -1067,8 +1067,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                     container.addWord(rlwi.getLiteralWordAt(k)
                             | rlwj.getLiteralWordAt(k));
                 }
-                rlwi.discardFirstWords(nbre_literal);
-                rlwj.discardFirstWords(nbre_literal);
+                rlwi.discardLiteralWords(nbre_literal);
+                rlwj.discardLiteralWords(nbre_literal);
             }
         }
         final boolean i_remains = rlwi.size() > 0;
@@ -1738,8 +1738,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k)
                     container.addWord(rlwi.getLiteralWordAt(k) ^ rlwj.getLiteralWordAt(k));
-                rlwi.discardFirstWords(nbre_literal);
-                rlwj.discardFirstWords(nbre_literal);
+                rlwi.discardLiteralWords(nbre_literal);
+                rlwj.discardLiteralWords(nbre_literal);
             }
         }
         final boolean i_remains = rlwi.size() > 0;

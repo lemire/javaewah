@@ -72,6 +72,11 @@ public final class IteratorAggregation32 {
                     throws CloneNotSupportedException {
                 throw new CloneNotSupportedException();
             }
+
+			@Override
+			public void discardLiteralWords(int y) {
+				x.discardLiteralWords(y);				
+			}
         };
     }
 

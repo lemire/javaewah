@@ -51,6 +51,12 @@ public interface IteratingRLW {
     void discardRunningWords();
 
     /**
+     * Discard x literal words (assumes that there is no running word)
+     * @param x the number of words to discard
+     */
+    void discardLiteralWords(long x);
+
+    /**
      * @return a copy of the iterator
      * @throws CloneNotSupportedException this should not be thrown in theory
      */

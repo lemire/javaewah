@@ -50,6 +50,12 @@ public interface IteratingRLW32 {
      * Discard all running words
      */
     void discardRunningWords();
+    
+    /**
+     * Discard x literal words (assumes that there is no running word)
+     * @param x the number of words to discard
+     */
+    void discardLiteralWords(int x);
 
     /**
      * @return a copy of the iterator

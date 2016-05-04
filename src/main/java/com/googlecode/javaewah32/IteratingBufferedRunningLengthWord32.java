@@ -39,7 +39,6 @@ public final class IteratingBufferedRunningLengthWord32 implements
             final EWAHCompressedBitmap32 bitmap) {
         this(EWAHIterator32.getEWAHIterator(bitmap));
     }
-
     /**
      * Discard first words, iterating to the next running length word if
      * needed.
@@ -71,6 +70,20 @@ public final class IteratingBufferedRunningLengthWord32 implements
             }
         }
     }
+    
+    @Override
+	public void discardLiteralWords(int x) {
+    	this.literalWordStartPosition += x;
+		this.brlw.NumberOfLiteralWords -= x;
+		if (this.brlw.NumberOfLiteralWords == 0) {
+			if (!this.iterator.hasNext()) {
+				return;
+			}
+			this.brlw.reset(this.iterator.next());
+			this.literalWordStartPosition = this.iterator.literalWords();
+		}		
+	}
+
 
     @Override
     public void discardRunningWords() {
@@ -298,5 +311,6 @@ public final class IteratingBufferedRunningLengthWord32 implements
     private final Buffer32 buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
+	
 
 }
