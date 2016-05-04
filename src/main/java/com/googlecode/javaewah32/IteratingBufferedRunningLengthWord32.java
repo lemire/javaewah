@@ -72,17 +72,17 @@ public final class IteratingBufferedRunningLengthWord32 implements
     }
     
     @Override
-	public void discardLiteralWords(int x) {
-    	this.literalWordStartPosition += x;
-		this.brlw.NumberOfLiteralWords -= x;
-		if (this.brlw.NumberOfLiteralWords == 0) {
-			if (!this.iterator.hasNext()) {
-				return;
-			}
-			this.brlw.reset(this.iterator.next());
-			this.literalWordStartPosition = this.iterator.literalWords();
-		}		
-	}
+  public void discardLiteralWords(int x) {
+      this.literalWordStartPosition += x;
+    this.brlw.NumberOfLiteralWords -= x;
+    if (this.brlw.NumberOfLiteralWords == 0) {
+      if (!this.iterator.hasNext()) {
+        return;
+      }
+      this.brlw.reset(this.iterator.next());
+      this.literalWordStartPosition = this.iterator.literalWords();
+    }    
+  }
 
 
     @Override
@@ -100,25 +100,31 @@ public final class IteratingBufferedRunningLengthWord32 implements
      * @return how many written
      */
     public int discharge(BitmapStorage32 container, int max) {
-        int index = 0;
-        while ((index < max) && (size() > 0)) {
-            // first run
-            int pl = getRunningLength();
-            if (index + pl > max) {
-                pl = max - index;
-            }
-            container.addStreamOfEmptyWords(getRunningBit(), pl);
-            index += pl;
-            int pd = getNumberOfLiteralWords();
-            if (pd + index > max) {
-                pd = max - index;
-            }
-            writeLiteralWords(pd, container);
-            discardFirstWords(pl + pd);
-            index += pd;
+      int index = 0;
+      while (true) {
+        if (index + getRunningLength() > max) {
+          final int offset = max - index;
+          container.addStreamOfEmptyWords(getRunningBit(), offset);
+          this.brlw.RunningLength -= offset;
+          return max;
         }
-        return index;
+        container.addStreamOfEmptyWords(getRunningBit(), getRunningLength());
+        index += getRunningLength();
+        if (getNumberOfLiteralWords() + index > max) {
+          final int offset = max - index;
+          writeLiteralWords(offset, container);
+          this.brlw.RunningLength = 0;
+          this.brlw.NumberOfLiteralWords -= offset;
+          this.literalWordStartPosition += offset;
+          return max;
+        }
+        writeLiteralWords(getNumberOfLiteralWords(), container);
+        index += getNumberOfLiteralWords();
+        if(!next()) break;
+      }
+      return index;
     }
+
 
     /**
      * Write out up to max words (negated), returns how many were written
@@ -311,6 +317,6 @@ public final class IteratingBufferedRunningLengthWord32 implements
     private final Buffer32 buffer;
     private int literalWordStartPosition;
     private EWAHIterator32 iterator;
-	
+  
 
 }

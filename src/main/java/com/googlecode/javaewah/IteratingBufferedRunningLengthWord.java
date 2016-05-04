@@ -115,26 +115,31 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
      * @return how many written
      */
     public long discharge(BitmapStorage container, long max) {
-        long index = 0;
-        while ((index < max) && (size() > 0)) {
-            // first run
-            long pl = getRunningLength();
-            if (index + pl > max) {
-                pl = max - index;
-            }
-            container.addStreamOfEmptyWords(getRunningBit(), pl);
-            index += pl;
-            int pd = getNumberOfLiteralWords();
-            if (pd + index > max) {
-                pd = (int) (max - index);
-            }
-            writeLiteralWords(pd, container);
-            discardFirstWords(pl + pd);
-            index += pd;
-        }
-        return index;
+    	long index = 0;
+    	while (true) {
+    		if (index + getRunningLength() > max) {
+    			final int offset = (int) (max - index);
+    			container.addStreamOfEmptyWords(getRunningBit(), offset);
+    			this.brlw.runningLength -= offset;
+    			return max;
+    		}
+    		container.addStreamOfEmptyWords(getRunningBit(), getRunningLength());
+    		index += getRunningLength();
+    		if (getNumberOfLiteralWords() + index > max) {
+    			final int offset =(int) (max - index);
+    			writeLiteralWords(offset, container);
+    			this.brlw.runningLength = 0;
+    			this.brlw.numberOfLiteralWords -= offset;
+    			this.literalWordStartPosition += offset;
+    			return max;
+    		}
+    		writeLiteralWords(getNumberOfLiteralWords(), container);
+    		index += getNumberOfLiteralWords();
+    		if(!next()) break;
+    	}
+    	return index;
     }
-
+    
     /**
      * Write out up to max words (negated), returns how many were written
      *
