@@ -15,7 +15,7 @@ import java.nio.IntBuffer;
  *
  * @author Gregory Ssi-Yan-Kai
  */
-final class IntBufferWrapper implements Buffer32 {
+final class IntBufferWrapper implements Buffer32, Cloneable {
 
     public IntBufferWrapper(IntBuffer buffer) {
         this.buffer = buffer;

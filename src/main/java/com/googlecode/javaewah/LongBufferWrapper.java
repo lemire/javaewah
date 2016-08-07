@@ -13,7 +13,7 @@ import java.nio.LongBuffer;
  *
  * @author Gregory Ssi-Yan-Kai
  */
-final class LongBufferWrapper implements Buffer {
+final class LongBufferWrapper implements Buffer, Cloneable {
 
     public LongBufferWrapper(LongBuffer buffer) {
         this.buffer = buffer;
