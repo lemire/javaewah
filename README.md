@@ -327,7 +327,10 @@ API Documentation
 
 http://www.javadoc.io/doc/com.googlecode.javaewah/JavaEWAH/
 
+Mailing list and discussion group
+---------------------------------
 
+https://groups.google.com/forum/#!forum/javaewah
 
 
 Further reading
