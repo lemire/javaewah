@@ -5,8 +5,7 @@
   <version>1.1.7-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <properties>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
   </properties>
   <licenses>
@@ -77,13 +76,13 @@
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java16</artifactId>
+            <artifactId>java17</artifactId>
             <version>1.0</version>
           </signature>
         </configuration>
         <executions>
           <execution>
-            <id>ensure-java-1.6-class-library</id>
+            <id>ensure-java-1.7-class-library</id>
             <phase>test</phase>
             <goals>
               <goal>check</goal>
