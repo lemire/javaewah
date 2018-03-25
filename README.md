@@ -63,7 +63,7 @@ offered the best performance.
 Real-world usage
 ----------------
 
-JavaEWAH is part of Apache Hive and its derivatives (e.g.,  Apache Spark) and Eclipse JGit. It has been used in production systems for many years. It is part of major Linux distributions.
+JavaEWAH is part of Apache Hive and its derivatives (e.g.,  Apache Spark) and Eclipse JGit. It has been used in production systems for many years. It is part of major Linux distributions. It is part of [Twitter algebird](https://github.com/twitter/algebird).
 
 
 EWAH is used to accelerate the distributed version control system Git (http://githubengineering.com/counting-objects/). You can find the C port of EWAH written by the Git team at https://github.com/git/git/tree/master/ewah
