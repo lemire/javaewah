@@ -2050,7 +2050,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     
     
     /**
-     * Generate a new bitmap  a new bitmap shifted by "b" bits. 
+     * Generates a new bitmap shifted by "b" bits.
      * If b is positive, the position of all set bits is increased by 
      * b. The negative case is not supported.
      *
