@@ -118,6 +118,7 @@ to you. In fact, if you do not need compression, then a BitSet offers remarkable
 One of the downsides of a compressed bitmap like those provided by JavaEWAH is slower random access:
 checking whether a bit is set to true in a compressed bitmap takes longer.
 
+The sparse scenario is another use case where compressed bitmaps should not be used.
 Keep in mind that random-looking data is usually not compressible. E.g., if you have a small set of
 32-bit random integers, it is not mathematically possible to use far less than 32 bits per integer,
 and attempts at compression can be counterproductive.
