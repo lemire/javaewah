@@ -5,7 +5,7 @@ JavaEWAH
 [![][license img]][license]
 [![docs-badge][]][docs]
 [![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
-
+[![Code Quality: Cpp](https://img.shields.io/lgtm/grade/java/g/lemire/javaewah.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lemire/javaewah/context:java)
 
 (c) 2009-2016
 Daniel Lemire (http://lemire.me/en/),
