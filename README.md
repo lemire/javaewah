@@ -48,7 +48,7 @@ wasteful serialization/deserialization routines.
 The library also provides a drop-in replacement for
 the standard BitSet class. Like the other bitmap classes
 in JavaEWAH, this uncompressed BitSet class supports
-memory-mapped files as well as many other conviences.
+memory-mapped files as well as many other conveniences.
 
 For better performance, use a 64-bit JVM over
 64-bit CPUs when using the 64-bit scheme (javaewah.EWAHCompressedBitmap).
