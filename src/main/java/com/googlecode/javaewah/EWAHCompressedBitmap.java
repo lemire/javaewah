@@ -7,7 +7,6 @@ package com.googlecode.javaewah;
 
 import com.googlecode.javaewah.symmetric.RunningBitmapMerge;
 import com.googlecode.javaewah.symmetric.ThresholdFuncBitmap;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -15,6 +14,7 @@ import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 /**
  * <p>
@@ -262,6 +262,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
      *
      * @param newData the word
      */
+    @Override
     public void addLiteralWord(final long newData) {
         this.sizeInBits += WORD_IN_BITS;
         insertLiteralWord(newData);
@@ -327,7 +328,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     public void addStreamOfEmptyWords(final boolean v, long number) {
         if (number == 0)
             return;
-        this.sizeInBits += number * WORD_IN_BITS;
+        this.sizeInBits += (int)(number * WORD_IN_BITS);
         fastaddStreamOfEmptyWords(v, number);
     }
 
@@ -565,7 +566,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         while (i.hasNext()) {
             RunningLengthWord localrlw = i.next();
             if (localrlw.getRunningBit()) {
-                counter += WORD_IN_BITS * localrlw.getRunningLength();
+                counter += (int)(WORD_IN_BITS * localrlw.getRunningLength());
             }
             final int numberOfLiteralWords = localrlw.getNumberOfLiteralWords();
             final int literalWords = i.literalWords();
@@ -774,7 +775,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                         v.add(pos++);
                 }
             } else {
-                pos += WORD_IN_BITS * localrlw.getRunningLength();
+                pos += (int)(WORD_IN_BITS * localrlw.getRunningLength());
             }
             final int nlw = localrlw.getNumberOfLiteralWords();
             for (int j = 0; j < nlw; ++j) {
@@ -807,8 +808,8 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             i.next();
             if (i.rlw.getRunningBit()) {
                 final long rl = i.rlw.getRunningLength();
-                karprabin += B * (rl & 0xFFFFFFFF);
-                karprabin += B * ((rl>>>32) & 0xFFFFFFFF);
+                karprabin += (int)(B * (rl & 0xFFFFFFFF));
+                karprabin += (int)(B * ((rl>>>32) & 0xFFFFFFFF));
             }
             final int nlw = i.rlw.getNumberOfLiteralWords();
             final int lw = i.literalWords();
@@ -1141,7 +1142,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         final IteratingRLW j = getIteratingRLW();
         final int wordi = i / WORD_IN_BITS;
         while (wordChecked <= wordi) {
-            wordChecked += j.getRunningLength();
+            wordChecked += (int) j.getRunningLength();
             if (wordi < wordChecked) {
                 return j.getRunningBit();
             }
@@ -1171,7 +1172,7 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
            if((rl > 0) && rb) {
                 return nword * WORD_IN_BITS;
            }
-           nword  += rl;
+           nword  += (int) rl;
            long lw = RunningLengthWord.getNumberOfLiteralWords(this.buffer, pos);
            if(lw > 0) {
                long word = this.buffer.getWord(pos + 1);
@@ -1299,14 +1300,14 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
                 setInRunningLength(value, i, nbits, pos, rl, rb, lw);
                 return;
             }
-            nbits += rbits;
+            nbits += (int) rbits;
             long lbits = lw * WORD_IN_BITS;
             if(i < nbits + lbits) {
                 setInLiteralWords(value, i, nbits, pos, rl, rb, lw);
                 return;
             }
-            nbits += lbits;
-            pos += lw + 1;
+            nbits += (int) lbits;
+            pos += (int) (lw + 1);
         }
     }
 

@@ -10,13 +10,13 @@ import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.LogicalElement;
 import com.googlecode.javaewah32.symmetric.RunningBitmapMerge32;
 import com.googlecode.javaewah32.symmetric.ThresholdFuncBitmap32;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 /**
  * <p>
@@ -824,7 +824,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
             final int lw = i.literalWords();
             for (int k = 0; k < nlw; ++k) {
                 long W = this.buffer.getWord(lw + k);
-                karprabin += B * W;
+                karprabin += (int) (B * W);
             }
         }
         return karprabin;
