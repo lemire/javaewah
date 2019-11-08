@@ -1,7 +1,6 @@
 package com.googlecode.javaewah.datastructure;
 
 import com.googlecode.javaewah.IntIterator;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.Externalizable;
@@ -10,6 +9,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
 import java.util.Iterator;
+
 
 /**
  * <p>This is an optimized version of Java's BitSet. In many cases, it can be used
@@ -400,7 +400,21 @@ public class BitSet implements Cloneable, Iterable<Integer>, Externalizable ,Wor
         return sum;
     }
 
-
+    /**
+     * Remove a word.
+     * 
+     *
+     * @param i index of the word to be removed.
+     */
+    public void removeWord(int i) {
+        long[] newdata = new long[data.length - 1];
+        if (i == 0) {
+            System.arraycopy(data, 1, newdata, 0, i - 1);
+        }
+        System.arraycopy(data, 0, newdata, 0, i - 1);
+        System.arraycopy(data, i, newdata, i - 1, data.length - i);
+        data = newdata;
+    }
 
     /**
      * Resize the bitset

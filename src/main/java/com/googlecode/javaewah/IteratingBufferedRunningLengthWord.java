@@ -56,7 +56,7 @@ public final class IteratingBufferedRunningLengthWord implements IteratingRLW,
             long toDiscard = x > this.brlw.numberOfLiteralWords ? this.brlw.numberOfLiteralWords
                     : x;
 
-            this.literalWordStartPosition += toDiscard;
+            this.literalWordStartPosition += (int) toDiscard;
             this.brlw.numberOfLiteralWords -= toDiscard;
             x -= toDiscard;
             if ((x > 0) || (this.brlw.size() == 0)) {
