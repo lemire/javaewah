@@ -5,8 +5,8 @@
   <version>1.1.7-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <properties>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
   </properties>
   <licenses>
@@ -67,26 +67,8 @@
             <configuration>
                 <forkCount>3</forkCount>
                 <reuseForks>true</reuseForks>
-                <argLine>-Xmx1024m ${argLine}</argLine>
+                <argLine>-Xmx1024m</argLine>
             </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.8</version>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eluder.coveralls</groupId>
-        <artifactId>coveralls-maven-plugin</artifactId>
-        <version>3.1.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

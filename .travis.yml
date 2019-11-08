@@ -2,9 +2,8 @@ language: java
 sudo: false
 
 jdk:
-  - oraclejdk9
-  - oraclejdk8
-  - openjdk7
+  - oraclejdk12
+  - openjdk8
 
 install: true
 
@@ -12,7 +11,5 @@ branches:
   only:
     - master
 
-script: mvn clean test jacoco:report
+script: mvn clean test 
 
-after_success:
-  - mvn coveralls:report
