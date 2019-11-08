@@ -57,7 +57,7 @@ public final class BitCounter implements BitmapStorage {
     @Override
     public void addStreamOfEmptyWords(boolean v, long number) {
         if (v) {
-            this.oneBits += number * EWAHCompressedBitmap.WORD_IN_BITS;
+            this.oneBits += (int)(number * EWAHCompressedBitmap.WORD_IN_BITS);
         }
     }
 

@@ -46,8 +46,8 @@ public final class BufferedRunningLengthWord implements Cloneable {
         }
         x -= this.runningLength;
         this.runningLength = 0;
-        this.literalWordOffset += x;
-        this.numberOfLiteralWords -= x;
+        this.literalWordOffset += (int) x;
+        this.numberOfLiteralWords -= (int) x;
     }
 
     /**
