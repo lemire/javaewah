@@ -8,15 +8,7 @@ JavaEWAH
 [![Code Quality: Cpp](https://img.shields.io/lgtm/grade/java/g/lemire/javaewah.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lemire/javaewah/context:java)
 
 (c) 2009-2016
-Daniel Lemire (http://lemire.me/en/),
-Cliff Moon,
-David McIntosh (https://github.com/mctofu),
-Robert Becho (https://github.com/RBecho),
-Colby Ranger (https://github.com/crangeratgoogle),
-Veronika Zenz (https://github.com/veronikazenz),
-Owen Kaser (https://github.com/owenkaser),
-Gregory Ssi-Yan-Kai (https://github.com/gssiyankai),
-and Rory Graves (https://github.com/rorygraves)
+[Daniel Lemire] (http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
 
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
@@ -96,7 +88,7 @@ When the bitset approach is applicable, it can be orders of
 magnitude faster than other possible implementation of a set (e.g., as a hash set)
 while using several times less memory.
 
-However, a bitset, even a compressed one is not always applicable. For example, if the
+However, a bitset, even a compressed one is not always applicable. For example, if 
 you have 1000 random-looking integers, then a simple array might be the best representation.
 We refer to this case as the "sparse" scenario.
 
