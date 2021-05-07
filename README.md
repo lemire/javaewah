@@ -1,5 +1,6 @@
 JavaEWAH
 ==========================================================
+[![Java CI](https://github.com/lemire/javaewah/actions/workflows/basic.yml/badge.svg)](https://github.com/lemire/javaewah/actions/workflows/basic.yml)
 [![][maven img]][maven]
 [![][license img]][license]
 [![docs-badge][]][docs]
