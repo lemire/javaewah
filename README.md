@@ -8,7 +8,7 @@ JavaEWAH
 [![Code Quality: Cpp](https://img.shields.io/lgtm/grade/java/g/lemire/javaewah.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lemire/javaewah/context:java)
 
 (c) 2009-2016
-[Daniel Lemire] (http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
+[Daniel Lemire](http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
 
 
 This code is licensed under Apache License, Version 2.0 (ASL2.0).
@@ -280,12 +280,6 @@ Ubuntu (Linux)
 To install javaewah on Ubuntu, type:
 
           sudo apt-get install libjavaewah-java
-
-Travis (Continuous integration)
--------------------------------
-
-You can check whether the latest version builds on your favorite version
-of Java using Travis: https://travis-ci.org/lemire/javaewah/builds/
 
 Clojure
 -------
