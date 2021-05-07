@@ -1179,12 +1179,15 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
            nword  += rl;
            int lw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, pos);
            if(lw > 0) {
-               int word = this.buffer.getWord(pos + 1);
-               if(word != 0) {
-                   int T = word & -word;
-                   return nword * WORD_IN_BITS + Integer.bitCount(T - 1);
-               }
-           }
+                int word = this.buffer.getWord(pos + 1);
+                // In theory, words should never be zero. Unfortunately due to the
+                // design which requires us to support 'andnot' and effective universe
+                // sizes, we sometimes end up appending zero words.
+                if(word != 0l) {
+                    int T = word & -word;
+                    return nword * WORD_IN_BITS + Integer.bitCount(T - 1);
+                }
+            }
         }
         return -1;
     }
@@ -1262,6 +1265,12 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
         this.sizeInBits = i + 1;
         if(value) {
             if (dist > 0) {
+                // Let us trim the lone zero word if needed
+                if (this.rlw.getNumberOfLiteralWords() > 0 && this.buffer.getLastWord() == 0) {
+                    this.buffer.removeLastWord();
+                    this.rlw.setNumberOfLiteralWords(this.rlw.getNumberOfLiteralWords() - 1);
+                    insertEmptyWord(false);
+                }
                 if (dist > 1) {
                     fastaddStreamOfEmptyWords(false, dist - 1);
                 }
