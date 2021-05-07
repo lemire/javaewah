@@ -7,12 +7,6 @@ JavaEWAH
 [![Coverage Status](https://coveralls.io/repos/lemire/javaewah/badge.svg?branch=master)](https://coveralls.io/r/lemire/javaewah?branch=master)
 [![Code Quality: Cpp](https://img.shields.io/lgtm/grade/java/g/lemire/javaewah.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/lemire/javaewah/context:java)
 
-(c) 2009-2016
-[Daniel Lemire](http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
-
-
-This code is licensed under Apache License, Version 2.0 (ASL2.0).
-(GPL 2.0 derivatives are allowed.)
 
 This is a word-aligned compressed variant of
 the Java Bitset class. We provide both a 64-bit
@@ -165,10 +159,12 @@ However, this is very naive. It is recommended that you run your own benchmarks.
 Unit testing
 ------------
 
-As of October 2011, this packages relies on Maven. To
+As of October 2011, this package relies on Maven. To
 test it:
 
+```
 mvn test
+```
 
 See
 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
@@ -329,13 +325,20 @@ https://groups.google.com/forum/#!forum/javaewah
 Further reading
 ---------------
 
-Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes, Data & Knowledge Engineering 69 (1), 2010.
-http://arxiv.org/abs/0901.3751
-
-Owen Kaser and Daniel Lemire, Compressed bitmap indexes: beyond unions and intersections, Software: Practice and Experience 46 (2), 2016. 
-http://arxiv.org/abs/1402.4466
+- Daniel Lemire, Owen Kaser, Kamel Aouiche, [Sorting improves word-aligned bitmap indexes](http://arxiv.org/abs/0901.3751), Data & Knowledge Engineering 69 (1), 2010.
+- Owen Kaser and Daniel Lemire, [Compressed bitmap indexes: beyond unions and intersections](http://arxiv.org/abs/1402.4466), Software: Practice and Experience 46 (2), 2016. 
 
 
+Credit
+--------
+
+
+(c) 2009-2021
+[Daniel Lemire](http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
+
+
+This code is licensed under Apache License, Version 2.0 (ASL2.0).
+(GPL 2.0 derivatives are allowed.)
 
 Acknowledgement
 ---------------
