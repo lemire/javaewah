@@ -1,6 +1,5 @@
 JavaEWAH
 ==========================================================
-[![Build Status](https://travis-ci.org/lemire/javaewah.png)](https://travis-ci.org/lemire/javaewah)
 [![][maven img]][maven]
 [![][license img]][license]
 [![docs-badge][]][docs]
