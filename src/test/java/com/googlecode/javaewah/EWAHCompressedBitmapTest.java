@@ -34,6 +34,23 @@ public class EWAHCompressedBitmapTest {
         Assert.assertEquals((long)other.getFirstSetBit(),(long)other.iterator().next());
     }
 
+    @Test
+    public void issue70() {
+        EWAHCompressedBitmap one = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        one.set(16627);
+        other.set(52811);
+        other = other.and(one);
+
+        one = one.andNot(other);
+        one.set(16039);
+        other.set(78669);
+        other = other.or(one);
+        one = one.and(other);
+        other = other.andNot(one);
+        Assert.assertEquals((long)other.getFirstSetBit(),(long)other.iterator().next());
+    }
+
 	@Test
 	public void swaptest() {
 		EWAHCompressedBitmap x = EWAHCompressedBitmap.bitmapOf(1,2,3);
