@@ -298,6 +298,11 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
     @Override
     public void addStreamOfLiteralWords(final Buffer buffer, final int start,
                                         final int number) {
+        // special handling for 'fake' final words.
+        if((start + 1 == buffer.sizeInWords()) && (buffer.getWord(start) == 0)) {
+            insertEmptyWord(false);
+            return;
+        }
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
             final int numberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
