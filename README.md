@@ -11,7 +11,9 @@ JavaEWAH
 This is a word-aligned compressed variant of
 the Java Bitset class. We provide both a 64-bit
 and a 32-bit RLE-like compression scheme. It can
-be used to implement bitmap indexes.
+be used to implement bitmap indexes. The EWAH format
+it relies upon is used in the git implementation 
+that runs GitHub.
 
 The goal of word-aligned compression is not to
 achieve the best compression, but rather to
