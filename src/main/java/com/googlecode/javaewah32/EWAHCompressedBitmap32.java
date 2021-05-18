@@ -274,11 +274,6 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
     @Override
     public void addStreamOfLiteralWords(final Buffer32 buffer, final int start,
                                         final int number) {
-        // special handling for 'fake' final words.
-        if((start + 1 == buffer.sizeInWords()) && (buffer.getWord(start) == 0)) {
-            insertEmptyWord(false);
-            return;
-        }
         int leftOverNumber = number;
         while (leftOverNumber > 0) {
             final int numberOfLiteralWords = this.rlw.getNumberOfLiteralWords();
@@ -513,6 +508,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     prey.discardFirstWords(predator
                             .getRunningLength());
                 } else if (i_is_prey) {
+                    // Todo: this may cause fragmentation whereas 0 literal words are inserted.
                     final int index = prey.discharge(container,
                             predator.getRunningLength());
                     container.addStreamOfEmptyWords(false,
@@ -1183,8 +1179,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
            }
            nword  += rl;
            int lw = RunningLengthWord32.getNumberOfLiteralWords(this.buffer, pos);
-           if(lw > 0) {
-                int word = this.buffer.getWord(pos + 1);
+           for(int p = pos + 1 ; p <= pos + lw; p++) {
+                int word = this.buffer.getWord(p);
                 // In theory, words should never be zero. Unfortunately due to the
                 // design which requires us to support 'andnot' and effective universe
                 // sizes, we sometimes end up appending zero words.
@@ -1192,6 +1188,7 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                     int T = word & -word;
                     return nword * WORD_IN_BITS + Integer.bitCount(T - 1);
                 }
+                nword++;
             }
         }
         return -1;
@@ -1635,28 +1632,44 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
 
     /**
      * A more detailed string describing the bitmap (useful for debugging).
+     * A JSON output is produced.
      *
      * @return the string
      */
+
     public String toDebugString() {
-        StringBuffer sb = new StringBuffer(" EWAHCompressedBitmap, size in bits = ");
-        sb.append(this.sizeInBits).append(" size in words = ");
-        sb.append(this.buffer.sizeInWords()).append("\n");
+        StringBuilder ans = new StringBuilder();
+        ans.append("{\"size in bits\":");
+        ans.append(this.sizeInBits).append(", \"size in words\":");
+        ans.append(this.buffer.sizeInWords()).append(",");
         final EWAHIterator32 i = this.getEWAHIterator();
+        ans.append(" \"content\": [");
+        boolean first = true;
         while (i.hasNext()) {
             RunningLengthWord32 localrlw = i.next();
+            if(!first) { ans.append(","); }
+            first = false;
+            ans.append("[");
+
             if (localrlw.getRunningBit()) {
-                sb.append(localrlw.getRunningLength()).append(" 1x11\n");
+                ans.append(localrlw.getRunningLength()).append(",").append(" \"1x11\", ");
             } else {
-                sb.append(localrlw.getRunningLength()).append(" 0x00\n");
+                ans.append(localrlw.getRunningLength()).append(",").append(" \"0x00\", ");
             }
-            sb.append(localrlw.getNumberOfLiteralWords()).append(" dirties\n");
-            for (int j = 0; j < localrlw.getNumberOfLiteralWords(); ++j) {
+            ans.append("[");
+            int j = 0;
+            for (; j + 1 < localrlw.getNumberOfLiteralWords(); ++j) {
                 int data = i.buffer().getWord(i.literalWords() + j);
-                sb.append("\t").append(data).append("\n");
+                ans.append("\"0x").append(Integer.toHexString(data)).append("\",");
             }
+            if(j < localrlw.getNumberOfLiteralWords()) {
+                int data = i.buffer().getWord(i.literalWords() + j);
+                ans.append("\"0x").append(Integer.toHexString(data)).append("\"");
+            }
+            ans.append("]]");
         }
-        return sb.toString();
+        ans.append("]}");
+        return ans.toString();
     }
 
     /**
