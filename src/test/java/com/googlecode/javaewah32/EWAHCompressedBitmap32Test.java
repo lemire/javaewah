@@ -104,14 +104,14 @@ public class EWAHCompressedBitmap32Test {
         one.set(16627);
         other.set(52811);
         other = other.and(one);
-
         one = one.andNot(other);
         one.set(16039);
         other.set(78669);
         other = other.or(one);
         one = one.and(other);
         other = other.andNot(one);
-        Assert.assertEquals((long)other.getFirstSetBit(),(long)other.iterator().next());
+        Assert.assertEquals((long)other.iterator().next(), 78669);
+        Assert.assertEquals((long)other.getFirstSetBit(), 78669);
     }
 
 	@Test
@@ -418,7 +418,6 @@ public class EWAHCompressedBitmap32Test {
     public void testBug090b() throws Exception {
         EWAHCompressedBitmap32 bm1 = new EWAHCompressedBitmap32();
         bm1.setSizeInBits(8, false); // Create a bitmap with no bit set
-        System.out.println(bm1.toDebugString());
         EWAHCompressedBitmap32 bm2 = new EWAHCompressedBitmap32();
         bm2.setSizeInBits(32, false); // Create a bitmap with no bit set
         EWAHCompressedBitmap32 bm3 = new EWAHCompressedBitmap32();
@@ -463,7 +462,6 @@ public class EWAHCompressedBitmap32Test {
     public void testBug090c() throws Exception {
         EWAHCompressedBitmap32 bm1 = new EWAHCompressedBitmap32();
         bm1.setSizeInBits(8, false); // Create a bitmap with no bit set
-        System.out.println(bm1.toDebugString());
         EWAHCompressedBitmap32 bm2 = new EWAHCompressedBitmap32();
         bm2.setSizeInBits(64, false); // Create a bitmap with no bit set
         EWAHCompressedBitmap32 bm3 = new EWAHCompressedBitmap32();
@@ -1325,9 +1323,6 @@ public class EWAHCompressedBitmap32Test {
         EWAHCompressedBitmap32 and2 = new  EWAHCompressedBitmap32();
         FastAggregation32.bufferedandWithContainer(and2, 32, bitmaps[0],bitmaps[1],bitmaps[2]);
         EWAHCompressedBitmap32 and3 = EWAHCompressedBitmap32.and(bitmaps[0],bitmaps[1],bitmaps[2]);
-        System.out.println(and1.sizeInBits());
-        System.out.println(and2.sizeInBits());
-        System.out.println(and3.sizeInBits());
         assertEqualsPositions(and1, and2);
         assertEqualsPositions(and2, and3);
     }
@@ -1932,8 +1927,6 @@ public class EWAHCompressedBitmap32Test {
         for (int k = 1; k < ewah.length; ++k)
             answer = answer.and(ewah[k]);
         // result should be empty
-        if (answer.toList().size() != 0)
-            System.out.println(answer.toDebugString());
         Assert.assertTrue(answer.toList().size() == 0);
         Assert.assertTrue(EWAHCompressedBitmap32.and(ewah)
                 .toList().size() == 0);
@@ -2024,9 +2017,6 @@ public class EWAHCompressedBitmap32Test {
                     EWAHCompressedBitmap32.or(ewah));
             int k = 0;
             for (int j : answer) {
-                if (k != j)
-                    System.out.println(answer
-                            .toDebugString());
                 Assert.assertEquals(k, j);
                 k += 1;
             }
@@ -2060,8 +2050,6 @@ public class EWAHCompressedBitmap32Test {
         }
         int k = 0;
         for (int j : answer) {
-            if (k != j)
-                System.out.println(answer.toDebugString());
             Assert.assertEquals(k, j);
             k += 1;
         }
