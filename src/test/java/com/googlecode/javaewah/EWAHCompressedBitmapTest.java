@@ -23,6 +23,44 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
 public class EWAHCompressedBitmapTest {
 	
     @Test
+    public void issue72a() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        main.clear(70583);
+        other = other.xor(main);
+        other.set(43013);
+        other = other.xor(main);
+        Assert.assertEquals((long)other.intIterator().next(),43013);
+        Assert.assertEquals((long)other.reverseIntIterator().next(),43013);
+    }
+    @Test
+    public void issue72b() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        main.set(33209);
+        other = other.and(main);
+        other = other.xor(main);
+        System.out.println(other);
+        Iterator<Integer> i = other.iterator();
+        Assert.assertEquals(i.hasNext(),true);
+        Assert.assertEquals((long)i.next(),(long)33209);
+    }
+    @Test
+    public void issue72c() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        main = main.and(other);
+        other.clear(96836);
+        main = main.andNot(other);
+        main = main.and(other);
+        main.set(96118);
+        other = other.and(main);
+        other = other.or(main);
+        System.out.println(other);
+        IntIterator intIterator = other.reverseIntIterator();
+        Assert.assertEquals((long)intIterator.next(),96118);
+    }
+    @Test
     public void issue68() {
         EWAHCompressedBitmap one = new EWAHCompressedBitmap();
         EWAHCompressedBitmap other = new EWAHCompressedBitmap();
@@ -32,6 +70,26 @@ public class EWAHCompressedBitmapTest {
         Assert.assertEquals((long)other.getFirstSetBit(),-1);
         other.set(82764);
         Assert.assertEquals((long)other.getFirstSetBit(),(long)other.iterator().next());
+    }
+    @Test
+    public void issue73() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        main.clear(10684);
+        other = other.andNot(main);
+        other = other.or(main);
+        new EWAHCompressedBitmap().or(other);
+    }
+    @Test
+    public void issue74() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        main = main.or(other);
+        other.set(7036);
+        main.set(44002);
+        other = other.and(main);
+        other = other.or(main);
+        Assert.assertEquals((long)other.iterator().next(),(long)44002);
     }
 
     @Test
