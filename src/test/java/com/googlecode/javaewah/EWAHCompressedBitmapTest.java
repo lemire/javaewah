@@ -21,7 +21,18 @@ import static com.googlecode.javaewah.EWAHCompressedBitmap.WORD_IN_BITS;
  */
 @SuppressWarnings("javadoc")
 public class EWAHCompressedBitmapTest {
-	
+    @Test
+    public void issue77() {
+        EWAHCompressedBitmap main = new EWAHCompressedBitmap();
+        main = main.shift(64);
+        main.set(63132);
+        Assert.assertEquals((long)main.intIterator().next(),63132);
+        EWAHCompressedBitmap other = new EWAHCompressedBitmap();
+        other.set(100);
+        other = other.shift(64);
+        other.clear(62514);
+        Assert.assertEquals((long)other.intIterator().next(),100+64);
+    }
     @Test
     public void issue72a() {
         EWAHCompressedBitmap main = new EWAHCompressedBitmap();

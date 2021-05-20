@@ -2095,8 +2095,20 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         int fullwords = b / WORD_IN_BITS;
         int shift = b % WORD_IN_BITS;
         answer.addStreamOfEmptyWords(false, fullwords);
-        if (shift == 0) {
-            answer.buffer.push_back(this.buffer, 0, sz);
+        if  (shift == 0) {
+            while (true) {
+                long rl = i.getRunningLength();
+                if (rl > 0) {
+                    answer.addStreamOfEmptyWords(i.getRunningBit(), rl);
+                }
+                int x = i.getNumberOfLiteralWords();
+                for (int k = 0; k < x; ++k) {
+                    answer.addWord(i.getLiteralWordAt(k));
+                }
+                if (!i.next()) {
+                    break;
+                }
+            }
         } else {
             // whether the shift should justify a new word
             final boolean shiftextension = ((this.sizeInBits + WORD_IN_BITS - 1) % WORD_IN_BITS) + shift >= WORD_IN_BITS;
