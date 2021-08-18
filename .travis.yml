@@ -13,3 +13,7 @@ branches:
 
 script: mvn clean test 
 
+
+cache:
+  directories:
+  - $HOME/.m2
