@@ -141,12 +141,8 @@ Data format
 For more details regarding the compression format, please
 see Section 3 of the following paper:
 
-Daniel Lemire, Owen Kaser, Kamel Aouiche, Sorting improves word-aligned bitmap indexes. Data & Knowledge Engineering 69 (1), pages 3-28, 2010.  
- http://arxiv.org/abs/0901.3751
-
-
-
- (The PDF file is freely available on the arXiv site.)
+Daniel Lemire, Owen Kaser, Kamel Aouiche, [Sorting improves word-aligned bitmap indexes](http://arxiv.org/abs/0901.3751). Data & Knowledge Engineering 69 (1), pages 3-28, 2010.  
+ 
 
 Benchmark
 ---------
@@ -171,6 +167,11 @@ mvn test
 See
 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 for details.
+
+We support Java 8 and up, but to build the library, you need Java 9 and up
+with the default Maven setup, since we rely on the `--release` flag functionality
+(unavailable in Java 8) to sidestep the [Deaded-NoSuchMethodError issue](https://www.morling.dev/blog/bytebuffer-and-the-dreaded-nosuchmethoderror/).
+
 
 
 Usage
