@@ -28,7 +28,8 @@ public final class EWAHPointer32 implements Comparable<EWAHPointer32> {
      * @param rw             the iterator
      * @param pos            current position (in word)
      */
-    public EWAHPointer32(final int previousEndRun,final IteratingBufferedRunningLengthWord32 rw, final int pos) {
+    public EWAHPointer32(final int previousEndRun,
+                         final IteratingBufferedRunningLengthWord32 rw, final int pos) {
         this.pos = pos;
         this.iterator = rw;
         if (this.iterator.getRunningLength() > 0) {
@@ -58,7 +59,8 @@ public final class EWAHPointer32 implements Comparable<EWAHPointer32> {
      */
     public int beginOfRun() {
         if (this.isLiteral)
-            return this.endrun - this.iterator.getNumberOfLiteralWords();
+            return this.endrun
+                    - this.iterator.getNumberOfLiteralWords();
         return (this.endrun - this.iterator.getRunningLength());
     }
 

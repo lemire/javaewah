@@ -136,8 +136,7 @@ public final class FastAggregation {
             long effective = 0;
             for (int k = 0; k < maxr; ++k) {
                 if (al.get(k).size() > 0) {
-                    int eff = IteratorAggregation
-                            .inplaceor(hardbitmap,
+                    int eff = IteratorAggregation.inplaceor(hardbitmap,
                                     al.get(k));
                     if (eff > effective)
                         effective = eff;

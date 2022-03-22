@@ -1650,6 +1650,9 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
         ans.append("]}");
         return ans.toString();
     }
+    
+    //moving the complex value of retrieving the complex if condition into another 
+    //method called hexValueofAns to avoid performing the multiple loops in one block of code.   
     public StringBuilder hexValueofAns(StringBuilder ans, RunningLengthWord localrlw, EWAHIterator i) {
     	 ans.append("[");
          int j = 0;

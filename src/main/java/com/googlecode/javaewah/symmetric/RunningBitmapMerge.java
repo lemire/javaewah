@@ -46,9 +46,8 @@ public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
             h.toss(x);
         }
         h.buildHeap(); // just in case we use an insane number of inputs
-        
-        //renaming lasta variable with lastvalue because the name is unclear
-        int lastValueofa = 0;
+
+        int lastValueofa  = 0;
         if (h.isEmpty())
             return;
         mainloop:

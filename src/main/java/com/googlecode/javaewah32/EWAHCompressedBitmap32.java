@@ -501,7 +501,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                         : rlwj;
                 final IteratingBufferedRunningLengthWord32 predator = i_is_prey ? rlwj
                         : rlwi;
-                if (((predator.getRunningBit()) && (i_is_prey)) || ((!predator.getRunningBit()) && (!i_is_prey))) {
+                if (((predator.getRunningBit()) && (i_is_prey))
+                        || ((!predator.getRunningBit()) && (!i_is_prey))) {
                     container.addStreamOfEmptyWords(false,
                             predator.getRunningLength());
                     prey.discardFirstWords(predator
@@ -1064,7 +1065,9 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
                 }
                 predator.discardRunningWords();
             }
-            final int nbre_literal = Math.min(rlwi.getNumberOfLiteralWords(),rlwj.getNumberOfLiteralWords());
+            final int nbre_literal = Math.min(
+                    rlwi.getNumberOfLiteralWords(),
+                    rlwj.getNumberOfLiteralWords());
             if (nbre_literal > 0) {
                 for (int k = 0; k < nbre_literal; ++k) {
                     container.addWord(rlwi.getLiteralWordAt(k)
@@ -1862,7 +1865,8 @@ public final class EWAHCompressedBitmap32 implements Cloneable, Externalizable,
      * @param a         the other bitmap (it will not be modified)
      * @param container where we store the result
      */
-    public void composeToContainer(final EWAHCompressedBitmap32 a,final EWAHCompressedBitmap32 container) {
+    public void composeToContainer(final EWAHCompressedBitmap32 a,
+                                   final EWAHCompressedBitmap32 container) {
         container.clear();
         final ChunkIterator iterator = chunkIterator();
         final ChunkIterator aIterator = a.chunkIterator();

@@ -177,9 +177,7 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
           public void remove() {
           	throw new RuntimeException("Object is immutable");
           }
-
           private int i = ImmutableBitSet.this.nextSetBit(0);
-
           private int j;
       };
   }
