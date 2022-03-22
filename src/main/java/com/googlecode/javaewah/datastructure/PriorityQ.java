@@ -92,19 +92,24 @@ public final class PriorityQ<T> {
                 if ((l <= this.lastIndex) && (compare(this.a[l], ai) < 0))
                     smallest = l;
             }
-            if (i != smallest) {
-                // conceptually, swap a[i]& a[smallest]
-                // but as an opt., we use ai and just save at
-                // end
-                // temp = a[i];
-                this.a[i] = this.a[smallest]; // move smallest
-                // one up into
-                // place of i
-                i = smallest;
-            } else {
-                this.a[smallest] = ai;
-                return;
-            }
+            
+            //swapping the functionality should be mentioned in swap class
+            Swap swap = new Swap();
+            swap.SwapWord(i, smallest, this.a, ai);
+            
+//            if (i != smallest) {
+//                // conceptually, swap a[i]& a[smallest]
+//                // but as an opt., we use ai and just save at
+//                // end
+//                // temp = a[i];
+//                this.a[i] = this.a[smallest]; // move smallest
+//                // one up into
+//                // place of i
+//                i = smallest;
+//            } else {
+//                this.a[smallest] = ai;
+//                return;
+//            }
         }
     }
 
@@ -128,4 +133,28 @@ public final class PriorityQ<T> {
     public boolean isEmpty() {
         return this.lastIndex == 0;
     }
+    
+    /* SET II - Extract class Identified the different functionality present in the
+    method name percolateDown and created a class which is used to swap the word */
+    class Swap{
+    	
+    	public void SwapWord(int i, int smallest, T[] a, T ai) {
+    		if (i != smallest) {
+              // conceptually, swap a[i]& a[smallest]
+              // but as an opt., we use ai and just save at
+              // end
+              // temp = a[i];
+              a[i] = a[smallest]; // move smallest
+              // one up into
+              // place of i
+              i = smallest;
+          } else {
+             a[smallest] = ai;
+              return;
+          }
+    		
+    	}
+    }
 }
+
+

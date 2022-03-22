@@ -39,6 +39,7 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         this.bufferUsed = 0;
     }
 
+    /*Dispatching the word if it is not empty is been moved to another method*/
     @Override
     public void dispatch(BitmapStorage out, int runBegin, int runEnd) {
         final int runLength = runEnd - runBegin;
@@ -47,20 +48,27 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         } else if (this.litWeight + this.hammingWeight < this.min) {
             out.addStreamOfEmptyWords(false, runLength);
         } else {
-            final int deficit = this.min - this.hammingWeight;
-            if (deficit == 1) {
-                orLiterals(out, runBegin, runLength);
-                return;
-            }
-            this.bufferUsed = this.getNumberOfLiterals();
-            if (this.bufferUsed == deficit) {
-                andLiterals(out, runBegin, runLength);
-            } else {
-                generalLiterals(deficit, out, runBegin, runLength);
-            }
+        	
+        	//extract the method, SET-II moving the field from one method to another method 
+        	//to get the variable available in the method where it is actually used.
+        	dispatchLiteral displatch = new dispatchLiteral();
+        	displatch.returnLiteral(this.hammingWeight, this.min,this.bufferUsed,this.getNumberOfLiterals(),runLength, out, runBegin, runEnd);
+       
+//            final int deficit = this.min - this.hammingWeight;
+//            if (deficit == 1) {
+//                orLiterals(out, runBegin, runLength);
+//                return;
+//            }
+//            this.bufferUsed = this.getNumberOfLiterals();
+//            if (this.bufferUsed == deficit) {
+//                andLiterals(out, runBegin, runLength);
+//            } else {
+//                generalLiterals(deficit, out, runBegin, runLength);
+//            }
         }
     }
 
+   
     private long threshold2buf(final int t, final long[] buf, final int bufUsed) {
         long result = 0L;
         final int[] counters = this.bufCounters;
@@ -127,17 +135,34 @@ public final class ThresholdFuncBitmap extends UpdateableBitmapFunction {
         }
     }
 
-    private void generalLiterals(final int deficit,
-                                       final BitmapStorage out, final int runBegin, final int runLength) {
+    private void generalLiterals(final int deficit,final BitmapStorage out, final int runBegin, final int runLength) {
         if (this.bufferUsed > this.buffers.length)
             this.buffers = Arrays.copyOf(this.buffers, 2 * this.bufferUsed);
         for (int i = 0; i < runLength; ++i) {
             int p = 0;
-            for (EWAHPointer R : this.getLiterals()) {
+            for(EWAHPointer R : this.getLiterals()) {
                 this.buffers[p++] = R.iterator.getLiteralWordAt(i + runBegin - R.beginOfRun());
             }
             out.addWord(threshold4(deficit, this.buffers, this.bufferUsed));
         }
+    }
+    
+    public class dispatchLiteral{
+    	
+    	 public void returnLiteral(int hammingWeight, int min, int bufferUsed, int getNumberOfLiterals, int runLength, BitmapStorage out, int runBegin, int runEnd) {
+    		 final int deficit = min - hammingWeight;
+            if (deficit == 1) {
+                orLiterals(out, runBegin, runLength);
+                return;
+            }
+            bufferUsed = getNumberOfLiterals;
+            if (bufferUsed == deficit) {
+                andLiterals(out, runBegin, runLength);
+            } else {
+                generalLiterals(deficit, out, runBegin, runLength);
+            }
+    	}
+        
     }
 
 }

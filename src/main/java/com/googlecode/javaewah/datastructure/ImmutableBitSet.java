@@ -210,15 +210,15 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
           return -1;
       long w = this.data.get(x);
       w >>>= (i % 64);
-      if (w != 0) {
-          return i + Long.numberOfTrailingZeros(w);
+      if (w != 0) {   	     	  
+    	  AppendTrailingZero az = new AppendTrailingZero(data);
+    	  int trailingZero = az.TrailingZero(i,w);
+    	  return trailingZero;
       }
       ++x;
       for (; x < this.data.limit(); ++x) {
           if (this.data.get(x) != 0) {
-              return x
-                      * 64
-                      + Long.numberOfTrailingZeros(this.data.get(x));
+              return x * 64+  Long.numberOfTrailingZeros(this.data.get(x));
           }
       }
       return -1;
@@ -243,9 +243,7 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
       ++x;
       for (; x < this.data.limit(); ++x) {
           if (this.data.get(x) != ~0) {
-              return x
-                      * 64
-                      + Long.numberOfTrailingZeros(~this.data.get(x));
+              return x* 64 + Long.numberOfTrailingZeros(~this.data.get(x));
           }
       }
       return -1;
@@ -314,9 +312,19 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
   }
 
   private LongBuffer data;
+}
 
 
+//SET-II getting the trailing zero method to the another class for refactoring
+class AppendTrailingZero extends ImmutableBitSet{
+	
+	//constructor
+	public AppendTrailingZero(LongBuffer bs) {
+		super(bs);
+	}
 
-
-
+	public int TrailingZero(int i,long w) {
+		return i + Long.numberOfTrailingZeros(w);
+	}
+	
 }

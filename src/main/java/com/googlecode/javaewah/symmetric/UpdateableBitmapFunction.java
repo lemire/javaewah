@@ -37,7 +37,6 @@ public abstract class UpdateableBitmapFunction {
 
     /**
      * Goes through the literals.
-     *
      * @return an iterator
      */
     public final Iterable<EWAHPointer> getLiterals() {

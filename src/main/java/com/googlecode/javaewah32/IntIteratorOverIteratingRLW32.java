@@ -66,8 +66,7 @@ public class IntIteratorOverIteratingRLW32 implements IntIterator {
     }
 
     private void setupForCurrentRunningLengthWord() {
-        this.runningLength = WORD_IN_BITS
-                * this.parent.getRunningLength() + this.position;
+        this.runningLength = WORD_IN_BITS * this.parent.getRunningLength() + this.position;
 
         if (!this.parent.getRunningBit()) {
             this.position = this.runningLength;
