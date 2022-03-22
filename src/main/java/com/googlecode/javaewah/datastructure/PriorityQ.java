@@ -89,8 +89,7 @@ public final class PriorityQ<T> {
                 } else if (compare(this.a[r], ai) < 0)
                     smallest = r;
             } else {// may have a l, don't have a r
-                if ((l <= this.lastIndex)
-                        && (compare(this.a[l], ai) < 0))
+                if ((l <= this.lastIndex) && (compare(this.a[l], ai) < 0))
                     smallest = l;
             }
             if (i != smallest) {

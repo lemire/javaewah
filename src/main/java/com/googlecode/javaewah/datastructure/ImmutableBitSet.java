@@ -29,6 +29,8 @@ public class ImmutableBitSet  implements Cloneable, Iterable<Integer>,WordArray 
    *
    * @param bs the data source
    */
+	
+	//Adding the changes to make the name bs more meaningful  bitSet
   public ImmutableBitSet(final LongBuffer bs) {
   	int length = (int) bs.get(0);
   	LongBuffer copy = bs.slice();

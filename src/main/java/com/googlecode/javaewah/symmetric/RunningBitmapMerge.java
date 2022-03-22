@@ -46,16 +46,17 @@ public class RunningBitmapMerge implements BitmapSymmetricAlgorithm {
             h.toss(x);
         }
         h.buildHeap(); // just in case we use an insane number of inputs
-
-        int lasta = 0;
+        
+        //renaming lasta variable with lastvalue because the name is unclear
+        int lastValueofa = 0;
         if (h.isEmpty())
             return;
         mainloop:
         while (true) { // goes until no more active inputs
             final int a = h.peek().endOfRun();
             // I suppose we have a run of length a - lasta here.
-            f.dispatch(out, lasta, a);
-            lasta = a;
+            f.dispatch(out, lastValueofa, a);
+            lastValueofa = a;
 
             while (h.peek().endOfRun() == a) {
                 final EWAHPointer p = h.peek();

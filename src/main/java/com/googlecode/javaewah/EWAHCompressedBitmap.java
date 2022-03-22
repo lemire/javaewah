@@ -1643,22 +1643,28 @@ public final class EWAHCompressedBitmap implements Cloneable, Externalizable,
             } else {
                 ans.append(localrlw.getRunningLength()).append(",").append(" \"0x00\", ");
             }
-            ans.append("[");
-            int j = 0;
-            for (; j + 1 < localrlw.getNumberOfLiteralWords(); ++j) {
-                long data = i.buffer().getWord(i.literalWords() + j);
-                ans.append("\"0x").append(Long.toHexString(data)).append("\",");
-            }
-            if(j < localrlw.getNumberOfLiteralWords()) {
-                long data = i.buffer().getWord(i.literalWords() + j);
-                ans.append("\"0x").append(Long.toHexString(data)).append("\"");
-            }
-            ans.append("]]");
+            
+            //getting the hexValueofAns
+           ans = hexValueofAns(ans, localrlw, i);
         }
         ans.append("]}");
         return ans.toString();
     }
-
+    public StringBuilder hexValueofAns(StringBuilder ans, RunningLengthWord localrlw, EWAHIterator i) {
+    	 ans.append("[");
+         int j = 0;
+         for (; j + 1 < localrlw.getNumberOfLiteralWords(); ++j) {
+             long data = i.buffer().getWord(i.literalWords() + j);
+             ans.append("\"0x").append(Long.toHexString(data)).append("\",");
+         }
+         if(j < localrlw.getNumberOfLiteralWords()) {
+             long data = i.buffer().getWord(i.literalWords() + j);
+             ans.append("\"0x").append(Long.toHexString(data)).append("\"");
+         }
+         ans.append("]]");
+         
+         return ans;
+    }
     /**
      * A string describing the bitmap.
      *
