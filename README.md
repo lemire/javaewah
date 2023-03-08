@@ -336,7 +336,7 @@ Credit
 --------
 
 
-(c) 2009-2021
+(c) 2009-2023
 [Daniel Lemire](http://lemire.me/en/), Cliff Moon, [David McIntosh](https://github.com/mctofu), [Robert Becho](https://github.com/RBecho), [Colby Ranger](https://github.com/crangeratgoogle), [Veronika Zenz](https://github.com/veronikazenz), [Owen Kaser](https://github.com/owenkaser), [Gregory Ssi-Yan-Kai](https://github.com/gssiyankai), and [Rory Graves](https://github.com/rorygraves)
 
 
